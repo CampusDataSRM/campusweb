@@ -16,6 +16,7 @@ module.exports = {
         theme_primary: '#0094FF',
         theme_secondary: '#9747FF',
         theme_text_normal: '#ffffff',
+        theme_text_normal_60: 'rgba(255,255,255,0.6)',
         theme_text_primary: "#91C3E7",
         theme_green: '#00FF38',
         theme_red: '#FF0000',
