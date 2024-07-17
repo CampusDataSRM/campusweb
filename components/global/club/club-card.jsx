@@ -1,7 +1,7 @@
 const ClubCard = ({ club, tags, popularity }) => {
   const tagColor = (tag) => {
     if (tag.toLowerCase().includes("recruiting")) {
-      return "theme_primary font-medium";
+      return "theme_text_primary font-bold";
     } else {
       return "theme_text_primary";
     }
@@ -29,7 +29,7 @@ const ClubCard = ({ club, tags, popularity }) => {
               key={index}
               className={`theme_box_bg text-${tagColor(
                 tag.value
-              )} text-sm px-3 py-1 rounded-full`}
+              )} text-sm px-3 py-1 rounded-full`} 
             >
               {tag.value}
             </div>
