@@ -14,3 +14,10 @@
     @apply bg-[#0C4DA2]/20 backdrop-blur-sm rounded-xl shadow-2xl;
   }
 }
+
+.page-center {
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
