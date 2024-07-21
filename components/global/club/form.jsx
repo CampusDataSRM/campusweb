@@ -1,8 +1,12 @@
 import { useState, useRef } from "react";
+const axios = require("axios");
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
 
+{
+  /* Club Event Creation Form */
+}
 const EventForm = () => {
   const fileUpload = useRef(null);
   const [event, setEvent] = useState({
@@ -35,8 +39,7 @@ const EventForm = () => {
         }
       };
       reader.readAsDataURL(e.target.files[0]);
-    } 
-    else {
+    } else {
       setEvent({ ...event, [e.target.name]: e.target.value });
     }
   };
@@ -48,7 +51,10 @@ const EventForm = () => {
         </div>
         <div>
           <form className="grid grid-cols-1 gap-4">
-            <button className={`${defaultStyle} min-h-40`} onClick={() => fileUpload.current.click()}>
+            <button
+              className={`${defaultStyle} min-h-40`}
+              onClick={() => fileUpload.current.click()}
+            >
               <div className="flex flex-col justify-center items-center h-full">
                 <input
                   type="file"
@@ -57,9 +63,12 @@ const EventForm = () => {
                   name="image"
                   ref={fileUpload}
                   onChange={onFormChange}
+                  accept="image/*"
                 />
                 <img src="/icons/camera/secondary.svg" className="w-7" />
-                <span className="text-theme_text_primary/80 text-sm py-2">Upload Banner (2:1 Ratio preffered)</span>
+                <span className="text-theme_text_primary/80 text-sm py-2">
+                  Upload Banner (2:1 Ratio preffered)
+                </span>
                 <img src={event.image} className="" />
               </div>
             </button>
@@ -214,12 +223,160 @@ const EventForm = () => {
   );
 };
 
-const ProfileForm = () => {
+{
+  /* Club Profile Form */
+}
+const ClubSignUpForm = () => {
+  const fileUpload = useRef(null);
+  const [club, setClub] = useState({
+    logo: null,
+    name: "",
+    description: "",
+    websiteLink: "",
+    isRecruiting: false,
+    label1: "",
+    label2: "",
+    label3: "",
+  });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(club);
+  };
+  const [descriptionLength, setDescriptionLength] = useState(0);
+
+  const onFormChange = (e) => {
+    if (e.target.name == "isRecruiting") {
+      setClub({ ...club, [e.target.name]: !club[e.target.name] });
+    } else if (e.target.name == "logo") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setClub({ ...club, logo: reader.result });
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    } else {
+      setClub({ ...club, [e.target.name]: e.target.value });
+      setDescriptionLength(e.target.value.length);
+    }
+  };
   return (
     <>
-      <div></div>
+      <div className="px-3 py-5">
+        <div className="text-theme_text_primary flex justify-start gap-2 content-center text-xl py-4">
+          Club Sign Up
+        </div>
+        <div>
+          <form className="grid grid-cols-1 gap-4">
+            <button
+              className={`${defaultStyle} min-h-40`}
+              onClick={() => fileUpload.current.click()}
+            >
+              <div className="flex flex-col justify-center items-center h-full">
+                <input
+                  type="file"
+                  placeholder="Event Image"
+                  className={`hidden`}
+                  name="logo"
+                  ref={fileUpload}
+                  onChange={onFormChange}
+                  accept="image/*"
+                />
+                <img src="/icons/camera/secondary.svg" className="w-7" />
+                <span className="text-theme_text_primary/80 text-sm py-2">
+                  Upload Banner (1:1 Ratio preffered)
+                </span>
+                <img src={club.logo} className="" />
+              </div>
+            </button>
+            <input
+              type="text"
+              placeholder="Club Name"
+              className={`${defaultStyle}`}
+              name="name"
+              onChange={onFormChange}
+              required
+            />
+            <div className={`${defaultStyle}`}>
+              <textarea
+                type="text"
+                placeholder="Description"
+                className={`bg-transparent w-full h-32 caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm`}
+                name="description"
+                maxLength={160}
+                onChange={onFormChange}
+                required
+              />
+              <span className="text-theme_text_primary text-sm flex justify-end">{descriptionLength}/160</span>
+            </div>
+            <input
+              type="url"
+              placeholder="Club Website Link (optional)"
+              className={`${defaultStyle}`}
+              name="websiteLink"
+              onChange={onFormChange}
+            />
+            <div className={`flex justify-between ${defaultStyle}`}>
+              <span className="text-theme_text_primary">Is Recruiting</span>
+              <label className="relative inline-flex cursor-pointer items-center">
+                <input
+                  id="isRecruiting"
+                  type="checkbox"
+                  className="peer sr-only"
+                  name="isRecruiting"
+                  onChange={onFormChange}
+                />
+                <div className="peer h-6 w-11 rounded-full bg-theme_text_primary/10 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:bg-white after:transition-all after:content-[''] peer-checked:bg-gradient-to-r peer-checked:from-theme_primary peer-checked:to-theme_secondary peer-checked:after:translate-x-full peer-focus:ring-green-300"></div>
+              </label>
+            </div>
+            <div className="grid grid-cols-1 gap-2 px-1">
+              <div className="text-theme_text_primary flex justify-start gap-2 content-center">
+                Labels
+                <button>
+                  {" "}
+                  <img
+                    src="/icons/info/primary.svg"
+                    className="w-4 mt-1"
+                  />{" "}
+                </button>{" "}
+              </div>
+              <input
+                type="text"
+                placeholder="Label 1"
+                className={`${defaultStyle}`}
+                name="label1"
+                onChange={onFormChange}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Label 2"
+                className={`${defaultStyle}`}
+                name="label2"
+                onChange={onFormChange}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Label 3"
+                className={`${defaultStyle}`}
+                name="label3"
+                onChange={onFormChange}
+                required
+              />
+            </div>
+            <button
+              type="button"
+              className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
+              onClick={handleSubmit}
+            >
+              Join the Campus Web
+            </button>
+          </form>
+        </div>
+      </div>
     </>
   );
 };
 
-export { EventForm, ProfileForm };
+export { EventForm, ClubSignUpForm };
