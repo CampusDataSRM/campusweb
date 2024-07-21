@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
 
 const EventForm = () => {
+  const fileUpload = useRef(null);
   const [event, setEvent] = useState({
     image: null,
     title: "",
@@ -26,18 +27,42 @@ const EventForm = () => {
   const onFormChange = (e) => {
     if (e.target.name == "OD" || e.target.name == "refreshment") {
       setEvent({ ...event, [e.target.name]: !event[e.target.name] });
-    } else {
+    } else if (e.target.name == "image") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setEvent({ ...event, image: reader.result });
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    } 
+    else {
       setEvent({ ...event, [e.target.name]: e.target.value });
     }
   };
   return (
     <>
       <div className="px-3 py-5">
-        <div className="text-theme_text_primary flex justify-start gap-2 content-center text-lg py-4">
-          Ongoing Events
+        <div className="text-theme_text_primary flex justify-start gap-2 content-center text-xl py-4">
+          Create Event
         </div>
         <div>
           <form className="grid grid-cols-1 gap-4">
+            <button className={`${defaultStyle} min-h-40`} onClick={() => fileUpload.current.click()}>
+              <div className="flex flex-col justify-center items-center h-full">
+                <input
+                  type="file"
+                  placeholder="Event Image"
+                  className={`hidden`}
+                  name="image"
+                  ref={fileUpload}
+                  onChange={onFormChange}
+                />
+                <img src="/icons/camera/secondary.svg" className="w-7" />
+                <span className="text-theme_text_primary/80 text-sm py-2">Upload Banner (2:1 Ratio preffered)</span>
+                <img src={event.image} className="" />
+              </div>
+            </button>
             <input
               type="text"
               placeholder="Event Title"
