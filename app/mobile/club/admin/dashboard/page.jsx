@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import EventCard from "@/components/global/events/event-card";
 import { eventData } from "@/components/global/events/data";
+import Link from "next/link";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -11,12 +12,12 @@ const Dashboard = () => {
     {
       name: "Create Event",
       icon: "/icons/plus/primary.svg",
-      buttonFunction: () => router.push("/"),
+      link:{path:"/mobile/club/admin/form", type:"createEvent"},
     },
     {
       name: "Club Profile",
       icon: "/icons/users/primary.svg",
-      buttonFunction: () => router.push("/"),
+      link:{path:"/profile", type:""},
     },
   ];
 
@@ -36,16 +37,21 @@ const Dashboard = () => {
         </div>
         <div className="grid grid-cols-2 gap-2 text-theme_text_normal font-medium">
           {clubNav.map((nav, index) => (
-            <button
+            <Link
               className="flex justify-center gap-2 theme_box_bg py-6 rounded-md text-center"
-              onClick={nav.buttonFunction}
               key={index}
+              href={{
+                pathname: nav.link.path,
+                query:{
+                  type: nav.link.type
+                }
+              }}
             >
               {nav.name}
               <span>
                 <img src={nav.icon} />{" "}
               </span>{" "}
-            </button>
+            </Link>
           ))}
         </div>
         <div className="px-2 mt-4">
