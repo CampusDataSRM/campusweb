@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { EventForm } from "@/components/global/club/form";
+import { ClubSignUpForm, EventForm } from "@/components/global/club/form";
 
 const Form = () => {
   const form = useSearchParams();
@@ -9,6 +9,7 @@ const Form = () => {
     return (
       <>
         <EventForm />
+        <ClubSignUpForm />
       </>
     );
   }
