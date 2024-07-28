@@ -1,23 +1,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import EventCard from "@/components/global/events/event-card";
-import { eventData } from "@/components/global/events/data";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 const Dashboard = () => {
   const router = useRouter();
-  const club = "srmkzilla";
+  const [club, setClub] = useState({});
   const clubNav = [
     {
       name: "Create Event",
       icon: "/icons/plus/primary.svg",
-      link:{path:"/mobile/club/admin/form", type:"createEvent"},
+      link: { path: "/mobile/club/admin/form", type: "createEvent" },
     },
     {
       name: "Club Profile",
       icon: "/icons/users/primary.svg",
-      link:{path:"/profile", type:""},
+      link: { path: "/profile", type: "" },
     },
   ];
 
@@ -25,6 +26,31 @@ const Dashboard = () => {
     { name: "Popularity", icon: "/icons/star.svg", value: "157x" },
     { name: "Events", icon: null, value: "7" },
   ];
+
+  useEffect(() => {
+    if (!Cookies.get("clubAuth")) {
+      router.push("/");
+    } else {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
+
+      
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+
+      fetch(
+        "https://campusapi-puce.vercel.app/api/users/club-events",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {setClub(result.data);})
+        .catch((error) => console.error(error));
+    }
+  }, []);
   return (
     <>
       <div className="px-4">
@@ -42,9 +68,9 @@ const Dashboard = () => {
               key={index}
               href={{
                 pathname: nav.link.path,
-                query:{
-                  type: nav.link.type
-                }
+                query: {
+                  type: nav.link.type,
+                },
               }}
             >
               {nav.name}
@@ -64,13 +90,12 @@ const Dashboard = () => {
                   className="mt-1"
                 />{" "}
               </span>{" "}
-              Ongoing Events
+              Our Events
             </div>
             <div className="flex flex-wrap justify-center gap-3 py-1">
-              {eventData
-                .filter((item) => item.club.name.toLowerCase() == club)
-                .map((event, index) => (
-                  <EventCard key={index} {...event} />
+              {club?.events &&
+                club.events.map((event, index) => (
+                  <EventCard event={event} club={club.club} key={index} />
                 ))}
             </div>
           </div>
@@ -89,7 +114,8 @@ const Dashboard = () => {
                   key={index}
                 >
                   <div className="text-theme_text_normal flex justify-center gap-1 text-2xl py-4 text-bold">
-                    {stat.value}{stat.icon && <img src={stat.icon} />}
+                    {stat.value}
+                    {stat.icon && <img src={stat.icon} />}
                   </div>
                   <div className="text-theme_text_primary text-sm">
                     {stat.name}

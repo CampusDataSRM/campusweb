@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function Home() {
-
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const [studentLogin, showStudentLogin] = useState(true);
   const handleFormChange = (e) => {
@@ -13,6 +15,13 @@ export default function Home() {
     setUserid("");
     setPassword("");
   };
+
+  
+  useEffect(() => {
+    if (Cookies.get("clubAuth")) {
+      router.push("/mobile/club/admin/dashboard");
+    }
+  }, []);
 
   const studentLoginFields = [
     {
@@ -30,7 +39,7 @@ export default function Home() {
   ];
   const handleStudentLogin = (e) => {
     e.preventDefault();
-    console.log("Student Login",userid, password);
+    console.log("Student Login", userid, password);
   };
 
   const clubLoginFields = [
@@ -49,8 +58,36 @@ export default function Home() {
   ];
   const handleClubLogin = (e) => {
     e.preventDefault();
-    console.log("Club Login",userid, password);
-  }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      email: userid,
+      password: password,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://campusapi-puce.vercel.app/api/auth/club-login",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.status === "success") {
+          Cookies.set("clubAuth", result.token, { expires: 1 });
+          router.push("/mobile/club/admin/dashboard");
+        } else {
+          alert("Invalid credentials");
+        }
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <>
@@ -63,7 +100,10 @@ export default function Home() {
           />
         </div>
         <div className="w-[350px]">
-          <form className={studentLogin ? "grid grid-cols-1 gap-4 mt-3" : "hidden"} name="Student Login Form">
+          <form
+            className={studentLogin ? "grid grid-cols-1 gap-4 mt-3" : "hidden"}
+            name="Student Login Form"
+          >
             {studentLoginFields.map((field, index) => (
               <div key={index}>
                 <input
@@ -84,7 +124,10 @@ export default function Home() {
               </button>
             </div>
           </form>
-          <form className={studentLogin ? "hidden" : "grid grid-cols-1 gap-4 mt-3"} name="Club Login Form">
+          <form
+            className={studentLogin ? "hidden" : "grid grid-cols-1 gap-4 mt-3"}
+            name="Club Login Form"
+          >
             {clubLoginFields.map((field, index) => (
               <div key={index}>
                 <input
@@ -106,8 +149,13 @@ export default function Home() {
             </div>
           </form>
           <div className="text-center mt-5">
-            <button className="text-theme_text_primary font-medium hover:cursor-pointer" onClick={handleFormChange}>
-              {studentLogin ? "Are you a club organiser?" : "Are you a student?"}
+            <button
+              className="text-theme_text_primary font-medium hover:cursor-pointer"
+              onClick={handleFormChange}
+            >
+              {studentLogin
+                ? "Are you a club organiser?"
+                : "Are you a student?"}
             </button>
           </div>
         </div>

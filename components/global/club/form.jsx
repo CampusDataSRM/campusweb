@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-const axios = require("axios");
+import Cookies from "js-cookie";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
@@ -26,12 +26,42 @@ const EventForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(event);
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
+
+    const formdata = new FormData();
+    formdata.append("title", event.title);
+    formdata.append("websiteLink", event.websiteLink);
+    formdata.append("eventDates", `${event.startDate} to ${event.endDate}`);
+    formdata.append("eventTiming", `${event.startTime} to ${event.endTime}`);
+    formdata.append("odsProvided", event.OD);
+    formdata.append("refreshmentsProvided", event.refreshment);
+    formdata.append("labels[]", event.label1);
+    formdata.append("labels[]", event.label2);
+    formdata.append("labels[]", event.label3);
+    formdata.append("BannerImg", event.image);
+    console.log(formdata);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://campusapi-puce.vercel.app/api/users/create-event",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
   };
 
   const onFormChange = (e) => {
     if (e.target.name == "OD" || e.target.name == "refreshment") {
       setEvent({ ...event, [e.target.name]: !event[e.target.name] });
-    } else if (e.target.name == "image") {
+    } else if (e.target.name == "something") {
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.readyState === 2) {
@@ -65,10 +95,14 @@ const EventForm = () => {
                   onChange={onFormChange}
                   accept="image/*"
                 />
-                <img src="/icons/camera/secondary.svg" className="w-7" />
-                <span className="text-theme_text_primary/80 text-sm py-2">
-                  Upload Banner (2:1 Ratio preffered)
-                </span>
+                {(event.image == null) && (
+                  <>
+                    <img src="/icons/camera/secondary.svg" className="w-7" />
+                    <span className="text-theme_text_primary/80 text-sm py-2">
+                      Upload Banner (2:1 Ratio preffered)
+                    </span>
+                  </>
+                )}
                 <img src={event.image} className="" />
               </div>
             </button>
@@ -307,7 +341,9 @@ const ClubSignUpForm = () => {
                 onChange={onFormChange}
                 required
               />
-              <span className="text-theme_text_primary text-sm flex justify-end">{descriptionLength}/160</span>
+              <span className="text-theme_text_primary text-sm flex justify-end">
+                {descriptionLength}/160
+              </span>
             </div>
             <input
               type="url"

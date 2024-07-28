@@ -9,7 +9,6 @@ const Form = () => {
     return (
       <>
         <EventForm />
-        <ClubSignUpForm />
       </>
     );
   }
