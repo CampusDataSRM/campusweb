@@ -23,6 +23,7 @@ const EventForm = () => {
     label2: "",
     label3: "",
   });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(event);
@@ -40,7 +41,6 @@ const EventForm = () => {
     formdata.append("labels[]", event.label2);
     formdata.append("labels[]", event.label3);
     formdata.append("BannerImg", event.image);
-    console.log(formdata);
 
     const requestOptions = {
       method: "POST",
@@ -59,20 +59,16 @@ const EventForm = () => {
   };
 
   const onFormChange = (e) => {
-    if (e.target.name == "OD" || e.target.name == "refreshment") {
-      setEvent({ ...event, [e.target.name]: !event[e.target.name] });
-    } else if (e.target.name == "something") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setEvent({ ...event, image: reader.result });
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
+    const { name, value, files, type } = e.target;
+    if (name === "OD" || name === "refreshment") {
+      setEvent((prevEvent) => ({ ...prevEvent, [name]: !prevEvent[name] }));
+    } else if (type === "file") {
+      setEvent((prevEvent) => ({ ...prevEvent, image: files[0] }));
     } else {
-      setEvent({ ...event, [e.target.name]: e.target.value });
+      setEvent((prevEvent) => ({ ...prevEvent, [name]: value }));
     }
   };
+
   return (
     <>
       <div className="px-3 py-5">
@@ -80,30 +76,36 @@ const EventForm = () => {
           Create Event
         </div>
         <div>
-          <form className="grid grid-cols-1 gap-4">
+          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <button
+              type="button"
               className={`${defaultStyle} min-h-40`}
               onClick={() => fileUpload.current.click()}
             >
               <div className="flex flex-col justify-center items-center h-full">
                 <input
                   type="file"
-                  placeholder="Event Image"
-                  className={`hidden`}
+                  className="hidden"
                   name="image"
                   ref={fileUpload}
                   onChange={onFormChange}
                   accept="image/*"
                 />
-                {(event.image == null) && (
+                {event.image == null && (
                   <>
                     <img src="/icons/camera/secondary.svg" className="w-7" />
                     <span className="text-theme_text_primary/80 text-sm py-2">
-                      Upload Banner (2:1 Ratio preffered)
+                      Upload Banner (2:1 Ratio preferred)
                     </span>
                   </>
                 )}
-                <img src={event.image} className="" />
+                {event.image && (
+                  <img
+                    src={URL.createObjectURL(event.image)}
+                    alt="Event Banner"
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
             </button>
             <input
@@ -122,9 +124,7 @@ const EventForm = () => {
               onChange={onFormChange}
             />
             <div className="grid grid-cols-7 gap-1">
-              <div
-                className={`col-span-7 flex justify-between ${defaultStyle}`}
-              >
+              <div className={`col-span-7 flex justify-between ${defaultStyle}`}>
                 <span className="text-theme_text_primary">Event Dates</span>
                 <span>
                   <img src="/icons/calender/primary.svg" className="w-5" />
@@ -143,7 +143,7 @@ const EventForm = () => {
               </span>
               <input
                 type="date"
-                placeholder="Start Date"
+                placeholder="End Date"
                 className={`col-span-3 ${defaultStyle}`}
                 name="endDate"
                 onChange={onFormChange}
@@ -151,16 +151,14 @@ const EventForm = () => {
               />
             </div>
             <div className="grid grid-cols-7 gap-1">
-              <div
-                className={`col-span-7 flex justify-between ${defaultStyle}`}
-              >
+              <div className={`col-span-7 flex justify-between ${defaultStyle}`}>
                 <span className="text-theme_text_primary">Event Timing</span>
                 <span>
                   <img src="/icons/clock/primary.svg" className="w-5" />
                 </span>
               </div>
               <input
-                type="Time"
+                type="time"
                 placeholder="Start Time"
                 className={`col-span-3 ${defaultStyle}`}
                 name="startTime"
@@ -171,8 +169,8 @@ const EventForm = () => {
                 to
               </span>
               <input
-                type="Time"
-                placeholder="Start Date"
+                type="time"
+                placeholder="End Time"
                 className={`col-span-3 ${defaultStyle}`}
                 name="endTime"
                 onChange={onFormChange}
@@ -198,7 +196,7 @@ const EventForm = () => {
               </span>
               <label className="relative inline-flex cursor-pointer items-center">
                 <input
-                  id="refeshment"
+                  id="refreshment"
                   type="checkbox"
                   className="peer sr-only"
                   name="refreshment"
@@ -210,13 +208,9 @@ const EventForm = () => {
             <div className="grid grid-cols-1 gap-2 px-1">
               <div className="text-theme_text_primary flex justify-start gap-2 content-center">
                 Labels
-                <button>
-                  {" "}
-                  <img
-                    src="/icons/info/primary.svg"
-                    className="w-4 mt-1"
-                  />{" "}
-                </button>{" "}
+                <button type="button">
+                  <img src="/icons/info/primary.svg" className="w-4 mt-1" />
+                </button>
               </div>
               <input
                 type="text"
@@ -243,19 +237,21 @@ const EventForm = () => {
                 required
               />
             </div>
-            <button
-              type="button"
-              className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
-              onClick={handleSubmit}
-            >
-              Create Event
-            </button>
+            <div className="py-5 flex justify-center">
+              <button
+                type="submit"
+                className="bg-gradient-to-r from-theme_primary to-theme_secondary px-6 py-2 text-theme_text_secondary rounded-lg"
+              >
+                Create Event
+              </button>
+            </div>
           </form>
         </div>
       </div>
     </>
   );
 };
+
 
 {
   /* Club Profile Form */
