@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import EventCard from "@/components/global/events/event-card";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { authExpiry } from "@/functions/auth-expiry";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -22,35 +23,48 @@ const Dashboard = () => {
     },
   ];
 
+  useEffect(() => {
+    if (Cookies.get("clubAuth")) {
+      if (authExpiry(Cookies.get("clubAuth"))) {
+        Cookies.remove("clubAuth");
+        router.push("/");
+      } else {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
+
+        const requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+        };
+
+        fetch(
+          "https://campusapi-puce.vercel.app/api/users/club-events",
+          requestOptions
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            setClub(result.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else {
+      router.push("/");
+    }
+  }, [router]);
+
   const clubStats = [
     { name: "Popularity", icon: "/icons/star.svg", value: "157x" },
-    { name: "Events", icon: null, value: "7" },
+    { name: "Events", icon: null, value: club?.events?.length || 0 },
   ];
 
-  useEffect(() => {
-    if (!Cookies.get("clubAuth")) {
-      router.push("/");
-    } else {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
-
-      
-
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-      };
-
-      fetch(
-        "https://campusapi-puce.vercel.app/api/users/club-events",
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {setClub(result.data);})
-        .catch((error) => console.error(error));
-    }
-  }, []);
+  const sessionLogout = () => {
+    console.log("Logging out");
+    Cookies.remove("clubAuth");
+    router.push("/");
+  };
   return (
     <>
       <div className="px-4">
@@ -60,6 +74,24 @@ const Dashboard = () => {
             alt="Campus Web"
             className="h-9 w-auto mx-auto"
           />
+        </div>
+        <div className="flex pb-2 justify-end">
+          <button
+            className="flex items-center gap-2 text-theme_text_primary text-lg py-2 font-mono font-semibold"
+            onClick={() => {console.log("Logging out");}}
+            disabled={false}
+          >
+            Logout
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#91C3E7"
+            >
+              <path d="M206.78-100.78q-44.3 0-75.15-30.85-30.85-30.85-30.85-75.15v-546.44q0-44.3 30.85-75.15 30.85-30.85 75.15-30.85h277.74v106H206.78v546.44h277.74v106H206.78Zm425.87-152.09L559-328.39 657.61-427H355.48v-106h302.13L559-631.61l73.65-75.52L859.22-480 632.65-252.87Z" />
+            </svg>
+          </button>
         </div>
         <div className="grid grid-cols-2 gap-2 text-theme_text_normal font-medium">
           {clubNav.map((nav, index) => (

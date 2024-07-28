@@ -2,12 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { authExpiry } from "@/functions/auth-expiry";
 import Cookies from "js-cookie";
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (Cookies.get("clubAuth")) {
+      if (authExpiry(Cookies.get("clubAuth"))) {
+        Cookies.remove("clubAuth");
+      } else {
+        router.push("/mobile/club/admin/dashboard");
+      }
+    }
+  }, [router]);
 
   const [studentLogin, showStudentLogin] = useState(true);
   const handleFormChange = (e) => {
@@ -15,13 +27,6 @@ export default function Home() {
     setUserid("");
     setPassword("");
   };
-
-  
-  useEffect(() => {
-    if (Cookies.get("clubAuth")) {
-      router.push("/mobile/club/admin/dashboard");
-    }
-  }, []);
 
   const studentLoginFields = [
     {
@@ -38,6 +43,7 @@ export default function Home() {
     },
   ];
   const handleStudentLogin = (e) => {
+    setLoading(true);
     e.preventDefault();
     console.log("Student Login", userid, password);
   };
@@ -57,6 +63,7 @@ export default function Home() {
     },
   ];
   const handleClubLogin = (e) => {
+    setLoading(true);
     e.preventDefault();
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -80,7 +87,7 @@ export default function Home() {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "success") {
-          Cookies.set("clubAuth", result.token, { expires: 1 });
+          Cookies.set("clubAuth", result.token);
           router.push("/mobile/club/admin/dashboard");
         } else {
           alert("Invalid credentials");
@@ -118,9 +125,33 @@ export default function Home() {
               <button
                 type="submit"
                 onClick={handleStudentLogin}
+                disabled={!loading}
                 className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
               >
-                Sign In
+                {loading ? (
+                  <svg
+                    class="animate-spin mx-auto h-7 w-7 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </div>
           </form>
@@ -142,9 +173,33 @@ export default function Home() {
               <button
                 type="submit"
                 onClick={handleClubLogin}
+                disabled={!loading}
                 className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
               >
-                Sign In
+                {loading ? (
+                  <svg
+                    class="animate-spin mx-auto h-7 w-7 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </div>
           </form>

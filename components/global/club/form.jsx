@@ -1,5 +1,8 @@
-import { useState, useRef } from "react";
+
 import Cookies from "js-cookie";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { authExpiry } from "@/functions/auth-expiry";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
@@ -8,6 +11,7 @@ const defaultStyle =
   /* Club Event Creation Form */
 }
 const EventForm = () => {
+  const router = useRouter();
   const fileUpload = useRef(null);
   const [event, setEvent] = useState({
     image: null,
@@ -26,36 +30,47 @@ const EventForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(event);
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
+    if (Cookies.get("clubAuth")) {
+      if (authExpiry(Cookies.get("clubAuth"))) {
+        Cookies.remove("clubAuth");
+        router.push("/");
+      } else {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
 
-    const formdata = new FormData();
-    formdata.append("title", event.title);
-    formdata.append("websiteLink", event.websiteLink);
-    formdata.append("eventDates", `${event.startDate} to ${event.endDate}`);
-    formdata.append("eventTiming", `${event.startTime} to ${event.endTime}`);
-    formdata.append("odsProvided", event.OD);
-    formdata.append("refreshmentsProvided", event.refreshment);
-    formdata.append("labels[]", event.label1);
-    formdata.append("labels[]", event.label2);
-    formdata.append("labels[]", event.label3);
-    formdata.append("BannerImg", event.image);
+        const formdata = new FormData();
+        formdata.append("title", event.title);
+        formdata.append("websiteLink", event.websiteLink);
+        formdata.append("eventDates", `${event.startDate} to ${event.endDate}`);
+        formdata.append(
+          "eventTiming",
+          `${event.startTime} to ${event.endTime}`
+        );
+        formdata.append("odsProvided", event.OD);
+        formdata.append("refreshmentsProvided", event.refreshment);
+        formdata.append("labels[]", event.label1);
+        formdata.append("labels[]", event.label2);
+        formdata.append("labels[]", event.label3);
+        formdata.append("BannerImg", event.image);
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: formdata,
+          redirect: "follow",
+        };
 
-    fetch(
-      "https://campusapi-puce.vercel.app/api/users/create-event",
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+        fetch(
+          "https://campusapi-puce.vercel.app/api/users/create-event",
+          requestOptions
+        )
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => console.error(error));
+      }
+    } else {
+      router.push("/");
+    }
   };
 
   const onFormChange = (e) => {
@@ -124,7 +139,9 @@ const EventForm = () => {
               onChange={onFormChange}
             />
             <div className="grid grid-cols-7 gap-1">
-              <div className={`col-span-7 flex justify-between ${defaultStyle}`}>
+              <div
+                className={`col-span-7 flex justify-between ${defaultStyle}`}
+              >
                 <span className="text-theme_text_primary">Event Dates</span>
                 <span>
                   <img src="/icons/calender/primary.svg" className="w-5" />
@@ -151,7 +168,9 @@ const EventForm = () => {
               />
             </div>
             <div className="grid grid-cols-7 gap-1">
-              <div className={`col-span-7 flex justify-between ${defaultStyle}`}>
+              <div
+                className={`col-span-7 flex justify-between ${defaultStyle}`}
+              >
                 <span className="text-theme_text_primary">Event Timing</span>
                 <span>
                   <img src="/icons/clock/primary.svg" className="w-5" />
@@ -237,21 +256,18 @@ const EventForm = () => {
                 required
               />
             </div>
-            <div className="py-5 flex justify-center">
-              <button
-                type="submit"
-                className="bg-gradient-to-r from-theme_primary to-theme_secondary px-6 py-2 text-theme_text_secondary rounded-lg"
-              >
-                Create Event
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
+            >
+              Create Event
+            </button>
           </form>
         </div>
       </div>
     </>
   );
 };
-
 
 {
   /* Club Profile Form */
