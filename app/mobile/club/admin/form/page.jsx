@@ -11,6 +11,14 @@ const Form = () => {
         <EventForm />
       </>
     );
+  } else if (form.get("type") == "clubSignUp") {
+    return (
+      <>
+        <ClubSignUpForm />
+      </>
+    );
+  } else {
+    return null;
   }
 };
 

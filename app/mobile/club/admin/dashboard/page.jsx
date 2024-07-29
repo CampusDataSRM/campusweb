@@ -9,7 +9,7 @@ import { authExpiry } from "@/functions/auth-expiry";
 
 const Dashboard = () => {
   const router = useRouter();
-  const [club, setClub] = useState({});
+  const [club, setClub] = useState();
   const clubNav = [
     {
       name: "Create Event",
@@ -57,7 +57,7 @@ const Dashboard = () => {
 
   const clubStats = [
     { name: "Popularity", icon: "/icons/star.svg", value: "157x" },
-    { name: "Events", icon: null, value: club?.events?.length || 0 },
+    {name: "Events", icon: null, value: club?.events?.length || 0 },
   ];
 
   const sessionLogout = () => {
@@ -78,8 +78,9 @@ const Dashboard = () => {
         <div className="flex pb-2 justify-end">
           <button
             className="flex items-center gap-2 text-theme_text_primary text-lg py-2 font-mono font-semibold"
-            onClick={() => {console.log("Logging out");}}
-            disabled={false}
+            onClick={sessionLogout}
+            type="button"
+            title="Logout"
           >
             Logout
             <svg
