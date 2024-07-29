@@ -72,7 +72,10 @@ const EventForm = () => {
             setSubmitting(false);
             router.push("/mobile/club/admin/dashboard");
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            console.error(error);
+            setSubmitting(false);
+          });
       }
     } else {
       router.push("/");
@@ -353,10 +356,14 @@ const ClubSignUpForm = () => {
           setVerification(true);
           setSubmitting(false);
         } else {
-          console.error(result);
+          console.log(result);
+          setSubmitting(false);
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setSubmitting(false);
+      });
   };
   const [descriptionLength, setDescriptionLength] = useState(0);
 

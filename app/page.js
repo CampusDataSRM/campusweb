@@ -92,9 +92,13 @@ export default function Home() {
           router.push("/mobile/club/admin/dashboard");
         } else {
           alert("Invalid credentials");
+          setLoading(false);
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
   };
 
   return (
@@ -206,7 +210,10 @@ export default function Home() {
             <div className="text-center mt-5">
               <Link
                 className="text-theme_text_primary font-medium hover:cursor-pointer"
-                href={{pathname: "/mobile/club/admin/form", query: {type: "clubSignUp"}}}
+                href={{
+                  pathname: "/mobile/club/admin/form",
+                  query: { type: "clubSignUp" },
+                }}
               >
                 New Club? Sign Up
               </Link>
