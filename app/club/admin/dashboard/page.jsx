@@ -14,7 +14,7 @@ const Dashboard = () => {
     {
       name: "Create Event",
       icon: "/icons/plus/primary.svg",
-      link: { path: "/mobile/club/admin/form", type: "createEvent" },
+      link: { path: "/club/admin/form", type: "createEvent" },
     },
     {
       name: "Club Profile",

@@ -70,7 +70,7 @@ const EventForm = () => {
           .then((result) => {
             console.log(result);
             setSubmitting(false);
-            router.push("/mobile/club/admin/dashboard");
+            router.push("/club/admin/dashboard");
           })
           .catch((error) => {
             console.error(error);

@@ -17,7 +17,7 @@ export default function Home() {
       if (authExpiry(Cookies.get("clubAuth"))) {
         Cookies.remove("clubAuth");
       } else {
-        router.push("/mobile/club/admin/dashboard");
+        router.push("/club/admin/dashboard");
       }
     }
   }, [router]);
@@ -89,7 +89,7 @@ export default function Home() {
       .then((result) => {
         if (result.status === "success") {
           Cookies.set("clubAuth", result.token);
-          router.push("/mobile/club/admin/dashboard");
+          router.push("/club/admin/dashboard");
         } else {
           alert("Invalid credentials");
           setLoading(false);
@@ -211,7 +211,7 @@ export default function Home() {
               <Link
                 className="text-theme_text_primary font-medium hover:cursor-pointer"
                 href={{
-                  pathname: "/mobile/club/admin/form",
+                  pathname: "/club/admin/form",
                   query: { type: "clubSignUp" },
                 }}
               >
