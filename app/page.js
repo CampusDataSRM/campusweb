@@ -46,7 +46,25 @@ export default function Home() {
   const handleStudentLogin = (e) => {
     setLoading(true);
     e.preventDefault();
-    console.log("Student Login", userid, password);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      username: userid,
+      password: password,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://campusapi-puce.vercel.app/api/auth/login/", requestOptions)
+      .then((response) => response.json())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
   };
 
   const clubLoginFields = [
@@ -130,8 +148,8 @@ export default function Home() {
               <button
                 type="submit"
                 onClick={handleStudentLogin}
-                disabled={!loading}
-                className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
+                disabled={loading}
+                className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
               >
                 {loading ? (
                   <svg

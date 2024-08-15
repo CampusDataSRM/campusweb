@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,7 +12,7 @@
 
 @layer utilities {
   .theme_box_bg {
-    @apply bg-[#0C4DA2]/20 backdrop-blur-sm rounded-xl shadow-2xl;
+    @apply bg-[#0C4DA2]/20 rounded-xl shadow-2xl;
   }
 }
 
@@ -20,5 +21,24 @@
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 42px;
+  aspect-ratio: 1;
+  --c:no-repeat linear-gradient(#91C3E7 0 0);
+  background: var(--c), var(--c), var(--c);
+  animation: 
+    l16-1 1s infinite,
+    l16-2 1s infinite;
+}
+@keyframes l16-1 {
+ 0%,100% {background-size:20% 100%}
+ 33%,66% {background-size:20% 40%}
+}
+@keyframes l16-2 {
+ 0%,33%   {background-position: 0 0   ,50% 100%,100% 0}
+ 66%,100% {background-position: 0 100%,50% 0   ,100% 100%}
 }
 

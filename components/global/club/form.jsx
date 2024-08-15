@@ -381,27 +381,25 @@ const ClubSignUpForm = () => {
   };
   return (
     <>
-      <div className="px-3 py-5">
-        <div className="text-theme_text_primary flex justify-center items-center gap-2 content-center text-xl py-4">
+      <div className="px-3 py-5 sm:hidden">
+        <div className="py-5">
+          <img
+            src="/logo.svg"
+            alt="Campus Web"
+            className="h-9 w-auto mx-auto"
+          />
+        </div>
+        <div className="text-theme_text_primary flex justify-start items-center gap-2 content-center text-xl pt-4 pb-6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="12px"
+            height="24px"
             viewBox="0 -960 960 960"
-            width="12px"
+            width="24px"
             fill="#91C3E7"
           >
-            <path d="M480-200q-117 0-198.5-81.5T200-480q0-117 81.5-198.5T480-760q117 0 198.5 81.5T760-480q0 117-81.5 198.5T480-200Z" />
+            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
           </svg>
           Club Sign Up
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="12px"
-            viewBox="0 -960 960 960"
-            width="12px"
-            fill="#91C3E7"
-          >
-            <path d="M480-200q-117 0-198.5-81.5T200-480q0-117 81.5-198.5T480-760q117 0 198.5 81.5T760-480q0 117-81.5 198.5T480-200Z" />
-          </svg>
         </div>
         <div className={verification ? "hidden" : ""}>
           <form className="grid grid-cols-1 gap-4">

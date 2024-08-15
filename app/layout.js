@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
           src="/bg_vector.png"
           alt="Create Next App"
           layout="fill"
-          className="filter blur-[80px] sm:blur-[150px] fixed top-0 left-0 -z-50"
+          className="filter blur-[60px] fixed top-0 left-0 -z-50"
         />
         {children}
       </body>
