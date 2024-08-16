@@ -2,9 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import EventCarousel from "@/components/global/events/carousel";
+import { useState } from "react";
 
 const Student = () => {
   const router = useRouter();
+  const [itemCount, setItemCount] = useState(4);
+  const [showMore, setShowMore] = useState(false);
   const studentMenu = [
     {
       name: "Attendance",
@@ -12,9 +15,9 @@ const Student = () => {
       link: "/student/attendance",
     },
     {
-      name: "Events",
-      icon: "/icons/calender/primary.svg",
-      link: "/student/events",
+      name: "Timetable",
+      icon: "/icons/clock/primary.svg",
+      link: "/student/timetable",
     },
     {
       name: "Marks",
@@ -25,6 +28,16 @@ const Student = () => {
       name: "Planner",
       icon: "/icons/loader/primary.svg",
       link: "/student/attendance",
+    },
+    {
+      name: "Events",
+      icon: "/icons/calender/primary.svg",
+      link: "/student/events",
+    },
+    {
+      name: "Clubs",
+      icon: "/icons/users/primary.svg",
+      link: "/student/clubs",
     },
   ];
   return (
@@ -39,7 +52,7 @@ const Student = () => {
         </div>
         <div className="sm:hidden px-2">
           <div className="grid grid-cols-2 justify-center gap-2 mt-8">
-            {studentMenu.map((menu, index) => (
+            {studentMenu.slice(0, itemCount).map((menu, index) => (
               <button
                 key={index}
                 onClick={() => router.push(menu.link)}
@@ -52,17 +65,43 @@ const Student = () => {
               </button>
             ))}
           </div>
-          <button className="theme_box_bg py-2 w-full flex justify-center items-center mt-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="28px"
-              viewBox="0 -960 960 960"
-              width="28px"
-              fill="#0094FF"
+          {showMore ? (
+            <button
+              className="theme_box_bg py-2 w-full flex justify-center items-center mt-2"
+              onClick={() => {
+                setItemCount(4);
+                setShowMore(false);
+              }}
             >
-              <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="28px"
+                viewBox="0 -960 960 960"
+                width="28px"
+                fill="#0094FF"
+              >
+                <path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z" />
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="theme_box_bg py-2 w-full flex justify-center items-center mt-2"
+              onClick={() => {
+                setItemCount(studentMenu.length);
+                setShowMore(true);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="28px"
+                viewBox="0 -960 960 960"
+                width="28px"
+                fill="#0094FF"
+              >
+                <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
+              </svg>
+            </button>
+          )}
           <EventCarousel />
         </div>
       </div>

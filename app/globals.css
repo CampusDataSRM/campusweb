@@ -25,7 +25,7 @@
 
 /* HTML: <div class="loader"></div> */
 .loader {
-  width: 42px;
+  width: 40px;
   aspect-ratio: 1;
   --c:no-repeat linear-gradient(#91C3E7 0 0);
   background: var(--c), var(--c), var(--c);

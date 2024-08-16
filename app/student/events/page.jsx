@@ -3,6 +3,7 @@ import EventCard from "@/components/global/events/event-card";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/global/navbar";
 import Loader from "@/components/global/loader";
+import SectionTitle from "@/components/global/section-title";
 
 const Events = () => {
   const [eventData, setEventData] = useState([]);
@@ -52,17 +53,7 @@ const Events = () => {
       <div className="max-h-screen overflow-auto">
         <Navbar items={navMenu} />
         <main className="px-4">
-          <div className="text-theme_text_primary flex justify-start items-center gap-2 content-center text-xl py-6 font-semibold">
-            <span>
-              {" "}
-              <img
-                alt="calender"
-                src="/icons/calender/secondary.svg"
-                className="w-5"
-              />{" "}
-            </span>{" "}
-            Our Events
-          </div>
+          <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />

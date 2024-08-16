@@ -13,6 +13,13 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    Cookies.set(
+      "studentAuth",
+      "wms-tkp-token_client_10002227248=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Domain=academia.srmist.edu.in; Path=/ wms-tkp-token_client_10002227248=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Domain=srmist.edu.in; Path=/ wms-tkp-token_client_10002227248=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Domain=edu.in; Path=/ wms-tkp-token_client_10002227248=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Path=/ _iamadt_client_10002227248=b77f1208cbc172c04860d0e2ed253cab8bc138c49a3bceb9c7e125a172a99d201768972f24e7008ec61f7288df621f9fc224c86da31243a1fbb8b56a2c6b6d39; Max-Age=3024000; Expires=Fri, 20-Sep-2024 05:45:19 GMT; HttpOnly; Domain=academia.srmist.edu.in; Path=/; Secure; SameSite=None;priority=High _iambdt_client_10002227248=5789ee0cf0d367e4ed0c13b3f2c03ceacbdecb2a1c3d9ab8f102b1e03e41cf2f7be77a673ed82e7a61fa34d24e1d5596a368a003f691926485082e0f59068103; Max-Age=3024000; Expires=Fri, 20-Sep-2024 05:45:19 GMT; HttpOnly; Domain=academia.srmist.edu.in; Path=/; Secure; SameSite=None;priority=High _z_identity=true; Path=/; Secure;priority=Medium"
+    );
+  }, []);
+
+  useEffect(() => {
     if (Cookies.get("clubAuth")) {
       if (authExpiry(Cookies.get("clubAuth"))) {
         Cookies.remove("clubAuth");
