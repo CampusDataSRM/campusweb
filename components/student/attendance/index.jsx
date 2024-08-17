@@ -17,7 +17,7 @@ const AttendanceCard = ({ attendance }) => {
               {attendance?.courseTitle}
             </span>
             <span className="text-theme_text_normal_60 text-sm">
-              {String(attendance?.courseCode).replace("Regular", "")}
+              {String(attendance?.courseCode).replace("Regular", "")}{" - "}{attendance?.category}
             </span>
             <div className="flex gap-3 items-center text-xs mt-2">
               <span className="theme_box_bg flex gap-3 rounded-full py-1 px-3">

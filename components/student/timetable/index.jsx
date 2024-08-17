@@ -1,25 +1,24 @@
 const TimetableCard = ({ subjectName, subjectType, classRoom, timing }) => {
-    const classtime = '10:00 - 11:00';
   return (
     <>
-      <div className="theme_box_bg px-4 py-6">
+      <div className={`${subjectName.includes("No class") ? "hidden" : ""} theme_box_bg px-4 py-6`}>
         <div className="w-full flex justify-between gap-3 items-center">
           <div className="flex flex-col gap-1">
             <span className="text-base text-theme_text_normal tracking-wide font-semibold text-wrap">
-              Transform and Boundary Value Problems
+              {subjectName}
             </span>
             <span className="text-sm text-theme_text_normal_60 font-semibold tracking-wide text-wrap">
-              TP1403
+              {classRoom}{" - "}{subjectType}
             </span>
           </div>
           <div className="flex flex-col gap-3 justify-center text-sm font-medium">
             <div className="theme_box_bg px-3 py-1 flex justify-center gap-2">
                 <span className="text-theme_primary">ST</span>
-                <span className="text-theme_text_normal">{classtime && classtime.split(" ")[0]}</span>
+                <span className="text-theme_text_normal">{timing && timing.split(" ")[0]}</span>
             </div>
             <div className="theme_box_bg px-3 py-1 flex justify-center gap-2">
                 <span className="text-theme_green">ET</span>
-                <span className="text-theme_text_normal">{classtime && classtime.split(" ")[2]}</span>
+                <span className="text-theme_text_normal">{timing && timing.split(" ")[2]}</span>
             </div>
           </div>
         </div>
