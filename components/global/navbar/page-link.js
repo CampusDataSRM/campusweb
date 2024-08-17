@@ -32,7 +32,7 @@ const studentPageLink = {
     clubs: {
         name: "Clubs",
         link: "/student/clubs",
-        icon: "/icons/users/primary.svg",
+        icon: "/icons/user-group/primary.svg",
     },
 };
 

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import EventCarousel from "@/components/global/events/carousel";
 import { useState } from "react";
+import YourStats from "@/components/student/stats";
 
 const Student = () => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const Student = () => {
     },
     {
       name: "Clubs",
-      icon: "/icons/users/primary.svg",
+      icon: "/icons/user-group/primary.svg",
       link: "/student/clubs",
     },
   ];
@@ -103,6 +104,9 @@ const Student = () => {
             </button>
           )}
           <EventCarousel />
+          <div className="px-1">
+            <YourStats />
+          </div>
         </div>
       </div>
     </>

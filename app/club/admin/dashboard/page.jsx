@@ -18,7 +18,7 @@ const Dashboard = () => {
     },
     {
       name: "Club Profile",
-      icon: "/icons/users/primary.svg",
+      icon: "/icons/user-group/primary.svg",
       link: { path: "/profile", type: "" },
     },
   ];
@@ -136,7 +136,7 @@ const Dashboard = () => {
             <div className="text-theme_text_primary flex justify-start gap-2 content-center text-lg py-6">
               <span>
                 {" "}
-                <img src="/icons/users/secondary.svg" className="mt-1" />{" "}
+                <img src="/icons/user-group/secondary.svg" className="mt-1" />{" "}
               </span>{" "}
               Club Standings
             </div>
