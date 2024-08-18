@@ -84,7 +84,7 @@ const Student = () => {
                 onClick={() => router.push(menu.link)}
                 className="theme_box_bg py-6 px-4 flex justify-between items-center"
               >
-                <span className="text-lg text-white font-medium">
+                <span className="text-base text-white font-medium">
                   {menu.name}
                 </span>
                 <img src={menu.icon} alt={menu.name} className="h-6 w-6" />
