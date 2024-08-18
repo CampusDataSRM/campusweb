@@ -44,7 +44,7 @@ const YourStats = ({}) => {
     },
     {
       name: "Marks",
-      value: `${marksObtained}/${totalMarksObtained}`,
+      value: `${marksObtained} / ${totalMarksObtained}`,
     },
   ];
   return (
@@ -62,7 +62,7 @@ const YourStats = ({}) => {
             key={index}
             className="theme_box_bg py-6 px-4 flex flex-col gap-3 justify-between items-center"
           >
-            <span className="text-2xl text-theme_text_normal font-bold tracking-wide">
+            <span className="text-2xl text-theme_text_normal font-semibold tracking-wide">
               {stat.value}
             </span>
             <span className="text-lg text-theme_text_normal/80 font-medium tracking-wide">
