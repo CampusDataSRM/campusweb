@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
+import Loader from "@/components/global/loader";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,13 +15,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Image
-          src="/bg_vector.png"
-          alt="Create Next App"
-          layout="fill"
-          className="filter blur-[60px] fixed top-0 left-0 -z-50"
-        />
-        {children}
+        <Suspense fallback={<Loader />}>
+          <Image
+            src="/bg_vector.png"
+            alt="Create Next App"
+            layout="fill"
+            className="filter blur-[60px] fixed top-0 left-0 -z-50"
+          />
+          <div className="sm:hidden">{children}</div>
+        </Suspense>
       </body>
     </html>
   );
