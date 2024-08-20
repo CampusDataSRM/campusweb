@@ -8,10 +8,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 
-
 const Timetable = () => {
-  const rawData = localStorage.getItem("studentData");
-  const dataStudent = JSON.parse(rawData);
   const navMenu = [
     {
       name: studentPageLink.dashboard.name,
@@ -38,12 +35,13 @@ const Timetable = () => {
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedDay, setSelectedDay] = useState("");
   useEffect(() => {
     setLoading(true);
+    const rawData = localStorage.getItem("studentData");
+    const dataStudent = JSON.parse(rawData);
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("studentAuth"));
-    
 
     const requestOptions = {
       method: "GET",
@@ -59,12 +57,12 @@ const Timetable = () => {
       .then((result) => {
         setTimetable(result);
         setDayOrders(Object.keys(result.timetable && result.timetable));
-        setSelectedDay(result && ("Day" + (result?.day_order)));
+        setSelectedDay(result && "Day" + result?.day_order);
         setLoading(false);
       })
       .catch((error) => console.error(error));
   }, []);
-  
+
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
@@ -83,7 +81,7 @@ const Timetable = () => {
                     key={index}
                     onClick={() => setSelectedDay(day)}
                     className={`${
-                      (selectedDay === day)
+                      selectedDay === day
                         ? "border-2 border-theme_green"
                         : "border-0"
                     } bg-theme_primary text-theme_text_normal rounded-xl h-10 w-10 font-medium hover:border-2 hover:border-theme_green`}
@@ -102,7 +100,7 @@ const Timetable = () => {
                           ? timetable.timetable[selectedDay]
                           : {}
                         : {}
-                    ).map((item, index) => (   
+                    ).map((item, index) => (
                       <TimetableCard
                         key={index}
                         subjectName={
