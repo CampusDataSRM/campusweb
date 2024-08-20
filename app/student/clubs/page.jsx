@@ -1,13 +1,14 @@
 "use client";
-import EventCard from "@/components/global/events/event-card";
-import { useEffect, useState } from "react";
+
 import Navbar from "@/components/global/navbar";
-import Loader from "@/components/global/loader";
 import SectionTitle from "@/components/global/section-title";
+import { useEffect, useState } from "react";
+import Loader from "@/components/global/loader";
+import ClubCard from "@/components/global/club/club-card";
 import { studentPageLink } from "@/components/global/navbar/page-link";
 
-const Events = () => {
-  const [eventData, setEventData] = useState([]);
+const Clubs = () => {
+  const [clubData, setClubData] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -16,13 +17,10 @@ const Events = () => {
       redirect: "follow",
     };
 
-    fetch(
-      "https://campusapi-puce.vercel.app/api/users/allevent",
-      requestOptions
-    )
+    fetch("https://campusapi-puce.vercel.app/api/users/allclub", requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        setEventData(result.data);
+        setClubData(result.data);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -45,33 +43,37 @@ const Events = () => {
       icon: studentPageLink.attendance.icon,
     },
     {
-      name: studentPageLink.clubs.name,
-      link: studentPageLink.clubs.link,
-      icon: studentPageLink.clubs.icon,
+      name: studentPageLink.events.name,
+      link: studentPageLink.events.link,
+      icon: studentPageLink.events.icon,
     },
   ];
+
   return (
     <>
       <div className="max-h-screen overflow-auto">
         <Navbar items={navMenu} />
-        <main className="px-4">
-          <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
+        <main className="px-5">
+          <SectionTitle
+            title="Clubs"
+            icon={"/icons/user-group/secondary.svg"}
+          />
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-8 py-4 mt-2">
-              {eventData.events &&
-                eventData.events.map((event, index) => (
-                  <EventCard key={index} event={event} club={{name: event.club_name, logo: event.logo}} />
+            <div className="flex flex-wrap justify-center gap-6">
+                {clubData.clubs && clubData.clubs.map((club, index) => (
+                    <ClubCard key={index} club={club} />
                 ))}
             </div>
           )}
         </main>
+        <br />
       </div>
     </>
   );
 };
 
-export default Events;
+export default Clubs;

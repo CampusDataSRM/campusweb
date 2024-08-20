@@ -17,7 +17,7 @@ const EventCard = ({ event, club }) => {
           </div>
         </div>
         <div className="flex flex-wrap gap-3 px-2 mt-3">
-          {event?.labels.map((value, index) => (
+          {event?.labels && event?.labels.map((value, index) => (
             <div
               name={value}
               key={index}
@@ -33,7 +33,7 @@ const EventCard = ({ event, club }) => {
             <span className="text-yellow-300 text-lg">&#9734;</span>
           </div>
           <div className="text-base">
-            <Link href={event?.website_link}>
+            <Link href={event?.website_link ? event.website_link : ""}>
               <button className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal">
                 Register
               </button>
