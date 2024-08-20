@@ -1,3 +1,5 @@
+'use client';
+
 import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -19,6 +21,7 @@ const YourStats = ({}) => {
     fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
       .then((response) => response.json())
       .then((result) => {
+        localStorage.setItem("studentData", result  && JSON.stringify(result));
         setCourseData(result?.courses);
         setTestPerformance(result?.testPerformances);
       })
