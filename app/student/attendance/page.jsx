@@ -63,9 +63,17 @@ const Attendance = () => {
             </div>
           ) : (
             <div className="flex flex-wrap justify-center gap-5">
-              {courseData.map((course, index) => (
-                <AttendanceCard key={index} attendance={course} />
-              ))}
+              {courseData ? (
+                courseData.map((course, index) => (
+                  <AttendanceCard key={index} attendance={course} />
+                ))
+              ) : (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    No data found for Attendance
+                  </span>
+                </div>
+              )}
             </div>
           )}
           <br />

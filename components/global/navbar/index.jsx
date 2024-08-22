@@ -40,7 +40,7 @@ const Navbar = ({ items }) => {
         <div>
           {isOpen && (
             <div className="grid grid-cols-2 gap-[6px] mt-4 px-4">
-              {items.map((item, index) => (
+              {items?.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => router.push(item.link)}

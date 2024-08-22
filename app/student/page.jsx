@@ -43,9 +43,11 @@ const Student = () => {
     },
   ];
 
-  const sessionLogout = () => {
+  const sessionLogout = (e) => {
+    e.preventDefault();
     Cookies.remove("studentAuth");
     router.push("/");
+    localStorage.clear();
   };
   return (
     <>
@@ -57,7 +59,7 @@ const Student = () => {
             className="h-9 w-auto mx-auto"
           />
         </div>
-        <div className="sm:hidden px-2">
+        <div className="sm:hidden px-[10px]">
           <div className="flex justify-end">
             <button
               className="flex items-center gap-2 text-theme_text_primary text-lg py-2 font-mono font-semibold"
@@ -129,7 +131,7 @@ const Student = () => {
             </button>
           )}
           <EventCarousel />
-          <div className="px-1">
+          <div>
             <YourStats />
           </div>
         </div>
