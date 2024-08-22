@@ -24,7 +24,10 @@ const StudentLogin = () => {
       name: "SRM Email / Net ID",
       type: "text",
       placeholder: "SRM Email / Net ID",
-      onChange: (e) => setUserid(e.target.value),
+      onChange: (e) => {
+        if (e.target.value.includes("@")) setUserid(e.target.value);
+        else setUserid(e.target.value + "@srmist.edu.in");
+      },
     },
     {
       name: "Password",
@@ -50,13 +53,15 @@ const StudentLogin = () => {
       headers: myHeaders,
       body: raw,
       redirect: "follow",
+      mode: "cors",
     };
 
     fetch("https://campusapi-puce.vercel.app/api/auth/login/", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (
-          result.passResponse.status_code === 201 &&
+          result.passResponse?.status_code === 201 &&
+          result.Status &&
           result.Status === "success"
         ) {
           Cookies.set("studentAuth", result.Cookies);

@@ -3,18 +3,18 @@ const ClubCard = ({ club, popularity }) => {
   return (
     <>
       <div className="w-full flex flex-col gap-5 theme_box_bg rounded-xl p-3">
-        <div className="flex justify-between items-start gap-3 text-theme_text_normal font-light pb-3">
-          <div className="grid grid-cols-1 gap-2 w-3/5">
+        <div className="flex justify-between items-start gap-4 text-theme_text_normal font-light pb-3">
+          <div className="grid grid-cols-1 gap-2 w-3/4">
             <div className="text-xl tracking-wider">
               {club?.name.toUpperCase()}
             </div>
-            <div className="text-sm tracking-wide">{club?.description}</div>
+            <div className="text-sm tracking-wide pr-6">{club?.description}</div>
           </div>
           <div className="">
             <img
               src={club?.logo}
               alt={club?.name}
-              className="w-[70px] h-[70px] rounded-lg"
+              className="w-[72px] h-[72px] rounded-lg"
             />
           </div>
         </div>
@@ -46,7 +46,7 @@ const ClubCard = ({ club, popularity }) => {
           </div>
           <div className="text-base">
             <Link href={club?.websiteLink ? club?.websiteLink : ""}>
-              <button className="bg-gradient-to-r from-theme_primary to-theme_secondary tracking-wider font-medium p-3 rounded-lg text-theme_text_normal">
+              <button className="bg-gradient-to-r from-theme_primary to-theme_secondary tracking-wider font-medium p-3 rounded-lg text-theme_text_normal shadow-lg">
                 Explore
               </button>
             </Link>

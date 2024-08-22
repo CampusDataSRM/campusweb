@@ -14,6 +14,7 @@ const Events = () => {
     const requestOptions = {
       method: "GET",
       redirect: "follow",
+      mode: "cors",
     };
 
     fetch(
@@ -62,8 +63,8 @@ const Events = () => {
             </div>
           ) : (
             <div className="flex flex-wrap justify-center gap-8 py-4 mt-2">
-              {eventData.events &&
-                eventData.events.map((event, index) => (
+              {eventData?.events &&
+                eventData?.events.slice(0).reverse().map((event, index) => (
                   <EventCard key={index} event={event} club={{name: event.club_name, logo: event.logo}} />
                 ))}
             </div>

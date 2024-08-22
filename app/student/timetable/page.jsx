@@ -110,7 +110,7 @@ const Timetable = () => {
                           timetable.timetable[selectedDay][item].subject_type
                         }
                         classRoom={
-                          timetable.timetable[selectedDay][item].room_code
+                          timetable.timetable[selectedDay][item].room_code ? timetable.timetable[selectedDay][item].room_code : "Not Assigned"
                         }
                         timing={item}
                       />

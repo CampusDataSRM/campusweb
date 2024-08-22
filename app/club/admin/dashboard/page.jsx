@@ -127,7 +127,7 @@ const Dashboard = () => {
             </div>
             <div className="flex flex-wrap justify-center gap-3 py-1">
               {club?.events &&
-                club.events.map((event, index) => (
+                club.events.slice(0).reverse().map((event, index) => (
                   <EventCard event={event} club={club.club} key={index} />
                 ))}
             </div>

@@ -5,14 +5,14 @@ const EventCard = ({ event, club }) => {
     <>
       <div className="max-w-[350px] w-full theme_box_bg rounded-xl">
         <div>
-          <img src={event?.banner_url} alt={event?.title} className="rounded-t-xl w-full" />
+          <img src={event?.banner_url} alt={event?.title} className="rounded-t-xl w-full max-h-[200px]" />
         </div>
         <div className="flex justify-between px-3 mt-3 tracking-wider">
           <div className="grid grid-cols-1 text-theme_text_normal my-auto">
             <div>{event?.title}</div>
             <div className="text-theme_text_normal_60">by {String(club?.name).toUpperCase()}</div>
           </div>
-          <div className="w-[50px] h-[50px] my-auto">
+          <div className="w-[50px] h-[50px]">
             <img src={club?.logo} alt={club?.name} className="rounded-lg" />
           </div>
         </div>
@@ -33,8 +33,8 @@ const EventCard = ({ event, club }) => {
             <span className="text-yellow-300 text-lg">&#9734;</span>
           </div>
           <div className="text-base">
-            <Link href={event?.website_link ? event.website_link : ""}>
-              <button className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal">
+            <Link href={event?.website_link ? event.website_link : ""} target="_blank" rel="noopener noreffer">
+              <button className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
                 Register
               </button>
             </Link>
