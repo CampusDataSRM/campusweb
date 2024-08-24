@@ -28,8 +28,8 @@ const Marks = () => {
   const dataLabels = (obj) => {
     let labels = Object.keys(obj);
     if (labels.length < 6) {
-      for (let i = 0; i < 5 - labels.length; i++) {
-        labels.push("CT / FT");
+      for (let i = 0; i <= 5 - labels.length; i++) {
+        labels.push(" ");
       }
       return labels;
     } else {
