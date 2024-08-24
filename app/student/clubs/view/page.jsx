@@ -6,7 +6,6 @@ import SectionTitle from "@/components/global/section-title";
 import ClubCard from "@/components/global/club/club-card";
 import EventCard from "@/components/global/events/event-card";
 import { useEffect, useState } from "react";
-import { studentPageLink } from "@/components/global/navbar/page-link";
 
 const ViewClub = () => {
   const club = useSearchParams();
@@ -29,33 +28,12 @@ const ViewClub = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  const navMenu = [
-    {
-      name: studentPageLink.dashboard.name,
-      link: studentPageLink.dashboard.link,
-      icon: studentPageLink.dashboard.icon,
-    },
-    {
-      name: studentPageLink.timetable.name,
-      link: studentPageLink.timetable.link,
-      icon: studentPageLink.timetable.icon,
-    },
-    {
-      name: studentPageLink.attendance.name,
-      link: studentPageLink.attendance.link,
-      icon: studentPageLink.attendance.icon,
-    },
-    {
-      name: studentPageLink.events.name,
-      link: studentPageLink.events.link,
-      icon: studentPageLink.events.icon,
-    },
-  ];
+  
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={navMenu} />
+        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Events']} />
         <main className="px-3">
           <SectionTitle
             title="Profile"

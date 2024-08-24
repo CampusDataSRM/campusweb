@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { studentPageLink } from "./page-link";
 
 const Navbar = ({ items }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,7 @@ const Navbar = ({ items }) => {
         <div>
           {isOpen && (
             <div className="grid grid-cols-2 gap-[6px] mt-4 px-4">
-              {items?.map((item, index) => (
+              {studentPageLink.filter((entity) => items?.includes(entity.name)).map((item, index) => (
                 <button
                   key={index}
                   onClick={() => router.push(item.link)}

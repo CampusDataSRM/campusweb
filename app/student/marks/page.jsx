@@ -2,7 +2,6 @@
 
 import Navbar from "@/components/global/navbar";
 import SectionTitle from "@/components/global/section-title";
-import { studentPageLink } from "@/components/global/navbar/page-link";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
@@ -40,7 +39,7 @@ const Marks = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar />
+        <Navbar items={['Dashboard','Timetable', 'Attendance','Planner']} />
         <main className="px-3">
           <SectionTitle title="Marks" />
           {testreport ? (

@@ -3,34 +3,11 @@
 import TimetableCard from "@/components/student/timetable";
 import Navbar from "@/components/global/navbar";
 import SectionTitle from "@/components/global/section-title";
-import { studentPageLink } from "@/components/global/navbar/page-link";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 
 const Timetable = () => {
-  const navMenu = [
-    {
-      name: studentPageLink.dashboard.name,
-      link: studentPageLink.dashboard.link,
-      icon: studentPageLink.dashboard.icon,
-    },
-    {
-      name: studentPageLink.attendance.name,
-      link: studentPageLink.attendance.link,
-      icon: studentPageLink.attendance.icon,
-    },
-    {
-      name: studentPageLink.marks.name,
-      link: studentPageLink.marks.link,
-      icon: studentPageLink.marks.icon,
-    },
-    {
-      name: studentPageLink.planner.name,
-      link: studentPageLink.planner.link,
-      icon: studentPageLink.planner.icon,
-    },
-  ];
 
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
@@ -66,7 +43,7 @@ const Timetable = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={navMenu} />
+        <Navbar items={['Dashboard', 'Attendance', 'Marks', 'Planner']} />
         <main className="px-4">
           <SectionTitle title="Timetable" />
           {loading ? (

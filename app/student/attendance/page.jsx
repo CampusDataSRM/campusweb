@@ -3,7 +3,6 @@ import AttendanceCard from "@/components/student/attendance";
 import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
 import Navbar from "@/components/global/navbar";
-import { studentPageLink } from "@/components/global/navbar/page-link";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
 
@@ -29,32 +28,10 @@ const Attendance = () => {
       })
       .catch((error) => console.error(error));
   }, []);
-  const navMenu = [
-    {
-      name: studentPageLink.dashboard.name,
-      link: studentPageLink.dashboard.link,
-      icon: studentPageLink.dashboard.icon,
-    },
-    {
-      name: studentPageLink.marks.name,
-      link: studentPageLink.marks.link,
-      icon: studentPageLink.marks.icon,
-    },
-    {
-      name: studentPageLink.timetable.name,
-      link: studentPageLink.timetable.link,
-      icon: studentPageLink.timetable.icon,
-    },
-    {
-      name: studentPageLink.planner.name,
-      link: studentPageLink.planner.link,
-      icon: studentPageLink.planner.icon,
-    },
-  ];
   return (
     <>
       <div className="pb-2 h-screen overflow-y-auto sm:hidden">
-        <Navbar items={navMenu} />
+        <Navbar items={['Dashboard', 'Marks', 'Timetable', 'Planner']} />
         <div className="px-4">
           <SectionTitle title="Attendance" />
           {loading ? (

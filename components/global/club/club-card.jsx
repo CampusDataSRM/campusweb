@@ -2,7 +2,7 @@ import Link from "next/link";
 const ClubCard = ({ club, popularity, visitLinkActive }) => {
   return (
     <>
-      <div className="w-full flex flex-col gap-5 theme_box_bg rounded-xl p-3">
+      <div className="w-full flex flex-col gap-3 theme_box_bg rounded-xl p-3">
         <div className="flex justify-between items-start gap-4 text-theme_text_normal font-light pb-3">
           <div className="grid grid-cols-1 gap-2 w-3/4">
             <div className="text-xl tracking-wider">

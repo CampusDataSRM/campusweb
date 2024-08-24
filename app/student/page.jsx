@@ -5,43 +5,12 @@ import EventCarousel from "@/components/global/events/carousel";
 import { useState } from "react";
 import YourStats from "@/components/student/stats";
 import Cookies from "js-cookie";
+import { studentPageLink } from "@/components/global/navbar/page-link";
 
 const Student = () => {
   const router = useRouter();
   const [itemCount, setItemCount] = useState(4);
   const [showMore, setShowMore] = useState(false);
-  const studentMenu = [
-    {
-      name: "Attendance",
-      icon: "/icons/percent/primary.svg",
-      link: "/student/attendance",
-    },
-    {
-      name: "Timetable",
-      icon: "/icons/clock/primary.svg",
-      link: "/student/timetable",
-    },
-    {
-      name: "Marks",
-      icon: "/icons/bar-chart/primary.svg",
-      link: "/student/marks",
-    },
-    {
-      name: "Planner",
-      icon: "/icons/loader/primary.svg",
-      link: "/student/attendance",
-    },
-    {
-      name: "Events",
-      icon: "/icons/calender/primary.svg",
-      link: "/student/events",
-    },
-    {
-      name: "Clubs",
-      icon: "/icons/user-group/primary.svg",
-      link: "/student/clubs",
-    },
-  ];
 
   const sessionLogout = (e) => {
     e.preventDefault();
@@ -80,7 +49,7 @@ const Student = () => {
             </button>
           </div>
           <div className="grid grid-cols-2 justify-center gap-2 mt-2">
-            {studentMenu.slice(0, itemCount).map((menu, index) => (
+            {studentPageLink.filter((ele) => !['Dashboard'].includes(ele.name)).slice(0, itemCount).map((menu, index) => (
               <button
                 key={index}
                 onClick={() => router.push(menu.link)}
@@ -115,7 +84,7 @@ const Student = () => {
             <button
               className="theme_box_bg py-2 w-full flex justify-center items-center mt-2"
               onClick={() => {
-                setItemCount(studentMenu.length);
+                setItemCount(studentPageLink.filter((ele) => !['Dashboard'].includes(ele.name)).length);
                 setShowMore(true);
               }}
             >

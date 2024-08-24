@@ -26,33 +26,12 @@ const Clubs = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  const navMenu = [
-    {
-      name: studentPageLink.dashboard.name,
-      link: studentPageLink.dashboard.link,
-      icon: studentPageLink.dashboard.icon,
-    },
-    {
-      name: studentPageLink.timetable.name,
-      link: studentPageLink.timetable.link,
-      icon: studentPageLink.timetable.icon,
-    },
-    {
-      name: studentPageLink.attendance.name,
-      link: studentPageLink.attendance.link,
-      icon: studentPageLink.attendance.icon,
-    },
-    {
-      name: studentPageLink.events.name,
-      link: studentPageLink.events.link,
-      icon: studentPageLink.events.icon,
-    },
-  ];
+  
   const [clubQuery, setClubQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={navMenu} />
+        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Events']} />
         <main className="px-5">
           <SectionTitle
             title="Clubs"

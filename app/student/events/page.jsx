@@ -28,33 +28,12 @@ const Events = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  const navMenu = [
-    {
-      name: studentPageLink.dashboard.name,
-      link: studentPageLink.dashboard.link,
-      icon: studentPageLink.dashboard.icon,
-    },
-    {
-      name: studentPageLink.timetable.name,
-      link: studentPageLink.timetable.link,
-      icon: studentPageLink.timetable.icon,
-    },
-    {
-      name: studentPageLink.attendance.name,
-      link: studentPageLink.attendance.link,
-      icon: studentPageLink.attendance.icon,
-    },
-    {
-      name: studentPageLink.clubs.name,
-      link: studentPageLink.clubs.link,
-      icon: studentPageLink.clubs.icon,
-    },
-  ];
+  
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={navMenu} />
+        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Clubs']} />
         <main className="px-4">
           <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">
