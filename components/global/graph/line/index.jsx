@@ -38,9 +38,10 @@ const LineChart = (chartDetails) => {
       {
         // First dataset
         data: [0, ...chartDetails.chartDetails.values],
+        label: "Percentage",
         borderColor: "#9747FF",
         borderWidth: 2,
-        backgroundColor: "rgba(151, 71, 255, 1.0)",
+        backgroundColor: "rgba(151, 71, 255, 0.6)",
         fill: false,
         tension: 0,
         pointStyle: "circle",
@@ -69,7 +70,7 @@ const LineChart = (chartDetails) => {
       },
       title: {
         display: false,
-        text: "Marks",
+        text: "Marks Percentage",
       },
     },
   };
