@@ -27,7 +27,7 @@ ChartJS.register(
 
 ChartJS.defaults.borderColor = "rgba(255,255,255,0.4)";
 ChartJS.defaults.color = "rgba(255,255,255,0.7)";
-ChartJS.defaults.font.size = 14;
+ChartJS.defaults.font.size = 13;
 ChartJS.defaults.transitions.duration = 1000;
 
 
@@ -37,15 +37,26 @@ const LineChart = (chartDetails) => {
     datasets: [
       {
         // First dataset
-        data: [0,...chartDetails.chartDetails.values],
+        data: [0, ...chartDetails.chartDetails.values],
         borderColor: "#9747FF",
-        borderWidth: 1.5,
-        backgroundColor: "rgba(151, 71, 255, 0.5)",
+        borderWidth: 2,
+        backgroundColor: "rgba(151, 71, 255, 1.0)",
         fill: false,
         tension: 0,
         pointStyle: "circle",
         pointRadius: 5,
         pointHoverRadius: 7,
+        pointBackgroundColor: "rgba(255,255,255,0.4)",
+        segment: {
+          borderColor: (context) => {
+            const index = context.p0.parsed.x;
+            return index == 0 ? "rgba(255,255,255,0.1)" : "#9747FF";
+          },
+          borderDash: (context) => {
+            const index = context.p0.parsed.x;
+            return index == 0 ? [5, 5] : [0, 0];
+          },
+        }
       },
     ],
   };

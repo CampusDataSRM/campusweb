@@ -28,7 +28,7 @@ const Marks = () => {
   const dataLabels = (obj) => {
     let labels = Object.keys(obj);
     if (labels.length < 6) {
-      for (let i = 0; i <= 5 - labels.length; i++) {
+      for (let i = 0; i <= 6 - labels.length; i++) {
         labels.push(" ");
       }
       return labels;
@@ -77,7 +77,7 @@ const Marks = () => {
                           <span className="text-lg ">{test.totalMarks}</span>
                         </div>
                       </div>
-                      <div>
+                      <div className="py-2">
                         {test.tests && Object.keys(test.tests).length > 0 && (
                           <LineChart
                             chartDetails={{chartLabels: dataLabels(test.tests), values: percentages(test.tests)}}
