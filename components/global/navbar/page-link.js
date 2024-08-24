@@ -16,7 +16,7 @@ const studentPageLink = {
     },
     marks: {
         name: "Marks",
-        link: "/student/attendance",
+        link: "/student/marks",
         icon: "/icons/bar-chart/primary.svg",
     },
     planner: {

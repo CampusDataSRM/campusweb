@@ -24,7 +24,7 @@ const Student = () => {
     {
       name: "Marks",
       icon: "/icons/bar-chart/primary.svg",
-      link: "/student/attendance",
+      link: "/student/marks",
     },
     {
       name: "Planner",
