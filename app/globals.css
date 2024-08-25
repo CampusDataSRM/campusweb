@@ -14,6 +14,15 @@
   .theme_box_bg {
     @apply bg-[#0C4DA2]/20 rounded-xl shadow-2xl;
   }
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+  .circle {
+    @apply w-[5px] h-[5px] mx-1 bg-theme_text_normal rounded-full;
+  }
 }
 
 .page-center {

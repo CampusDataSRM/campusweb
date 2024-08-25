@@ -4,29 +4,7 @@ import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
-const YourStats = ({}) => {
-  const [courseData, setCourseData] = useState([]);
-  const [testPerformance, setTestPerformance] = useState([]);
-
-  useEffect(() => {
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("studentAuth"));
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        localStorage.setItem("studentData", result  && JSON.stringify(result));
-        setCourseData(result?.courses);
-        setTestPerformance(result?.testPerformances);
-      })
-      .catch((error) => console.error(error));
-  }, []);
+const YourStats = ({ courseData, testPerformance }) => {
 
   let attendance = 0;
   for (let i = 0; i < courseData?.length; i++) {
@@ -59,7 +37,7 @@ const YourStats = ({}) => {
           textColor="theme_text_normal"
         />
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 -mt-3">
         {stats?.map((stat, index) => (
           <div
             key={index}
