@@ -18,7 +18,7 @@ const Timetable = () => {
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
     const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("studentAuth"));
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
     const requestOptions = {
       method: "GET",

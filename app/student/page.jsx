@@ -22,7 +22,7 @@ const Student = () => {
   useEffect(() => {
     setLoading(true);
     const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("studentAuth"));
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
     myHeaders.append("mode", "cors");
 
     const requestOptions = {
@@ -45,7 +45,7 @@ const Student = () => {
 
   const sessionLogout = (e) => {
     e.preventDefault();
-    Cookies.remove("studentAuth");
+    Cookies.remove("X-CSRF-Token");
     router.push("/");
     localStorage.clear();
   };
@@ -105,7 +105,7 @@ const Student = () => {
               .map((menu, index) => (
                 <button
                   key={index}
-                  onClick={() => router.push(menu.link)}
+                  onClick={(menu.name === 'Logout') ? sessionLogout : () => router.push(menu.link)}
                   className="theme_box_bg py-6 px-4 flex justify-between items-center"
                 >
                   <span className="text-base text-white font-medium">

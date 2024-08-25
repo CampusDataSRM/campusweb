@@ -12,7 +12,7 @@ const Attendance = () => {
   useEffect(() => {
     setLoading(true);
     const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("studentAuth"));
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
     const requestOptions = {
       method: "GET",

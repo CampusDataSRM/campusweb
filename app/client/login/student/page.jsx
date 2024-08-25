@@ -8,7 +8,7 @@ import LoginLayout from "@/components/global/layout";
 
 const StudentLogin = () => {
   useEffect(() => {
-    if (Cookies.get("studentAuth")) {
+    if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
   }, []);
@@ -64,7 +64,7 @@ const StudentLogin = () => {
           result.Status &&
           result.Status === "success"
         ) {
-          Cookies.set("studentAuth", result.Cookies);
+          Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {
           alert("Invalid credentials");
