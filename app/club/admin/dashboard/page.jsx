@@ -70,7 +70,7 @@ const Dashboard = () => {
   };
   return (
     <>
-      <div className="px-4">
+      <div className="px-4 max-h-screen overflow-auto">
         <div className="py-10">
           <img
             src="/logo.svg"

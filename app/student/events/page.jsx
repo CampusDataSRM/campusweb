@@ -4,13 +4,39 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/global/navbar";
 import Loader from "@/components/global/loader";
 import SectionTitle from "@/components/global/section-title";
+import Cookies from "js-cookie";
 import { studentPageLink } from "@/components/global/navbar/page-link";
 
 const Events = () => {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [studentID, setStudentID] = useState("");
+  const [clickedOnLike, setClickedOnLike] = useState(false);
+
+  const likeEvent = (eventID) => {
+    const myHeaders = new Headers();
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+    myHeaders.append("eventid", eventID);
+
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch("https://campusapi-puce.vercel.app/api/users/post-p", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        setClickedOnLike(!clickedOnLike);
+      })
+      .catch((error) => console.error(error));
+  };
+
   useEffect(() => {
     setLoading(true);
+    const student = JSON.parse(localStorage.getItem("studentData"));
+    setStudentID(student.registrationNumber);
     const requestOptions = {
       method: "GET",
       redirect: "follow",
@@ -26,14 +52,13 @@ const Events = () => {
         setLoading(false);
       })
       .catch((error) => console.error(error));
-  }, []);
+  }, [clickedOnLike]);
 
-  
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Clubs']} />
+        <Navbar items={["Dashboard", "Timetable", "Attendance", "Clubs"]} />
         <main className="px-4">
           <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">
@@ -106,6 +131,12 @@ const Events = () => {
                       key={index}
                       event={event}
                       club={{ name: event.club_name, logo: event.logo }}
+                      onLikingEvent={likeEvent(event._id)}
+                      checkLiked={
+                        event.likedby
+                          ? event.likedby.includes(studentID)
+                          : false
+                      }
                     />
                   ))
               ) : (

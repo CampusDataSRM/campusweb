@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const EventCard = ({ event, club }) => {
+const EventCard = ({ event, club, onLikingEvent, checkLiked }) => {
   return (
     <>
       <div className="max-w-[350px] w-full theme_box_bg rounded-xl">
@@ -39,10 +39,15 @@ const EventCard = ({ event, club }) => {
             </div>
           )}
         </div>
-        <div className="flex justify-between px-2 py-3">
-          <div className="text-base text-theme_text_primary my-auto">
-            Popularity: {event?.popularity}{" "}
-            <span className="text-yellow-300 text-lg">&#9734;</span>
+        <div className="flex justify-between items-center px-2 py-3">
+          <div className="text-base text-theme_text_primary flex gap-2 items-center">
+            <span>Popularity: {event?.popularity}</span>
+            <button className="" onClick={onLikingEvent ? onLikingEvent : () => {}} disabled={checkLiked && checkLiked}>
+              {checkLiked ? (
+                <img src="/icons/star/gold-solid.svg" alt="Not-like" />) : (
+                <img src="/icons/star/gold.svg" alt="like" />
+                )}
+            </button>
           </div>
           <div className="text-base">
             <Link

@@ -126,7 +126,7 @@ const ClubLogin = () => {
             <Link
               className="text-theme_text_primary font-medium hover:cursor-pointer"
               href={{
-                pathname: "/club/admin/form",
+                pathname: "/client/signup/club",
                 query: { type: "clubSignUp" },
               }}
             >
