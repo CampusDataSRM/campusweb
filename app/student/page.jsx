@@ -23,7 +23,6 @@ const Student = () => {
     setLoading(true);
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
-    myHeaders.append("mode", "cors");
 
     const requestOptions = {
       method: "GET",
@@ -45,13 +44,18 @@ const Student = () => {
 
   const sessionLogout = (e) => {
     e.preventDefault();
-    Cookies.remove("X-CSRF-Token");
-    router.push("/");
     localStorage.clear();
+    Cookies.remove("X-CSRF-Token");
+    if (Cookies.get("X-CSRF-Token")) {
+      console.log("Token not removed");
+    } else {
+      console.log("Token removed");
+      router.push("/client/login/student");
+    };
   };
   return (
     <>
-      <div className="pt-4">
+      <div className="py-4 max-h-screen overflow-auto">
         <div className="py-5">
           <img
             src="/logo.svg"
@@ -81,22 +85,6 @@ const Student = () => {
                 )}
               </div>
             </div>
-            <button
-              className="flex items-center gap-2 text-theme_text_primary text-lg py-2 font-mono font-semibold"
-              onClick={sessionLogout}
-              type="button"
-              title="Logout"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="20px"
-                viewBox="0 -960 960 960"
-                width="20px"
-                fill="#91c3e7"
-              >
-                <path d="M480-48q-89.64 0-168.48-34.02-78.84-34.02-137.16-92.34-58.32-58.32-92.34-137.16T48-480q0-90.6 33.5-168.8Q115-727 174-786l75 75q-44.95 44.55-69.97 103.28Q154-549 154-480.33 154-343 248.74-248.5 343.49-154 480-154t231.26-94.74Q806-343.49 806-480q0-69-25.03-127.72Q755.95-666.45 711-711l75-75q59 59 92.5 137.2Q912-570.6 912-480q0 89.52-33.5 168.26t-91.99 137.16q-58.48 58.42-137.55 92.5Q569.9-48 480-48Zm-53-379v-485h106v485H427Z" />
-              </svg>
-            </button>
           </div>
           <div className="grid grid-cols-2 justify-center gap-2 mt-2">
             {studentPageLink

@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-const EventCard = ({ event, club, onLikingEvent, checkLiked }) => {
+const EventCard = ({
+  event,
+  club,
+  onLikingEvent,
+  checkLiked,
+  userClickedLiked,
+}) => {
   return (
     <>
       <div className="max-w-[350px] w-full theme_box_bg rounded-xl">
@@ -42,11 +48,44 @@ const EventCard = ({ event, club, onLikingEvent, checkLiked }) => {
         <div className="flex justify-between items-center px-2 py-3">
           <div className="text-base text-theme_text_primary flex gap-2 items-center">
             <span>Popularity: {event?.popularity}</span>
-            <button className="" onClick={onLikingEvent ? onLikingEvent : () => {}} disabled={checkLiked && checkLiked}>
-              {checkLiked ? (
-                <img src="/icons/star/gold-solid.svg" alt="Not-like" />) : (
-                <img src="/icons/star/gold.svg" alt="like" />
-                )}
+            <button
+              className="pl-1"
+              onClick={onLikingEvent ? onLikingEvent : () => {}}
+              disabled={userClickedLiked ? userClickedLiked : (checkLiked && checkLiked)}
+            >
+              {userClickedLiked ? (
+                <>
+                  <svg
+                    className="animate-spin mx-auto h-5 w-5 text-theme_primary"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  {checkLiked ? (
+                    <img src="/icons/star/gold-solid.svg" alt="Not-like" />
+                  ) : (
+                    <img src="/icons/star/gold.svg" alt="like" />
+                  )}
+                </>
+              )}
             </button>
           </div>
           <div className="text-base">

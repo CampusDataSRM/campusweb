@@ -12,8 +12,10 @@ const Events = () => {
   const [loading, setLoading] = useState(false);
   const [studentID, setStudentID] = useState("");
   const [clickedOnLike, setClickedOnLike] = useState(false);
+  const [processLike, setProcessLike] = useState(false);
 
   const likeEvent = (eventID) => {
+    setClickedOnLike(true);
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
     myHeaders.append("eventid", eventID);
@@ -28,7 +30,13 @@ const Events = () => {
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
-        setClickedOnLike(!clickedOnLike);
+        if(result.message == "Popularity updated successfully") {
+        setClickedOnLike(false);
+        setProcessLike(!processLike);
+        } else {
+          alert("Something went wrong");
+          clickedOnLike(false);
+        }
       })
       .catch((error) => console.error(error));
   };
@@ -52,7 +60,7 @@ const Events = () => {
         setLoading(false);
       })
       .catch((error) => console.error(error));
-  }, [clickedOnLike]);
+  }, [processLike]);
 
   const [eventQuery, setEventQuery] = useState("");
   return (
@@ -131,12 +139,13 @@ const Events = () => {
                       key={index}
                       event={event}
                       club={{ name: event.club_name, logo: event.logo }}
-                      onLikingEvent={likeEvent(event._id)}
+                      onLikingEvent={() => likeEvent(event.id)}
                       checkLiked={
                         event.likedby
                           ? event.likedby.includes(studentID)
                           : false
                       }
+                      userClickedLiked={clickedOnLike}
                     />
                   ))
               ) : (

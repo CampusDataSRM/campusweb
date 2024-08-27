@@ -53,7 +53,6 @@ const StudentLogin = () => {
       headers: myHeaders,
       body: raw,
       redirect: "follow",
-      mode: "cors",
     };
 
     fetch("https://campusapi-puce.vercel.app/api/auth/login/", requestOptions)
@@ -64,6 +63,7 @@ const StudentLogin = () => {
           result.Status &&
           result.Status === "success"
         ) {
+          Cookies.remove("X-CSRF-Token");
           Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {
