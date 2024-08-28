@@ -20,7 +20,7 @@ const Dashboard = () => {
     {
       name: "Club Profile",
       icon: "/icons/user-group/primary.svg",
-      link: { path: "/profile", type: "" },
+      link: { path: "/club/profile", type: "clubProfile" },
     },
   ];
 
@@ -56,7 +56,7 @@ const Dashboard = () => {
     } else {
       router.push("/");
     }
-  }, [router]);
+  }, []);
 
   const clubStats = [
     { name: "Popularity", icon: "/icons/star.svg", value: "157x" },
