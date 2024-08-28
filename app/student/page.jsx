@@ -21,25 +21,29 @@ const Student = () => {
 
   useEffect(() => {
     setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+    if (!Cookies.get("X-CSRF-Token")) {
+      router.push("/client/login/student");
+    } else {
+      const myHeaders = new Headers();
+      myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
 
-    fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setStudentName(result?.name);
-        localStorage.setItem("studentData", result && JSON.stringify(result));
-        setCourseData(result?.courses);
-        setTestPerformance(result?.testPerformances);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
+      fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          setStudentName(result?.name);
+          localStorage.setItem("studentData", result && JSON.stringify(result));
+          setCourseData(result?.courses);
+          setTestPerformance(result?.testPerformances);
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
+    }
   }, []);
 
   const sessionLogout = (e) => {
@@ -51,7 +55,7 @@ const Student = () => {
     } else {
       console.log("Token removed");
       router.push("/client/login/student");
-    };
+    }
   };
   return (
     <>
@@ -93,7 +97,11 @@ const Student = () => {
               .map((menu, index) => (
                 <button
                   key={index}
-                  onClick={(menu.name === 'Logout') ? sessionLogout : () => router.push(menu.link)}
+                  onClick={
+                    menu.name === "Logout"
+                      ? sessionLogout
+                      : () => router.push(menu.link)
+                  }
                   className="theme_box_bg py-6 px-4 flex justify-between items-center"
                 >
                   <span className="text-base text-white font-medium">
