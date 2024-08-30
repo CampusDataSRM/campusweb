@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "campusweb": "file:",
     "chart.js": "^4.4.4",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
