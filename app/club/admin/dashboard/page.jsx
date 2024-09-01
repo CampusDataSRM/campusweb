@@ -38,6 +38,7 @@ const Dashboard = () => {
         const requestOptions = {
           method: "GET",
           headers: myHeaders,
+          mode: "cors",
         };
 
         fetch(

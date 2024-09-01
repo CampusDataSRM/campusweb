@@ -121,7 +121,7 @@ const ClubProfile = () => {
 
   return (
     <>
-      <div className="px-3 py-5 sm:hidden">
+      <div className="px-3 py-5 max-h-screen overflow-auto sm:hidden">
         <div className="py-5">
           <img
             src="/logo.svg"
@@ -264,11 +264,6 @@ const ClubProfile = () => {
               required
             />
           </div>
-          <span className="flex items-start h-full text-xs py-2 gap-2 text-theme_primary">
-            <img src="/icons/info/primary.svg" className="w-4" />
-            By signing up you agree to the Campus Web's Terms and Conditions and
-            Privacy Policy.
-          </span>
           <button
             type="button"
             className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
