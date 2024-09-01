@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -63,8 +63,9 @@ const StudentLogin = () => {
           result.Status &&
           result.Status === "success"
         ) {
-          Cookies.remove("X-CSRF-Token");
-          Cookies.set("X-CSRF-Token", result.Cookies);
+          // Cookies.remove("X-CSRF-Token");
+          Cookies.set("X-CSRF-Token", result.Cookies, { expires: 2 });
+          // Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {
           alert("Invalid credentials");
