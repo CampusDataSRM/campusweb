@@ -6,6 +6,7 @@ import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
+import { pageNames } from "@/components/global/navbar/page-link";
 
 const Timetable = () => {
 
