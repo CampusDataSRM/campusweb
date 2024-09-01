@@ -1,7 +1,7 @@
 // "use client";
 
 import React from "react";
-import SettingsInDrawer from "../DrawerComponents/SettingsInDrawer";
+import SettingsInDrawer from "./DrawerComponents/SettingsInDrawer";
 
 const useClickOutside = (ref, callback) => {
   const handleClick = e => {
