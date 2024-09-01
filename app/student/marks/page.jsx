@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import LineChart from "@/components/global/graph/line";
+import { pageNames } from "@/components/global/navbar/page-link";
 
 const Marks = () => {
   const [testreport, setTestreport] = useState([]);
@@ -39,7 +40,7 @@ const Marks = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={['Dashboard','Timetable', 'Attendance','Planner']} />
+        <Navbar items={pageNames.filter(item => item !== "Marks")} />
         <main className="px-3">
           <SectionTitle title="Marks" />
           {testreport ? (

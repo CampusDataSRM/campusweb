@@ -5,6 +5,7 @@ import Loader from "@/components/global/loader";
 import Navbar from "@/components/global/navbar";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
+import { pageNames } from "@/components/global/navbar/page-link";
 
 const Attendance = () => {
   const [courseData, setCourseData] = useState([]);
@@ -31,7 +32,7 @@ const Attendance = () => {
   return (
     <>
       <div className="pb-2 h-screen overflow-y-auto sm:hidden">
-        <Navbar items={['Dashboard', 'Marks', 'Timetable', 'Planner']} />
+        <Navbar items={pageNames.filter(item => item !== "Attendance")} />
         <div className="px-4">
           <SectionTitle title="Attendance" />
           {loading ? (

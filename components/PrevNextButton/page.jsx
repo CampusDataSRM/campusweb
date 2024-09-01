@@ -50,7 +50,7 @@ export default function PrevNextButton({
   };
 
   return (
-    <div className={`fixed bottom-8 left-[50%] transform -translate-x-1/2 ${isDrawer ? "-z-10" : "z-50"}`}>
+    <div className={`fixed bottom-8 left-[50%] transform -translate-x-1/2 ${isDrawer ? "-z-10" : "z-40"}`}>
   <div className="flex gap-20">
     <Image
       src="/leftArrow.svg"

@@ -4,6 +4,7 @@ import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
+import { pageNames } from "@/components/global/navbar/page-link";
 
 const Planner = () => {
   const [planner, setPlanner] = useState();
@@ -61,7 +62,7 @@ const Planner = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={["Dashboard", "Attendance", "Marks", "Planner"]} />
+        <Navbar items={pageNames.filter(item => item !== "Planner")} />
         <main className="px-3 pb-3">
           <SectionTitle title="Planner" />
           <div className="">

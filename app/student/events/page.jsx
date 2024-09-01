@@ -5,7 +5,7 @@ import Navbar from "@/components/global/navbar";
 import Loader from "@/components/global/loader";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
-import { studentPageLink } from "@/components/global/navbar/page-link";
+import { pageNames, studentPageLink } from "@/components/global/navbar/page-link";
 
 const Events = () => {
   const [eventData, setEventData] = useState([]);
@@ -66,7 +66,7 @@ const Events = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={["Dashboard", "Timetable", "Attendance", "Clubs"]} />
+        <Navbar items={pageNames.filter(item => item !== "Events")} />
         <main className="px-4">
           <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">

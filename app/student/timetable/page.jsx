@@ -43,7 +43,7 @@ const Timetable = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={['Dashboard', 'Attendance', 'Marks', 'Planner']} />
+        <Navbar items={pageNames.filter(item => item !== "Timetable")} />
         <main className="px-4">
           <SectionTitle title="Timetable" />
           {loading ? (

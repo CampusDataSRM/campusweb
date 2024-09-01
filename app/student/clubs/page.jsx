@@ -5,7 +5,7 @@ import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
 import ClubCard from "@/components/global/club/club-card";
-import { studentPageLink } from "@/components/global/navbar/page-link";
+import { pageNames, studentPageLink } from "@/components/global/navbar/page-link";
 
 const Clubs = () => {
   const [clubData, setClubData] = useState([]);
@@ -31,7 +31,7 @@ const Clubs = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Events']} />
+        <Navbar items={pageNames.filter(item => item !== "Clubs")} />
         <main className="px-5">
           <SectionTitle
             title="Clubs"

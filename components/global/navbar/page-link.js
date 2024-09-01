@@ -34,11 +34,18 @@ const studentPageLink = [
         link: "/student/clubs",
         icon: "/icons/user-group/primary.svg",
     },
+    // {
+    //     name: "Logout",
+    //     link: "/",
+    //     icon: "/icons/logout/primary.svg",
+    // },
     {
-        name: "Logout",
-        link: "/",
-        icon: "/icons/logout/primary.svg",
+        name: "WhatsInMess",
+        link: "/student/whatsinmess",
+        icon: "/whatsinmess_bulletpoint.svg",
     },
 ];
 
-export { studentPageLink };
+const pageNames = studentPageLink.map((entity) => entity.name);
+
+export { studentPageLink, pageNames };

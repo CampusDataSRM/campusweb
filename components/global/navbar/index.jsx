@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { studentPageLink } from "./page-link";
+import SwipeUpDrawer from "@/components/SwipeUpDrawer/page";
 
 const Navbar = ({ items }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,21 +39,8 @@ const Navbar = ({ items }) => {
             </button>
           )}
         </div>
-        <div>
-          {isOpen && (
-            <div className="grid grid-cols-2 gap-[6px] mt-4 px-4">
-              {studentPageLink.filter((entity) => items?.includes(entity.name)).map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => router.push(item.link)}
-                  className="flex justify-center py-4 bg-theme_primary/10 rounded-md gap-4 items-center"
-                >
-                  <img src={item.icon} alt={item.name} className="h-5 w-auto" />
-                  <span className="text-white font-medium">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+        <div className="absolute bottom-0 h-auto overflow-hidden w-screen max-w-4xl z-100">
+          <SwipeUpDrawer isDrawer={isOpen ? "nav" : null} studentPageLink={studentPageLink} items={items} />
         </div>
         <br />
       </div>

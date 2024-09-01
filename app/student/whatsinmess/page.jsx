@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
 import SwipeUpDrawer from "../../../components/SwipeUpDrawer/page";
 import PrevNextButton from "../../../components/PrevNextButton/page";
+import { pageNames } from "@/components/global/navbar/page-link";
 
 const WhatsinmessPage = () => {
   const [menu, setMenu] = useState();
@@ -126,7 +127,7 @@ const WhatsinmessPage = () => {
 
   return (
     <div className="max-h-screen overflow-auto sm:hidden">
-      <Navbar items={["Dashboard", "Attendance", "Marks", "Planner"]} />
+      <Navbar items={pageNames.filter(item => item !== "WhatsInMess")} />
 
       <div className="px-4">
         {/* Heading and settings button */}
