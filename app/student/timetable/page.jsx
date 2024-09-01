@@ -14,6 +14,7 @@ const Timetable = () => {
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState("");
+  const [currentDayOrder, setCurrentDayOrder] = useState(null);
   useEffect(() => {
     setLoading(true);
     const rawData = localStorage.getItem("studentData");
@@ -36,6 +37,7 @@ const Timetable = () => {
         setTimetable(result);
         setDayOrders(Object.keys(result.timetable && result.timetable));
         setSelectedDay(result && "Day" + result?.day_order);
+        setCurrentDayOrder(result?.day_order);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -90,6 +92,7 @@ const Timetable = () => {
                           timetable.timetable[selectedDay][item].room_code ? timetable.timetable[selectedDay][item].room_code : "Not Assigned"
                         }
                         timing={item}
+                        isCurrntDayOrder={currentDayOrder == selectedDay.split("Day")[1]}
                       />
                     ))}
                     {Object.keys(

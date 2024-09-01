@@ -1,4 +1,4 @@
-const TimetableCard = ({ subjectName, subjectType, classRoom, timing }) => {
+const TimetableCard = ({ subjectName, subjectType, classRoom, timing, isCurrntDayOrder }) => {
   const calculateProgress = () => {
     if (!timing) return 0;
 
@@ -18,7 +18,8 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing }) => {
     const startMinutes = convertToMinutes(startTime);
     const endMinutes = convertToMinutes(endTime);
 
-    const currentMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+    // const currentMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+    const currentMinutes = 15 * 60 + 50;
 
     if (currentMinutes <= startMinutes) {
       return 0;
@@ -31,10 +32,10 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing }) => {
 
   const progressWidth = calculateProgress();
 
+  
+
   return (
     <>
-    {console.log(progressWidth)
-    }
       <div className={`${subjectName.includes("No class") ? "hidden" : ""} theme_box_bg px-4 py-6`}>
         <div className="w-full flex justify-between gap-3 items-center">
           <div className="flex flex-col gap-1">
@@ -56,7 +57,7 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing }) => {
             </div>
           </div>
         </div>
-        { progressWidth !=0 && <div className="mt-4">
+        { progressWidth !=0 && isCurrntDayOrder && <div className="mt-4">
           <div className="bg-theme_primary/50 w-full h-[3px] rounded-full">
             <div
               className={`h-full bg-theme_green rounded-full`}
