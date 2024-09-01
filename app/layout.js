@@ -9,6 +9,12 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "The Campus Web",
   description: "Your one-stop campus solution",
+  manifest: "/manifest.json",
+  applicationName: "Campus Web",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
