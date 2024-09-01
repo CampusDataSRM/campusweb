@@ -5,6 +5,7 @@ import SettingsInDrawer from "./DrawerComponents/SettingsInDrawer";
 import { useRouter } from "next/navigation";
 
 const useClickOutside = (ref, callback) => {
+  
   const handleClick = e => {
     if (ref.current && !ref.current.contains(e.target)) {
       callback();
