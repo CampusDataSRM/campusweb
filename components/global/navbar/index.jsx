@@ -10,7 +10,7 @@ const Navbar = ({ items }) => {
     <>
       <div>
         <div className="flex justify-between px-4 pt-8">
-          <div>
+          <div onClick={() => router.push("/student")}>
             <img src="/logo.svg" alt="logo" className="h-7" />
           </div>
           {isOpen ? (

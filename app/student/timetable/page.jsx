@@ -14,6 +14,7 @@ const Timetable = () => {
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState("");
+  const [currentDayOrder, setCurrentDayOrder] = useState(null);
   useEffect(() => {
     setLoading(true);
     const rawData = localStorage.getItem("studentData");
@@ -36,6 +37,7 @@ const Timetable = () => {
         setTimetable(result);
         setDayOrders(Object.keys(result.timetable && result.timetable));
         setSelectedDay(result && "Day" + result?.day_order);
+        setCurrentDayOrder(result?.day_order);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -53,7 +55,7 @@ const Timetable = () => {
             </div>
           ) : (
             <>
-              <div className="theme_box_bg px-3 py-4 flex gap-5 items-center">
+              <div className="theme_box_bg px-3 py-3 flex gap-5 items-center">
                 {dayOrders.map((day, index) => (
                   <button
                     key={index}
@@ -62,14 +64,13 @@ const Timetable = () => {
                       selectedDay === day
                         ? "border-2 border-theme_green"
                         : "border-0"
-                    } bg-theme_primary text-theme_text_normal rounded-xl h-10 w-10 font-medium hover:border-2 hover:border-theme_green`}
+                    } bg-theme_primary text-theme_text_normal rounded-xl h-9 w-9 font-medium hover:border-2 hover:border-theme_green`}
                   >
                     {day[day.length - 1]}
                   </button>
                 ))}
               </div>
-              <br />
-              <div className="grid grid-cols-1 gap-5">
+              <div className="grid grid-cols-1 gap-5 mt-3">
                 <div className="grid grid-cols-1 gap-4 pb-3">
                   <div className={"grid grid-cols-1 gap-4"}>
                     {Object.keys(
@@ -91,6 +92,7 @@ const Timetable = () => {
                           timetable.timetable[selectedDay][item].room_code ? timetable.timetable[selectedDay][item].room_code : "Not Assigned"
                         }
                         timing={item}
+                        isCurrntDayOrder={currentDayOrder == selectedDay.split("Day")[1]}
                       />
                     ))}
                     {Object.keys(
