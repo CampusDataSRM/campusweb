@@ -53,6 +53,7 @@ const StudentLogin = () => {
       headers: myHeaders,
       body: raw,
       redirect: "follow",
+      mode: "cors",
     };
 
     fetch("https://campusapi-puce.vercel.app/api/auth/login/", requestOptions)

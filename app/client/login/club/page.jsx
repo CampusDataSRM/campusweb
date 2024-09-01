@@ -54,6 +54,7 @@ const ClubLogin = () => {
       headers: myHeaders,
       body: raw,
       redirect: "follow",
+      mode: "cors",
     };
 
     fetch(
@@ -63,7 +64,7 @@ const ClubLogin = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "success") {
-          Cookies.set("clubAuth", result.token);
+          Cookies.set("clubAuth", result.token, { expires: 2 });
           router.push("/club/admin/dashboard");
         } else {
           alert("Invalid credentials");
