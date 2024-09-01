@@ -18,8 +18,8 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing, isCurrntDa
     const startMinutes = convertToMinutes(startTime);
     const endMinutes = convertToMinutes(endTime);
 
-    // const currentMinutes = new Date().getHours() * 60 + new Date().getMinutes();
-    const currentMinutes = 15 * 60 + 50;
+    const currentIST = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    const currentMinutes = new Date(currentIST).getHours() * 60 + new Date(currentIST).getMinutes();
 
     if (currentMinutes <= startMinutes) {
       return 0;
