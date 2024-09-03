@@ -41,7 +41,7 @@ const EventCarousel = () => {
     timeoutRef.current = setTimeout(
       () =>
         setIndex((prevIndex) =>
-          prevIndex === (events.events && events.events.length) - 1
+          prevIndex === (events?.events && events?.events.length) - 1
             ? 0
             : prevIndex + 1
         ),
@@ -61,7 +61,7 @@ const EventCarousel = () => {
           icon="/icons/calender/white.svg"
           textColor="theme_text_normal"
         />
-        <div className="flex flex-wrap justify-center -mt-4 px-1">
+        <div className="flex flex-wrap justify-center -mt-3 px-1">
           {loading ? (
             <div className="flex justify-center p-5">
               <svg
@@ -86,38 +86,48 @@ const EventCarousel = () => {
               </svg>
             </div>
           ) : (
-            <div className="slideshow bg-black rounded-xl pb-4">
-              <div
-                className="slideshowSlider"
-                style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
-              >
-                {events.events &&
-                  events.events.map((event, index) => (
-                    <div className="inline-block" key={index}>
-                      <img
-                        src={event.banner_url}
-                        alt="slide"
-                        key={index}
-                        className="inline-block rounded-t-xl w-[370px] h-[175px]"
-                      />
-                    </div>
-                  ))}
-              </div>
-              <div className="slideshowDots flex flex-nowrap justify-center mt-1">
-                {events.events &&
-                  events.events.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`slideshowDot${
-                        index === idx ? " active" : ""
-                      }`}
-                      onClick={() => {
-                        setIndex(idx);
-                      }}
-                    ></div>
-                  ))}
-              </div>
-            </div>
+            <>
+              {events?.events ? (
+                <div className="slideshow bg-black rounded-xl pb-4">
+                  <div
+                    className="slideshowSlider"
+                    style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
+                  >
+                    {events?.events &&
+                      events.events.map((event, index) => (
+                        <div className="inline-block" key={index}>
+                          <img
+                            src={event.banner_url}
+                            alt="slide"
+                            key={index}
+                            className="inline-block rounded-t-xl w-[370px] h-[175px]"
+                          />
+                        </div>
+                      ))}
+                  </div>
+                  <div className="slideshowDots flex flex-nowrap justify-center mt-1">
+                    {events?.events &&
+                      events.events.map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={`slideshowDot${
+                            index === idx ? " active" : ""
+                          }`}
+                          onClick={() => {
+                            setIndex(idx);
+                          }}
+                        ></div>
+                      ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    No Events to Showcase
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>
