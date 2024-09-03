@@ -43,7 +43,7 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing, isCurrntDa
               {subjectName}
             </span>
             <span className="text-sm text-theme_text_normal_60 font-semibold tracking-wide text-wrap">
-              {classRoom}{" - "}{subjectType}
+              {classRoom.toUpperCase()}{" - "}{subjectType}
             </span>
           </div>
           <div className="flex flex-col gap-3 justify-center text-sm font-medium">

@@ -94,7 +94,7 @@ const EventCarousel = () => {
                     style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
                   >
                     {events?.events &&
-                      events.events.map((event, index) => (
+                      events.events.slice(0).reverse().map((event, index) => (
                         <div className="inline-block" key={index}>
                           <img
                             src={event.banner_url}
