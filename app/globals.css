@@ -51,3 +51,48 @@
  66%,100% {background-position: 0 100%,50% 0   ,100% 100%}
 }
 
+
+/* Carousel */
+
+.slideshow {
+  margin: 0 auto;
+  overflow: hidden;
+  max-width: 500px;
+}
+
+.slideshowSlider {
+  white-space: nowrap;
+  transition: ease 1000ms;
+}
+
+.slide {
+  display: inline-block;
+
+  height: 400px;
+  width: 100%;
+  border-radius: 40px;
+}
+
+/* Buttons */
+
+.slideshowDots {
+  text-align: center;
+}
+
+.slideshowDot {
+  display: inline-block;
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 15px 7px 0px;
+
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.slideshowDot.active {
+  background-color: rgba(255, 255, 255, 1.0);
+  width: 10px;
+  height: 5px;
+  border-radius: 25%;
+}
