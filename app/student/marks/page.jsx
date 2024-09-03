@@ -16,7 +16,7 @@ const Marks = () => {
     const dataStudent = JSON.parse(rawData);
     setTestreport(dataStudent?.testPerformances);
   }, []);
-  
+
   const percentages = (obj) => {
     let percent = [];
     for (let key in obj) {
@@ -40,7 +40,7 @@ const Marks = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={pageNames.filter(item => item !== "Marks")} />
+        <Navbar items={pageNames.filter((item) => item !== "Marks")} />
         <main className="px-3">
           <SectionTitle title="Marks" />
           {testreport ? (
@@ -79,9 +79,18 @@ const Marks = () => {
                       </div>
                       <div className="py-2">
                         {test.tests && Object.keys(test.tests).length > 0 && (
-                          <LineChart
-                            chartDetails={{chartLabels: dataLabels(test.tests), values: percentages(test.tests)}}
-                          />
+                          <>
+                          <div className="flex justify-center gap-2 items-center pb-2">
+                            <span className="bg-theme_text_normal/40 w-3 h-3 rounded-full border-2 border-theme_secondary"></span>
+                            <span className="text-xs font-light tracking-wide text-theme_text_normal">Percentage</span>
+                          </div>
+                            <LineChart
+                              chartDetails={{
+                                chartLabels: dataLabels(test.tests),
+                                values: percentages(test.tests),
+                              }}
+                            />
+                          </>
                         )}
                       </div>
                       <div className="flex flex-wrap gap-3">
