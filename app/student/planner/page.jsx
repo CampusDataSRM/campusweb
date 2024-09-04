@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
+import CWDateRangePicker from "@/components/student/planner/CWDateRangePicker";
 
 const Planner = () => {
   const [planner, setPlanner] = useState();
@@ -65,129 +66,7 @@ const Planner = () => {
         <Navbar items={pageNames.filter(item => item !== "Planner")} />
         <main className="px-3 pb-3">
           <SectionTitle title="Planner" />
-          <div className="">
-            {loading ? (
-              <div className="flex justify-center mt-60">
-                <Loader />
-              </div>
-            ) : (
-              <>
-                <div className="theme_box_bg p-3 flex flex-col gap-4">
-                  <span className="text-lg text-theme_text_primary">
-                    Calendar
-                  </span>
-                  <div className="flex justify-start items-center text-theme_text_normal">
-                    <button
-                      className=""
-                      onClick={() => handleMonthChange("prev")}
-                    >
-                      <img
-                        src="/icons/chevron/left.svg"
-                        alt="left"
-                        className="p-1"
-                      />
-                    </button>
-                    <span className="tracking-wide font-medium w-24 text-center">
-                      {monthArray[currentMonthID]}
-                    </span>
-                    <button
-                      className=""
-                      onClick={() => handleMonthChange("next")}
-                    >
-                      <img
-                        src="/icons/chevron/right.svg"
-                        alt="right"
-                        className="p-1"
-                      />
-                    </button>
-                  </div>
-                  <div className="max-h-[300px] overflow-auto pb-2 flex flex-col gap-2">
-                    {planner && planner[getMonth[currentMonthID]] ? (
-                      <>
-                        {planner[getMonth[currentMonthID]].Data ? (
-                          <>
-                            {planner[getMonth[currentMonthID]].Data.map(
-                              (item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex gap-2 items-stretch justify-center w-full"
-                                  id={todayDate.getDate() ===
-                                    Number(item.Date) &&
-                                  monthArray[currentMonthID] ===
-                                    monthArray[todayDate.getMonth()]
-                                    ? "activeDay"
-                                    : ""}
-                                >
-                                  <div
-                                    className={`flex flex-col gap-1 items-center justify-center py-2 w-20 rounded-xl text-theme_text_normal theme_box_bg
-                                    ${
-                                      todayDate.getDate() ===
-                                        Number(item.Date) &&
-                                      monthArray[currentMonthID] ===
-                                        monthArray[todayDate.getMonth()]
-                                        ? "border-2 border-theme_green"
-                                        : ""
-                                    }
-                                    `}
-                                  >
-                                    <span className="font-normal text-sm">
-                                      {item.Day}
-                                    </span>
-                                    <span className="font-medium text-base">
-                                      {item.Date}
-                                    </span>
-                                  </div>
-                                  <div
-                                    className={`w-full text-theme_text_normal flex justify-start items-center rounded-xl px-3 py-1 ${
-                                      item.Event.includes("Holiday") ||
-                                      item.Dayorder == "-"
-                                        ? "bg-theme_green/80"
-                                        : todayDate.getDate() ===
-                                            Number(item.Date) &&
-                                          monthArray[currentMonthID] ===
-                                            monthArray[todayDate.getMonth()]
-                                        ? "bg-theme_secondary/80"
-                                        : "theme_box_bg"
-                                    }`}
-                                  >
-                                    <span className="max-h-10 overflow-hidden text-ellipsis text-sm tracking-wide">
-                                      {item.Dayorder === "-"
-                                        ? item.Event
-                                          ? item.Event
-                                          : "Holiday"
-                                        : item.Event
-                                        ? item.Event
-                                        : "Nothing Today"}
-                                    </span>
-                                  </div>
-                                </div>
-                              )
-                            )}
-                            {planner[getMonth[currentMonthID]].Data.length ===
-                              0 && (
-                              <div className="text-theme_text_normal theme_box_bg text-center py-4">
-                                No data available
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="text-theme_text_normal theme_box_bg text-center py-4">
-                            No data available
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-theme_text_normal theme_box_bg text-center py-4">
-                          No data available
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <CWDateRangePicker />
         </main>
       </div>
     </>

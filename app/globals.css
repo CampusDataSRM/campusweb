@@ -96,3 +96,77 @@
   height: 5px;
   border-radius: 25%;
 }
+
+.translucent-date-range .rdrCalendarWrapper {
+  background-color: rgba(255, 255, 255, 0.8); /* White with 80% opacity */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  backdrop-filter: blur(8px); /* Blur effect to enhance the translucent look */
+  position: relative;
+  z-index: 1;
+}
+
+.translucent-date-range .rdrDateRangeWrapper,
+.translucent-date-range .rdrMonths {
+  background: rgba(12, 77, 162, 0.2); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.translucent-date-range .rdrMonth {
+  background: none;
+}
+
+.translucent-date-range .rdrMonthAndYearPickers {
+  background: rgba(12, 77, 162, 0.2); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.translucent-date-range .rdrMonthAndYearPickers select {
+  color: #91C3E7 !important;
+}
+
+.translucent-date-range .rdrDay {
+  backdrop-filter: blur(5px); /* Additional blur effect on days */
+}
+
+.rdrDay {
+  color: #fff !important;
+}
+
+.rdrDay:has(.rdrInRange), .rdrDay:has(.rdrStartEdge), .rdrDay:has(.rdrEndEdge) {
+  color: #003d68 !important;
+}
+
+.rdrDayPassive {
+  color: #ffffff9a !important;
+}
+
+.rdrDateDisplayWrapper {
+  background: rgba(12, 77, 162, 0.2) !important; 
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.rdrDateDisplayWrapper * {
+  background: rgba(12, 77, 162, 0.2) !important; 
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  color: #91C3E7 !important;
+}
+
+.rdrNextPrevButton {
+  background: rgba(12, 77, 162, 0.2) !important; 
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.translucent-date-range {
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.rdrDayWeekend {
+  color: #91C3E7 !important;
+}

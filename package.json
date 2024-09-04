@@ -11,11 +11,13 @@
   "dependencies": {
     "campusweb": "file:",
     "chart.js": "^4.4.4",
+    "date-fns": "^3.6.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "next": "14.2.4",
-    "react": "^18",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
+    "react-date-range": "^2.0.1",
     "react-dom": "^18"
   },
   "devDependencies": {

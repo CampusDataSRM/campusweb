@@ -3,6 +3,8 @@ import "./globals.css";
 import Image from "next/image";
 import Loader from "@/components/global/loader";
 import { Suspense } from "react";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
