@@ -38,6 +38,7 @@ const Student = () => {
         .then((response) => response.json())
         .then((result) => {
           setStudentName(result?.name);
+          localStorage.removeItem("studentData");
           localStorage.setItem("studentData", result && JSON.stringify(result));
           setCourseData(result?.courses);
           setTestPerformance(result?.testPerformances);
@@ -49,7 +50,7 @@ const Student = () => {
 
   const sessionLogout = (e) => {
     e.preventDefault();
-    localStorage.clear();
+    localStorage.removeItem("studentData");
     Cookies.remove("X-CSRF-Token");
     if (Cookies.get("X-CSRF-Token")) {
       console.log("Token not removed");

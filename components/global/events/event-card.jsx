@@ -24,11 +24,11 @@ const EventCard = ({
               by {String(club?.name).toUpperCase()}
             </div>
           </div>
-          <div className="w-[50px] h-[50px]">
-            <img src={club?.logo} alt={club?.name} className="rounded-lg" />
+          <div className="">
+            <img src={club?.logo} alt={club?.name} className="rounded-lg w-12 h-12" />
           </div>
         </div>
-        <div className="flex flex-wrap gap-3 px-2 mt-3">
+        <div className="flex flex-wrap gap-3 px-2 mt-4">
           {event?.labels &&
             event?.labels.map((value, index) => (
               <div
@@ -45,7 +45,7 @@ const EventCard = ({
             </div>
           )}
         </div>
-        <div className="flex justify-between items-center px-2 py-3">
+        <div className="flex justify-between items-center px-2 py-3 mt-1">
           <div className="text-base text-theme_text_primary flex gap-2 items-center">
             <span>Popularity: {event?.popularity}</span>
             <button
