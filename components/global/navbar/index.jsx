@@ -39,7 +39,7 @@ const Navbar = ({ items }) => {
             </button>
           )}
         </div>
-        <div className="absolute bottom-0 h-auto overflow-hidden w-screen max-w-4xl z-100">
+        <div className={`absolute bottom-0 h-auto overflow-hidden w-screen max-w-4xl ${isOpen ? "z-50" : "-z-50"}`}>
           <SwipeUpDrawer isDrawer={isOpen ? "nav" : null} studentPageLink={studentPageLink} items={items} setDrawer={setIsOpen} />
         </div>
         <br />
