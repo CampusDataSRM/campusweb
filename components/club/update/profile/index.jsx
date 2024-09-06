@@ -75,8 +75,6 @@ const UpdateClubProfile = () => {
   }, [profileUpdate]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitting(true);
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
 
@@ -155,13 +153,13 @@ const UpdateClubProfile = () => {
                 <img
                   src={URL.createObjectURL(club.logo)}
                   alt="Club Logo"
-                  className="w-32 h-32 object-cover"
+                  className="w-32 h-32 rounded-md"
                 />
               ) : (
                 <img
                   src={clubLogoUrl}
                   alt="Club Logo"
-                  className="w-32 h-32 object-cover"
+                  className="w-32 h-32 rounded-md"
                 />
               )}
             </div>

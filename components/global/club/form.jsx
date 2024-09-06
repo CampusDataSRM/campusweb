@@ -128,7 +128,7 @@ const EventForm = () => {
                   <img
                     src={URL.createObjectURL(event.image)}
                     alt="Event Banner"
-                    className="w-full h-full object-cover"
+                    className="w-full h-40 rounded-lg"
                   />
                 )}
               </div>
