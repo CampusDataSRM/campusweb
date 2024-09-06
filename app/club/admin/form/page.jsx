@@ -8,12 +8,26 @@ const Form = () => {
   if (form.get("type") == "createEvent") {
     return (
       <>
+        <div className="pt-8">
+          <img
+            src="/logo.svg"
+            alt="Campus Web"
+            className="h-9 w-auto mx-auto"
+          />
+        </div>
         <EventForm />
       </>
     );
   } else if (form.get("type") == "clubSignUp") {
     return (
       <>
+        <div className="pt-8">
+          <img
+            src="/logo.svg"
+            alt="Campus Web"
+            className="h-9 w-auto mx-auto"
+          />
+        </div>
         <ClubSignUpForm />
       </>
     );

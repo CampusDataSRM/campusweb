@@ -97,6 +97,7 @@ const EventForm = () => {
     <>
       <div className="px-3 py-5">
         <div className="text-theme_text_primary flex justify-start gap-2 content-center text-xl py-4">
+          <img src="/icons/calender/secondary.svg" className="w-5" />
           Create Event
         </div>
         <div>
