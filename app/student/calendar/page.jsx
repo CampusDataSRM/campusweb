@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 
-const Planner = () => {
+const Calendar = () => {
   const [planner, setPlanner] = useState();
   const monthArray = [
     "January",
@@ -194,4 +194,4 @@ const Planner = () => {
   );
 };
 
-export default Planner;
+export default Calendar;

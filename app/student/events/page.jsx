@@ -68,7 +68,7 @@ const Events = () => {
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter(item => item !== "Events")} />
         <main className="px-4">
-          <SectionTitle title="Events" icon={"/icons/calender/secondary.svg"} />
+          <SectionTitle title="Events" icon={"/icons/event/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -20,6 +20,11 @@ const studentPageLink = [
         icon: "/icons/bar-chart/primary.svg",
     },
     {
+        name: "Calendar",
+        link: "/student/calendar",
+        icon: "/icons/calender/primary.svg",
+    },
+    {
         name: "Planner",
         link: "/student/planner",
         icon: "/icons/loader/primary.svg",
@@ -27,7 +32,7 @@ const studentPageLink = [
     {
         name: "Events",
         link: "/student/events",
-        icon: "/icons/calender/primary.svg",
+        icon: "/icons/event/primary.svg",
     },
     {
         name: "Clubs",

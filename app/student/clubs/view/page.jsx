@@ -58,7 +58,7 @@ const ViewClub = () => {
                       <div className="mt-4">
                         <SectionTitle
                           title="Events"
-                          icon="/icons/calender/secondary.svg"
+                          icon="/icons/event/secondary.svg"
                         />
                         <form className="mb-5 flex gap-2 items-center theme_box_bg">
                           <svg

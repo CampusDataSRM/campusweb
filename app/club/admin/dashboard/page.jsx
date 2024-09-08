@@ -6,6 +6,7 @@ import EventCard from "@/components/global/events/event-card";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import { authExpiry } from "@/functions/auth-expiry";
+import SectionTitle from "@/components/global/section-title";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -71,7 +72,7 @@ const Dashboard = () => {
   };
   return (
     <>
-      <div className="px-4 max-h-screen overflow-auto">
+      <div className="px-3 max-h-screen overflow-auto">
         <div className="py-10">
           <img
             src="/logo.svg"
@@ -136,19 +137,10 @@ const Dashboard = () => {
             </Link>
           ))}
         </div>
-        <div className="px-2 mt-4">
+        <div className="mt-4">
           <div>
-            <div className="text-theme_text_primary flex justify-start gap-2 content-center text-lg py-6">
-              <span>
-                {" "}
-                <img
-                  src="/icons/calender/secondary.svg"
-                  className="mt-1"
-                />{" "}
-              </span>{" "}
-              Our Events
-            </div>
-            <div className="flex flex-wrap justify-center gap-3 py-1">
+            <SectionTitle title="Events" icon="/icons/event/secondary.svg" />
+            <div className="flex flex-wrap justify-center gap-3 pb-1">
               {club?.events &&
                 club.events
                   .slice(0)

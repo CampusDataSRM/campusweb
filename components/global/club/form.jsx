@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { authExpiry } from "@/functions/auth-expiry";
 import Link from "next/link";
+import SectionTitle from "@/components/global/section-title";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
@@ -96,10 +97,7 @@ const EventForm = () => {
   return (
     <>
       <div className="px-3 py-5">
-        <div className="text-theme_text_primary flex justify-start gap-2 content-center text-xl py-4">
-          <img src="/icons/calender/secondary.svg" className="w-5" />
-          Create Event
-        </div>
+        <SectionTitle title="Create Event" icon="/icons/event/secondary.svg" />
         <div>
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <button

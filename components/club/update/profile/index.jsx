@@ -9,7 +9,7 @@ import { authExpiry } from "@/functions/auth-expiry";
 import SectionTitle from "@/components/global/section-title";
 
 const defaultStyle =
-  "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
+  "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl disabled:text-theme_text_normal_60";
 
 const UpdateClubProfile = () => {
   const fileUpload = useRef(null);

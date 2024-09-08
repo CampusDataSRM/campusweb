@@ -58,7 +58,7 @@ const EventCarousel = () => {
       <main>
         <SectionTitle
           title="Events"
-          icon="/icons/calender/white.svg"
+          icon="/icons/event/white.svg"
           textColor="theme_text_normal"
         />
         <div className="flex flex-wrap justify-center -mt-3 px-1">
