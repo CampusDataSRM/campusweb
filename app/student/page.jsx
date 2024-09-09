@@ -60,7 +60,7 @@ const Student = () => {
       redirect: "follow",
     };
 
-    fetch("https://campusapi-puce.vercel.app/api/auth/logout/", requestOptions)
+    fetch("https://campusapi-puce.vercel.app/api/auth/logoutuser/", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         localStorage.removeItem("studentData");
