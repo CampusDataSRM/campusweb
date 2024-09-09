@@ -3,6 +3,7 @@
 import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { toTwoDecimalPlaces } from "@/functions/round-off";
 
 const YourStats = ({ courseData, testPerformance }) => {
 
@@ -25,7 +26,7 @@ const YourStats = ({ courseData, testPerformance }) => {
     },
     {
       name: "Marks",
-      value: `${marksObtained} / ${totalMarksObtained}`,
+      value: `${toTwoDecimalPlaces(marksObtained)} / ${totalMarksObtained}`,
     },
   ];
   return (

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import LineChart from "@/components/global/graph/line";
 import { pageNames } from "@/components/global/navbar/page-link";
+import { toTwoDecimalPlaces } from "@/functions/round-off";
 
 const Marks = () => {
   const [testreport, setTestreport] = useState([]);
@@ -72,7 +73,7 @@ const Marks = () => {
                           </span>
                         </div>
                         <div className="text-theme_primary font-bold flex items-end gap-[2px] pr-3">
-                          <span className="text-2xl ">{test.totalMarkGot}</span>
+                          <span className="text-2xl ">{toTwoDecimalPlaces(test.totalMarkGot)}</span>
                           <span className="text-lg ">/</span>
                           <span className="text-lg ">{test.totalMarks}</span>
                         </div>
