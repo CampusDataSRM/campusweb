@@ -36,7 +36,6 @@ const Calendar = () => {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
-      mode: "cors",
     };
 
     fetch("https://campusapi-puce.vercel.app/api/auth/planner", requestOptions)
