@@ -3,7 +3,6 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 
 const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
-  console.log(clubID);
   const [clubPopularity, setClubPopularity] = useState(
     club?.popularity ? club?.popularity : 0
   );
