@@ -2,9 +2,9 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { useState } from "react";
 
-const EventCard = ({ event, club, eventID, checkLiked }) => {
-  const [eventPopularity, setEventPopularity] = useState(event?.popularity);
-  const [action, setAction] = useState("");
+const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => {
+  const [eventPopularity, setEventPopularity] = useState(event?.popularity ? event?.popularity : 0);
+  
   const [userClicked, setUserClicked] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(checkLiked);
 
@@ -45,15 +45,15 @@ const EventCard = ({ event, club, eventID, checkLiked }) => {
 
   return (
     <>
-      <div className="max-w-[350px] w-full theme_box_bg rounded-xl">
+      <div className="w-full theme_box_bg rounded-xl">
         <div>
           <img
             src={event?.banner_url}
             alt={event?.title}
-            className="rounded-t-xl w-full max-h-[200px]"
+            className="rounded-t-xl w-full max-h-[250px]"
           />
         </div>
-        <div className="flex justify-between px-3 mt-3 tracking-wider">
+        <div className="flex justify-between px-3 mt-5 tracking-wider">
           <div className="grid grid-cols-1 text-theme_text_normal my-auto">
             <div>{event?.title}</div>
             <div className="text-theme_text_normal_60">
@@ -91,7 +91,7 @@ const EventCard = ({ event, club, eventID, checkLiked }) => {
             <button
               className="pl-1"
               onClick={actionLikeUnlike}
-              disabled={userClicked}
+              disabled={disabledPopularity ? true : userClicked} 
             >
               {userClicked ? (
                 <>

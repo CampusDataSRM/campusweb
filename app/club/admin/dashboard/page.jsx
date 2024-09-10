@@ -61,7 +61,11 @@ const Dashboard = () => {
   }, []);
 
   const clubStats = [
-    { name: "Popularity", icon: "/icons/star.svg", value: "157x" },
+    {
+      name: "Popularity",
+      icon: "/icons/star.svg",
+      value: club?.popularity || 0,
+    },
     { name: "Events", icon: null, value: club?.events?.length || 0 },
   ];
 
@@ -146,32 +150,28 @@ const Dashboard = () => {
                   .slice(0)
                   .reverse()
                   .map((event, index) => (
-                    <EventCard event={event} club={club.club} key={index} />
+                    <EventCard
+                      event={event}
+                      club={club.club}
+                      key={index}
+                      disabledPopularity={true}
+                    />
                   ))}
             </div>
           </div>
-          <div className="mt-4">
-            <div className="text-theme_text_primary flex justify-start gap-2 content-center text-lg py-6">
-              <span>
-                {" "}
-                <img
-                  src="/icons/user-group/secondary.svg"
-                  className="mt-1"
-                />{" "}
-              </span>{" "}
-              Club Standings
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="mt-6">
+          <SectionTitle title="Club Standings" icon="/icons/event/secondary.svg" />
+            <div className="grid grid-cols-2 gap-2 -mt-3">
               {clubStats.map((stat, index) => (
                 <div
-                  className="theme_box_bg rounded-md p-4 text-center"
+                  className="theme_box_bg rounded-md p-4 text-center flex flex-col justify-center items-center gap-4" 
                   key={index}
                 >
-                  <div className="text-theme_text_normal flex justify-center gap-1 text-2xl py-4 text-bold">
+                  <div className="text-theme_text_normal flex justify-center gap-2 text-xl text-bold">
                     {stat.value}
                     {stat.icon && <img src={stat.icon} />}
                   </div>
-                  <div className="text-theme_text_primary text-sm">
+                  <div className="text-theme_text_primary font-medium tracking-wide text-sm">
                     {stat.name}
                   </div>
                 </div>

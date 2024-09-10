@@ -82,7 +82,7 @@ const Events = () => {
               <Loader />
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-8 pb-4">
+            <div className="flex flex-wrap justify-center gap-4 pb-4">
               {eventData?.events ? (
                 eventData?.events
                   .filter((event) => {

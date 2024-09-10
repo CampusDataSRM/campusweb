@@ -12,8 +12,11 @@ const ViewClub = () => {
   const clubID = club.get("id");
   const [clubData, setClubData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [studentID, setStudentID] = useState("");
   useEffect(() => {
     setLoading(true);
+    const student = JSON.parse(localStorage.getItem("studentData"));
+    setStudentID(student.registrationNumber);
     const requestOptions = {
       method: "GET",
       redirect: "follow",
@@ -28,12 +31,11 @@ const ViewClub = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={['Dashboard', 'Timetable', 'Attendance', 'Events']} />
+        <Navbar items={["Dashboard", "Timetable", "Attendance", "Events"]} />
         <main className="px-3">
           <SectionTitle
             title="Profile"
@@ -54,6 +56,12 @@ const ViewClub = () => {
                         key={index}
                         club={club}
                         visitLinkActive={true}
+                        clubID={club?.id}
+                        checkLiked={
+                          club.likedby
+                            ? club.likedby.includes(studentID)
+                            : false
+                        }
                       />
                       <div className="mt-4">
                         <SectionTitle
@@ -127,6 +135,12 @@ const ViewClub = () => {
                                     name: club.name,
                                     logo: club.logo,
                                   }}
+                                  eventID={event.ID}
+                                  checkLiked={
+                                    event.likedby
+                                      ? event.likedby.includes(studentID)
+                                      : false
+                                  }
                                 />
                               ))
                           ) : (

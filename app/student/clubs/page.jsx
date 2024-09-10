@@ -5,13 +5,19 @@ import SectionTitle from "@/components/global/section-title";
 import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
 import ClubCard from "@/components/global/club/club-card";
-import { pageNames, studentPageLink } from "@/components/global/navbar/page-link";
+import {
+  pageNames,
+  studentPageLink,
+} from "@/components/global/navbar/page-link";
 
 const Clubs = () => {
   const [clubData, setClubData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [studentID, setStudentID] = useState("");
   useEffect(() => {
     setLoading(true);
+    const student = JSON.parse(localStorage.getItem("studentData"));
+    setStudentID(student.registrationNumber);
     const requestOptions = {
       method: "GET",
       redirect: "follow",
@@ -26,12 +32,11 @@ const Clubs = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  
   const [clubQuery, setClubQuery] = useState("");
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={pageNames.filter(item => item !== "Clubs")} />
+        <Navbar items={pageNames.filter((item) => item !== "Clubs")} />
         <main className="px-5">
           <SectionTitle
             title="Clubs"
@@ -96,7 +101,18 @@ const Clubs = () => {
                     )
                       return e;
                   })
-                  .map((club, index) => <ClubCard key={index} club={club} />)
+                  .map((club, index) => (
+                    <ClubCard
+                      key={index}
+                      club={club}
+                      clubID={club?.id}
+                      checkLiked={
+                        club.likedby ?
+                          club.likedby.includes(studentID)
+                          : false
+                      }
+                    />
+                  ))
               ) : (
                 <div className="theme_box_bg py-6 w-full">
                   <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
