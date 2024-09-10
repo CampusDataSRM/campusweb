@@ -26,6 +26,7 @@ const Calendar = () => {
   const todayDate = new Date();
   const [currentMonthID, setCurrentMonthID] = useState(todayDate.getMonth());
   const [getMonth, setGetMonth] = useState([]);
+
   useEffect(() => {
     setLoading(true);
     const myHeaders = new Headers();
@@ -101,7 +102,7 @@ const Calendar = () => {
                       />
                     </button>
                   </div>
-                  <div className="max-h-[300px] overflow-auto pb-2 flex flex-col gap-2">
+                  <div className="max-h-[500px] overflow-auto pb-2 flex flex-col gap-2">
                     {planner && planner[getMonth[currentMonthID]] ? (
                       <>
                         {planner[getMonth[currentMonthID]].Data ? (

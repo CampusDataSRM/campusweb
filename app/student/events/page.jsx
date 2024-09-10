@@ -11,35 +11,6 @@ const Events = () => {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [studentID, setStudentID] = useState("");
-  const [clickedOnLike, setClickedOnLike] = useState(false);
-  const [processLike, setProcessLike] = useState(false);
-
-  const likeEvent = (eventID) => {
-    setClickedOnLike(true);
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
-    myHeaders.append("eventid", eventID);
-
-    const requestOptions = {
-      method: "PUT",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch("https://campusapi-puce.vercel.app/api/users/post-p", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        if(result.message == "Popularity updated successfully") {
-        setClickedOnLike(false);
-        setProcessLike(!processLike);
-        } else {
-          alert("Something went wrong");
-          clickedOnLike(false);
-        }
-      })
-      .catch((error) => console.error(error));
-  };
 
   useEffect(() => {
     setLoading(true);
@@ -60,7 +31,7 @@ const Events = () => {
         setLoading(false);
       })
       .catch((error) => console.error(error));
-  }, [processLike]);
+  }, []);
 
   const [eventQuery, setEventQuery] = useState("");
   return (
@@ -139,13 +110,12 @@ const Events = () => {
                       key={index}
                       event={event}
                       club={{ name: event.club_name, logo: event.logo }}
-                      onLikingEvent={() => likeEvent(event.id)}
+                      eventID={event.id}
                       checkLiked={
                         event.likedby
                           ? event.likedby.includes(studentID)
                           : false
                       }
-                      userClickedLiked={clickedOnLike}
                     />
                   ))
               ) : (
