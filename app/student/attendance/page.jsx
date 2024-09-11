@@ -12,22 +12,13 @@ const Attendance = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setCourseData(result?.courses);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
+    const result = JSON.parse(localStorage.getItem("studentData"));
+    if (!result) {
+      router.push("/client/login/student");
+    } else {
+      setCourseData(result?.courses);
+      setLoading(false);
+    }
   }, []);
   return (
     <>
