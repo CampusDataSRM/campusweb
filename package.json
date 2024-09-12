@@ -19,7 +19,8 @@
     "react-chartjs-2": "^5.2.0",
     "react-date-range": "^2.0.1",
     "react-dom": "^18",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "swiper": "^8.4.7"
   },
   "devDependencies": {
     "postcss": "^8",

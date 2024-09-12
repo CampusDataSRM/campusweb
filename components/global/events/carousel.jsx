@@ -1,6 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import SectionTitle from "@/components/global/section-title";
 import EventCard from "@/components/global/events/event-card";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination, Autoplay } from "swiper";
 
 const EventCarousel = () => {
   const [events, setEvents] = useState([]);
@@ -25,33 +29,6 @@ const EventCarousel = () => {
         console.error(error);
       });
   }, []);
-
-  const delay = 2500;
-  const [index, setIndex] = useState(0);
-  const timeoutRef = useRef(null);
-
-  function resetTimeout() {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-  }
-
-  useEffect(() => {
-    resetTimeout();
-    timeoutRef.current = setTimeout(
-      () =>
-        setIndex((prevIndex) =>
-          prevIndex === (events?.events && events?.events.length) - 1
-            ? 0
-            : prevIndex + 1
-        ),
-      delay
-    );
-
-    return () => {
-      resetTimeout();
-    };
-  }, [index]);
 
   return (
     <>
@@ -88,38 +65,34 @@ const EventCarousel = () => {
           ) : (
             <>
               {events?.events ? (
-                <div className="slideshow bg-black rounded-xl pb-4">
-                  <div
-                    className="slideshowSlider"
-                    style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
-                  >
-                    {events?.events &&
-                      events.events.slice(0).reverse().map((event, index) => (
-                        <div className="inline-block" key={index}>
-                          <img
-                            src={event.banner_url}
-                            alt="slide"
-                            key={index}
-                            className="inline-block rounded-t-xl w-[370px] h-[175px]"
-                          />
-                        </div>
+                <Swiper
+                  spaceBetween={30}
+                  pagination={{ clickable: true, dynamicBullets: true }}
+                  autoplay={{
+                    delay: 2000,
+                    disableOnInteraction: false,
+                  }}
+                  modules={[Pagination, Autoplay]}
+                  loop={true}
+                  className="mySwiper bg-black rounded-lg pb-4 relative"
+                >
+                  {events?.events &&
+                    events.events
+                      .slice(0)
+                      .reverse()
+                      .map((event, index) => (
+                        <SwiperSlide key={index}>
+                          <div>
+                            <img
+                              src={event.banner_url}
+                              alt={`slide-${index}`}
+                              className="rounded-t-lg w-[370px] h-[175px]"
+                            />
+                            {/* <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div> */}
+                          </div>
+                        </SwiperSlide>
                       ))}
-                  </div>
-                  <div className="slideshowDots flex flex-nowrap justify-center mt-1">
-                    {events?.events &&
-                      events.events.map((_, idx) => (
-                        <div
-                          key={idx}
-                          className={`slideshowDot${
-                            index === idx ? " active" : ""
-                          }`}
-                          onClick={() => {
-                            setIndex(idx);
-                          }}
-                        ></div>
-                      ))}
-                  </div>
-                </div>
+                </Swiper>
               ) : (
                 <div className="theme_box_bg py-6 w-full">
                   <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
