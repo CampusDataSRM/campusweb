@@ -23,12 +23,18 @@ const EventCarousel = () => {
       .then((response) => response.json())
       .then((result) => {
         setEvents(result.data);
+        console.log(result.data);
+        
         setLoading(false);
       })
       .catch((error) => {
         console.error(error);
       });
   }, []);
+
+  const handleEventClick = (websiteLink) => {
+    window.open(websiteLink, "_blank");
+  };
 
   return (
     <>
@@ -87,6 +93,7 @@ const EventCarousel = () => {
                               src={event.banner_url}
                               alt={`slide-${index}`}
                               className="rounded-t-lg w-[370px] h-[175px]"
+                              onClick={() => handleEventClick(event.website_link)}
                             />
                             {/* <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div> */}
                           </div>
