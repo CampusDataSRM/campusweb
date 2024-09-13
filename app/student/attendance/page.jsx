@@ -24,7 +24,7 @@ const Attendance = () => {
     <>
       <div className="pb-2 h-screen overflow-y-auto sm:hidden">
         <Navbar items={pageNames.filter(item => item !== "Attendance")} />
-        <div className="px-4">
+        <div className="px-3">
           <SectionTitle title="Attendance" />
           {loading ? (
             <div className="flex justify-center mt-60 content-center">

@@ -11,7 +11,7 @@ const AttendanceCard = ({ attendance }) => {
   return (
     <>
       <div className="px-3 py-5 w-full theme_box_bg">
-        <div className="flex gap-5 justify-between items-end">
+        <div className="flex gap-3 justify-between items-end">
           <div className="flex flex-col gap-1 justify-start">
             <span className="text-base font-normal text-theme_text_normal tracking-wide text-wrap">
               {attendance?.courseTitle}
@@ -55,7 +55,7 @@ const AttendanceCard = ({ attendance }) => {
             >
               {attendanceColor(attendance?.margin, attendance?.required).label}
             </span>
-            <span className="text-theme_primary text-base font-semibold text-nowrap text-center mt-3">
+            <span className="text-theme_primary text-[15px] font-bold text-nowrap text-center mt-3">
               {attendance?.attendancePercent} %
             </span>
           </div>
