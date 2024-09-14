@@ -16,7 +16,7 @@ const getStudentData = async (authToken) => {
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {
-    return { message: "failed_to_fetch", content: error };
+    return { message: "error", content: error };
   }
 };
 
@@ -36,12 +36,18 @@ const getPlannerData = async (authToken) => {
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {
-    return { message: "failed_to_fetch", content: error };
+    return { message: "error", content: error };
   }
 };
 
 // Timetable API
-const getTimetableData = async (authToken, batch) => {
+const getTimetableData = async (authToken) => {
+  const rawData = localStorage.getItem("studentData");
+  const dataStudent = JSON.parse(rawData);
+  const batch = dataStudent?.comboBatch;
+  console.log(batch);
+  
+
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
 
@@ -57,9 +63,15 @@ const getTimetableData = async (authToken, batch) => {
       requestOptions
     );
     const result = await response.json();
+
+    console.log("timetable result", result);
+    
+    
     return { message: "success", content: result };
   } catch (error) {
-    return { message: "failed_to_fetch", content: error };
+    console.log("ADGAERNIAERNO");
+    
+    return { message: "error", content: error };
   }
 };
 
