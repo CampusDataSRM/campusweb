@@ -6,6 +6,7 @@ import Navbar from "@/components/global/navbar";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
 import { pageNames } from "@/components/global/navbar/page-link";
+import { getStudentData } from "@/functions/api/student";
 
 const Attendance = () => {
   const [courseData, setCourseData] = useState([]);
@@ -13,17 +14,27 @@ const Attendance = () => {
   useEffect(() => {
     setLoading(true);
     const result = JSON.parse(localStorage.getItem("studentData"));
+
     if (!result) {
       router.push("/client/login/student");
     } else {
       setCourseData(result?.courses);
       setLoading(false);
+      const someResult = getStudentData(Cookies.get("X-CSRF-Token"));
+      someResult.then((data) => {
+        if (data?.message === "failed_to_fetch") {
+          console.log("Failed to fetch data");
+        } else {
+          setCourseData(data?.content.courses);
+          localStorage.setItem("studentData", JSON.stringify(data?.content));
+        }
+      });
     }
   }, []);
   return (
     <>
       <div className="pb-2 h-screen overflow-y-auto sm:hidden">
-        <Navbar items={pageNames.filter(item => item !== "Attendance")} />
+        <Navbar items={pageNames.filter((item) => item !== "Attendance")} />
         <div className="px-3">
           <SectionTitle title="Attendance" />
           {loading ? (

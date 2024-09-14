@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
+import { getTimetableData } from "@/functions/api/student";
 
 const Timetable = () => {
 
