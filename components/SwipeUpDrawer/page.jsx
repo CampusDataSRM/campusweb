@@ -94,10 +94,10 @@ export default function SwipeUpDrawer({
                       ? handleLogout
                       : () => router.push(item.link)
                   }
-                  className="flex justify-stretch py-4 px-2 bg-gradient-to-br from-theme_primary/40 to-theme_secondary/40 rounded-md gap-4 items-center"
+                  className="flex justify-stretch py-4 px-2 bg-gradient-to-br from-theme_primary/40 via-theme_primary/40 to-theme_secondary/40 rounded-md gap-4 items-center"
                 >
                   <img src={item.icon} alt={item.name} className="h-5 w-auto" />
-                  <span className="text-white font-bold">{item.name}</span>
+                  <span className="text-white font-semibold">{item.name}</span>
                 </button>
               ))}
           </div>

@@ -56,7 +56,7 @@ const Timetable = () => {
             </div>
           ) : (
             <>
-              <div className="theme_box_bg backdrop-blur-lg px-3 py-3 flex gap-5 items-center absolute bottom-5 left-1/2 -translate-x-1/2">
+              <div className="theme_box_bg backdrop-blur-lg px-6 py-3 flex gap-6 items-center absolute bottom-5 left-1/2 -translate-x-1/2">
                 {dayOrders.map((day, index) => (
                   <button
                     key={index}
@@ -73,7 +73,7 @@ const Timetable = () => {
               </div>
               <div className="grid grid-cols-1 gap-5 mt-3">
                 <div className="grid grid-cols-1 gap-4 pb-3">
-                  <div className={"grid grid-cols-1 gap-4"}>
+                  <div className={"grid grid-cols-1 gap-4 pb-20"}>
                     {Object.keys(
                       timetable.timetable
                         ? timetable.timetable[selectedDay]
