@@ -94,7 +94,7 @@ export default function SwipeUpDrawer({
                       ? handleLogout
                       : () => router.push(item.link)
                   }
-                  className="flex justify-stretch py-4 px-2 bg-[#062855]/70 rounded-md gap-4 items-center"
+                  className="flex justify-stretch py-4 px-2 bg-[#071d3a] rounded-md gap-4 items-center"
                 >
                   <img src={item.icon} alt={item.name} className="h-5 w-auto" />
                   <span className="text-white font-semibold">{item.name}</span>

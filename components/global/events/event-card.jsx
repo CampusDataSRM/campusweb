@@ -134,7 +134,7 @@ const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => 
               target="_blank"
               rel="noopener noreffer"
             >
-              <button className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
+              <button className="bg-gradient-to-br from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
                 Register
               </button>
             </Link>

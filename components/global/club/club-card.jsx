@@ -155,7 +155,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
                   },
                 }}
               >
-                <button className="bg-gradient-to-r from-theme_primary to-theme_secondary tracking-wider font-medium p-3 rounded-lg text-theme_text_normal shadow-lg">
+                <button className="bg-gradient-to-br from-theme_primary to-theme_secondary tracking-wider font-medium p-3 rounded-lg text-theme_text_normal shadow-lg">
                   Explore
                 </button>
               </Link>
