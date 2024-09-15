@@ -68,7 +68,7 @@ export default function SwipeUpDrawer({
       ref={ref}
     >
       <div
-        className={`theme_box_bg backdrop-blur-lg relative flex justify-center inset-x-0 items-center w-full max-w-4xl p-5 py-16 bottom-0 rounded-t-3xl  ${
+        className={`theme_box_bg backdrop-blur-md relative flex justify-center inset-x-0 items-center w-full max-w-4xl p-5 py-16 bottom-0 rounded-t-3xl  ${
           isDrawer ? "" : "translate-y-full"
         } transition-transform duration-300 ease-in-out z-50`}
       >
@@ -94,7 +94,7 @@ export default function SwipeUpDrawer({
                       ? handleLogout
                       : () => router.push(item.link)
                   }
-                  className="flex justify-stretch py-4 px-2 bg-gradient-to-br from-theme_primary/40 via-theme_primary/40 to-theme_secondary/40 rounded-md gap-4 items-center"
+                  className="flex justify-stretch py-4 px-2 bg-[#062855]/70 rounded-md gap-4 items-center"
                 >
                   <img src={item.icon} alt={item.name} className="h-5 w-auto" />
                   <span className="text-white font-semibold">{item.name}</span>

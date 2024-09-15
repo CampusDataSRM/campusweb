@@ -82,9 +82,9 @@ const DashboardTimetable = () => {
                       onClick={() => setSelectedDay(day)}
                       className={`${
                         selectedDay === day
-                          ? "border-2 border-theme_green"
-                          : "border-0"
-                      } bg-theme_primary text-theme_text_normal rounded-md text-sm h-[30px] w-[30px] font-medium hover:border-2 hover:border-theme_green`}
+                          ? "bg-theme_primary font-black"
+                          : "bg-theme_primary/40"
+                      } bg-theme_primary text-theme_text_normal rounded-md text-sm h-[30px] w-[30px] font-medium`}
                     >
                       {day[day.length - 1]}
                     </button>
