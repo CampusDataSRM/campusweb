@@ -1,11 +1,12 @@
 'use client';
 
 import SectionTitle from "@/components/global/section-title";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
+import { useRouter } from "next/navigation";
 
 const YourStats = ({ courseData, testPerformance }) => {
+
+  const Router = useRouter();
 
   let attendance = 0;
   for (let i = 0; i < courseData?.length; i++) {
@@ -23,10 +24,12 @@ const YourStats = ({ courseData, testPerformance }) => {
     {
       name: "Attendance",
       value: `${(attendance / courseData?.length).toFixed(2)} %`,
+      goTo: "/student/attendance",
     },
     {
       name: "Marks",
       value: `${toTwoDecimalPlaces(marksObtained)} / ${totalMarksObtained}`,
+      goTo: "/student/marks",
     },
   ];
   return (
@@ -43,6 +46,7 @@ const YourStats = ({ courseData, testPerformance }) => {
           <div
             key={index}
             className="theme_box_bg py-6 px-4 flex flex-col gap-3 justify-between items-center"
+            onClick={() => Router.push(stat.goTo)}
           >
             <span className="text-xl text-theme_text_normal font-semibold tracking-wide text-center text-nowrap">
               {stat.value}

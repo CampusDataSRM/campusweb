@@ -62,7 +62,7 @@ const Calendar = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={pageNames.filter(item => item !== "Planner")} />
+        <Navbar items={pageNames.filter(item => item !== "Calendar")} />
         <main className="px-3 pb-3">
           <SectionTitle title="Calendar" />
           <div className="">

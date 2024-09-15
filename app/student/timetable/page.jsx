@@ -56,16 +56,16 @@ const Timetable = () => {
             </div>
           ) : (
             <>
-              <div className="theme_box_bg px-3 py-3 flex gap-5 items-center">
+              <div className="theme_box_bg backdrop-blur-lg px-3 py-3 flex gap-5 items-center absolute bottom-5 left-1/2 -translate-x-1/2">
                 {dayOrders.map((day, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedDay(day)}
                     className={`${
                       selectedDay === day
-                        ? "border-2 border-theme_green"
-                        : "border-0"
-                    } bg-theme_primary text-theme_text_normal rounded-xl h-9 w-9 font-medium hover:border-2 hover:border-theme_green`}
+                        ? "bg-theme_primary font-black scale-110"
+                        : "border-0 bg-theme_primary/40 "
+                    } text-theme_text_normal rounded-xl h-9 w-9 font-medium `}
                   >
                     {day[day.length - 1]}
                   </button>
