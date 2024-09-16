@@ -59,12 +59,23 @@ const Calendar = () => {
       }
     }
   };
+
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 500); 
+  }, [currentMonthID, planner]);
   return (
     <>
       <div className="max-h-screen overflow-auto sm:hidden">
-        <Navbar items={pageNames.filter(item => item !== "Calendar")} />
+        <Navbar items={pageNames.filter((item) => item !== "Calendar")} />
         <main className="px-3 pb-3">
-          <SectionTitle title="Calendar" icon={'/icons/calender/secondary.svg'} />
+          <SectionTitle
+            title="Calendar"
+            icon={"/icons/calender/secondary.svg"}
+          />
           <div className="">
             {loading ? (
               <div className="flex justify-center mt-60">
@@ -73,9 +84,6 @@ const Calendar = () => {
             ) : (
               <>
                 <div className="theme_box_bg p-3 flex flex-col gap-4">
-                  <span className="text-lg text-theme_text_primary">
-                    Calendar
-                  </span>
                   <div className="flex justify-start items-center text-theme_text_normal">
                     <button
                       className=""
@@ -111,12 +119,13 @@ const Calendar = () => {
                                 <div
                                   key={index}
                                   className="flex gap-2 items-stretch justify-center w-full"
-                                  id={todayDate.getDate() ===
-                                    Number(item.Date) &&
+                                  id={
+                                    todayDate.getDate() === Number(item.Date) &&
                                     monthArray[currentMonthID] ===
                                       monthArray[todayDate.getMonth()]
                                       ? "activeDay"
-                                    : ""}
+                                      : ""
+                                  }
                                 >
                                   <div
                                     className={`flex flex-col gap-1 items-center justify-center py-2 w-20 rounded-xl text-theme_text_normal theme_box_bg
@@ -129,6 +138,10 @@ const Calendar = () => {
                                         : ""
                                     }
                                     `}
+                                    ref={todayDate.getDate() ===
+                                      Number(item.Date) &&
+                                    monthArray[currentMonthID] ===
+                                      monthArray[todayDate.getMonth()] ? scrollRef : null}
                                   >
                                     <span className="font-normal text-sm">
                                       {item.Day}
@@ -138,7 +151,7 @@ const Calendar = () => {
                                     </span>
                                   </div>
                                   <div
-                                    className={`w-full text-theme_text_normal flex justify-start items-center rounded-xl px-3 py-1 ${
+                                    className={`w-full text-theme_text_normal flex justify-between gap-2 items-center rounded-xl px-3 py-1 ${
                                       item.Event.includes("Holiday") ||
                                       item.Dayorder == "-"
                                         ? "bg-theme_green/80"
@@ -150,7 +163,7 @@ const Calendar = () => {
                                         : "theme_box_bg"
                                     }`}
                                   >
-                                    <span className="max-h-10 overflow-hidden text-ellipsis text-sm tracking-wide">
+                                    <span className="overflow-hidden text-ellipsis text-sm tracking-wide w-[83%]">
                                       {item.Dayorder === "-"
                                         ? item.Event
                                           ? item.Event
@@ -158,6 +171,9 @@ const Calendar = () => {
                                         : item.Event
                                         ? item.Event
                                         : "Nothing Today"}
+                                    </span>
+                                    <span className="overflow-hidden text-ellipsis text-sm tracking-wide whitespace-nowrap w-[17%]">
+                                      {`DO ${item.Dayorder}`}
                                     </span>
                                   </div>
                                 </div>

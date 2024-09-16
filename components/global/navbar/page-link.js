@@ -24,11 +24,11 @@ const studentPageLink = [
         link: "/student/calendar",
         icon: "/icons/calender/primary.svg",
     },
-    {
-        name: "Planner",
-        link: "/student/planner",
-        icon: "/icons/loader/primary.svg",
-    },
+    // {
+    //     name: "Planner",
+    //     link: "/student/planner",
+    //     icon: "/icons/loader/primary.svg",
+    // },
     {
         name: "Events",
         link: "/student/events",
