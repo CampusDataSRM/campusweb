@@ -64,7 +64,7 @@ const Calendar = () => {
       <div className="max-h-screen overflow-auto sm:hidden">
         <Navbar items={pageNames.filter(item => item !== "Calendar")} />
         <main className="px-3 pb-3">
-          <SectionTitle title="Calendar" />
+          <SectionTitle title="Calendar" icon={'/icons/calender/secondary.svg'} />
           <div className="">
             {loading ? (
               <div className="flex justify-center mt-60">

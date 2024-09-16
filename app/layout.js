@@ -6,6 +6,9 @@ import { Suspense } from "react";
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -30,7 +33,10 @@ export default function RootLayout({ children }) {
             layout="fill"
             className="filter blur-[60px] fixed top-0 left-0 -z-50"
           />
-          <div className="sm:hidden">{children}</div>
+          <div className="sm:hidden">{children}
+            <Analytics />
+            <SpeedInsights />
+          </div>
         </Suspense>
       </body>
     </html>
