@@ -10,6 +10,10 @@
   font-family: "Nunito";
 }
 
+body{
+  font-family: "Nunito" !important;
+}
+
 @layer utilities {
   .theme_box_bg {
     @apply bg-[#0C4DA2]/20 rounded-xl shadow-2xl;
@@ -102,6 +106,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
   backdrop-filter: blur(8px); /* Blur effect to enhance the translucent look */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
   position: relative;
   z-index: 1;
 }
@@ -129,6 +134,7 @@
 
 .translucent-date-range .rdrDay {
   backdrop-filter: blur(5px); /* Additional blur effect on days */
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .rdrDay {

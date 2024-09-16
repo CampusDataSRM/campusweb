@@ -45,6 +45,11 @@ const studentPageLink = [
         icon: "/whatsinmess_bulletpoint.svg",
     },
     {
+        name: "About us",
+        link: "/about",
+        icon: "/icons/us/primary.svg",
+    },
+    {
         name: "Logout",
         link: "/",
         icon: "/icons/logout/primary.svg",
