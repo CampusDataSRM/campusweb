@@ -88,6 +88,15 @@ const EventForm = () => {
     if (name === "OD" || name === "refreshment") {
       setEvent((prevEvent) => ({ ...prevEvent, [name]: !prevEvent[name] }));
     } else if (type === "file") {
+      const file = e.target.files[0];
+      if (file) {
+        const fileSize = file.size;
+        if (fileSize > 610*1024) {
+          alert("File size exceeds 600kb");
+          return;
+        }
+        setClub({ ...club, [e.target.name]: file });
+      }
       setEvent((prevEvent) => ({ ...prevEvent, image: files[0] }));
     } else {
       setEvent((prevEvent) => ({ ...prevEvent, [name]: value }));
@@ -390,14 +399,22 @@ const ClubSignUpForm = () => {
   };
 
   const onFormChange = (e) => {
-    if (e.target.name == "isRecruiting") {
+    if (e.target.name === "isRecruiting") {
       setClub({ ...club, [e.target.name]: !club[e.target.name] });
-    } else if (e.target.type == "file") {
-      setClub({ ...club, [e.target.name]: e.target.files[0] });
-    } else if (e.target.name == "description") {
+    } else if (e.target.type === "file") {
+      const file = e.target.files[0];
+      if (file) {
+        const fileSize = file.size;
+        if (fileSize > 205*1024) {
+          alert("File size exceeds 200kb");
+          return;
+        }
+        setClub({ ...club, [e.target.name]: file });
+      }
+    } else if (e.target.name === "description") {
       setDescriptionLength(e.target.value.length);
       setClub({ ...club, [e.target.name]: e.target.value });
-    } else if (e.target.name == "password") {
+    } else if (e.target.name === "password") {
       setPasswordLength(e.target.value.length);
       setClub({ ...club, [e.target.name]: e.target.value });
     } else {
