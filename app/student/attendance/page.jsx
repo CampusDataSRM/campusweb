@@ -7,8 +7,10 @@ import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getStudentData } from "@/functions/api/student";
+import { useRouter } from "next/navigation";
 
 const Attendance = () => {
+  const router = useRouter();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {

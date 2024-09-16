@@ -9,8 +9,10 @@ import {
   pageNames,
   studentPageLink,
 } from "@/components/global/navbar/page-link";
+import { useRouter } from "next/navigation";
 
 const Events = () => {
+  const router = useRouter();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [studentID, setStudentID] = useState("");

@@ -8,8 +8,10 @@ import Loader from "@/components/global/loader";
 import LineChart from "@/components/global/graph/line";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
+import { useRouter } from "next/navigation";
 
 const Marks = () => {
+  const router = useRouter();
   const [testreport, setTestreport] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {

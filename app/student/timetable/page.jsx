@@ -8,9 +8,10 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getTimetableData } from "@/functions/api/student";
+import { useRouter} from "next/navigation";
 
 const Timetable = () => {
-
+  const router = useRouter();
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);

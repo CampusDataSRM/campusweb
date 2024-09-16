@@ -5,8 +5,10 @@ import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
+import { useRouter } from "next/navigation";
 
 const Calendar = () => {
+  const router = useRouter();
   const [planner, setPlanner] = useState();
   const monthArray = [
     "January",

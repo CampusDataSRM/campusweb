@@ -18,8 +18,10 @@ import {
   getStudentData,
   getTimetableData,
 } from "@/functions/api/student";
+import { useRouter } from "next/navigation";
 
 const Planner = () => {
+  const router = useRouter();
   // const [planner, setPlanner] = useState();
   const [plannerData, setPlannerData] = useState();
   const [startDate, setStartDate] = useState(

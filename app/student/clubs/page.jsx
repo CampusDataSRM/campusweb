@@ -10,8 +10,11 @@ import {
   studentPageLink,
 } from "@/components/global/navbar/page-link";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Clubs = () => {
+  const router = useRouter();
   const [clubData, setClubData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [studentID, setStudentID] = useState("");

@@ -6,8 +6,11 @@ import SectionTitle from "@/components/global/section-title";
 import ClubCard from "@/components/global/club/club-card";
 import EventCard from "@/components/global/events/event-card";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const ViewClub = () => {
+  const router = useRouter();
   const club = useSearchParams();
   const clubID = club.get("id");
   const [clubData, setClubData] = useState([]);
@@ -15,6 +18,9 @@ const ViewClub = () => {
   const [studentID, setStudentID] = useState("");
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const student = JSON.parse(localStorage.getItem("studentData"));
     setStudentID(student.registrationNumber);
     const requestOptions = {
