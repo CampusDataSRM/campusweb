@@ -9,6 +9,7 @@ import {
   pageNames,
   studentPageLink,
 } from "@/components/global/navbar/page-link";
+import Link from "next/link";
 
 const Clubs = () => {
   const [clubData, setClubData] = useState([]);
@@ -37,7 +38,7 @@ const Clubs = () => {
     <>
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Clubs")} />
-        <main className="px-5">
+        <main className="px-3">
           <SectionTitle
             title="Clubs"
             icon={"/icons/user-group/secondary.svg"}
@@ -107,9 +108,7 @@ const Clubs = () => {
                       club={club}
                       clubID={club?.id}
                       checkLiked={
-                        club.likedby ?
-                          club.likedby.includes(studentID)
-                          : false
+                        club.likedby ? club.likedby.includes(studentID) : false
                       }
                     />
                   ))
@@ -120,6 +119,20 @@ const Clubs = () => {
                   </span>
                 </div>
               )}
+              <div className="theme_box_bg py-6 w-full flex flex-col gap-4 px-1">
+                <span className="text-theme_text_normal/80 font-norma tracking-wide text-lg flex justify-center">
+                  More Clubs Joining Soon...
+                </span>
+                <Link
+                  className="text-theme_text_primary font-medium tracking-wide flex flex-wrap gap-2 justify-center"
+                  href={{
+                    pathname: "/client/signup/club",
+                    query: { type: "clubSignUp" },
+                  }}
+                >
+                  Are you a Club Organiser? <span className="text-theme_secondary">Register Now!</span>
+                </Link>
+              </div>
             </div>
           )}
         </main>

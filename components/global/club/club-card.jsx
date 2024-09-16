@@ -78,7 +78,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
               <div
                 name={tag}
                 key={index}
-                className={`theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full`}
+                className={(tag.length == 0) ? `hidden` : `theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full`}
               >
                 {tag}
               </div>

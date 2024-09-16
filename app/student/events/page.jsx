@@ -5,7 +5,10 @@ import Navbar from "@/components/global/navbar";
 import Loader from "@/components/global/loader";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
-import { pageNames, studentPageLink } from "@/components/global/navbar/page-link";
+import {
+  pageNames,
+  studentPageLink,
+} from "@/components/global/navbar/page-link";
 
 const Events = () => {
   const [eventData, setEventData] = useState([]);
@@ -37,7 +40,7 @@ const Events = () => {
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={pageNames.filter(item => item !== "Events")} />
+        <Navbar items={pageNames.filter((item) => item !== "Events")} />
         <main className="px-4">
           <SectionTitle title="Events" icon={"/icons/event/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">
@@ -122,6 +125,13 @@ const Events = () => {
                 <div className="theme_box_bg py-6 w-full">
                   <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
                     No Events to Showcase
+                  </span>
+                </div>
+              )}
+              {eventData?.events?.length === 0 && (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    Events Coming Soon...
                   </span>
                 </div>
               )}
