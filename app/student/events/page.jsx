@@ -124,7 +124,7 @@ const Events = () => {
               ) : (
                 <div className="theme_box_bg py-6 w-full">
                   <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
-                    No Events to Showcase
+                    Failed to load Events
                   </span>
                 </div>
               )}

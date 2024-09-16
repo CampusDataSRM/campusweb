@@ -102,6 +102,7 @@ const Clubs = () => {
                     )
                       return e;
                   })
+                  .sort((a, b) => b.popularity - a.popularity)
                   .map((club, index) => (
                     <ClubCard
                       key={index}
@@ -115,7 +116,7 @@ const Clubs = () => {
               ) : (
                 <div className="theme_box_bg py-6 w-full">
                   <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
-                    No Clubs to Showcase
+                    Failed to load Clubs
                   </span>
                 </div>
               )}
