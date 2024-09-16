@@ -78,18 +78,42 @@ const ClubLogin = () => {
         setLoading(false);
       });
   };
+  const [passwordVisible, setPasswordVisible] = useState(false);
   return (
     <>
       <LoginLayout>
         <form className={"grid grid-cols-1 gap-4 mt-3"} name="Club Login Form">
           {clubLoginFields.map((field, index) => (
-            <div key={index}>
+            <div key={index} className="flex gap-1">
               <input
-                type={field.type}
+                type={
+                  field.type == "password" && passwordVisible
+                    ? "text"
+                    : field.type
+                }
                 placeholder={field.placeholder}
                 onChange={field.onChange}
                 className="theme_box_bg drop-shadow-lg tracking-wider py-5 px-4 w-full text-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm placeholder:tracking-wide focus:border focus:border-theme_text_primary"
               />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPasswordVisible(!passwordVisible);
+                }}
+                className={field.type == "password" ? "theme_box_bg px-4" : "hidden"}
+              >
+                {passwordVisible ? (
+                  <img
+                    src="/icons/visiblity/secondary/off.svg"
+                    className="w-5"
+                  />
+                ) : (
+                  <img
+                    src="/icons/visiblity/secondary/on.svg"
+                    className="w-5"
+                  />
+                )}
+              </button>
             </div>
           ))}
           <div>

@@ -1,4 +1,4 @@
-  "use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -25,8 +25,8 @@ const StudentLogin = () => {
       type: "text",
       placeholder: "SRM Email / Net ID",
       onChange: (e) => {
-        if (e.target.value.includes("@")) setUserid(e.target.value);
-        else setUserid(e.target.value + "@srmist.edu.in");
+        if (e.target.value.includes("@")) setUserid(e.target.value.trim());
+        else setUserid(e.target.value.trim() + "@srmist.edu.in");
       },
     },
     {
@@ -76,6 +76,8 @@ const StudentLogin = () => {
       .catch((error) => console.error(error));
   };
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   return (
     <>
       <LoginLayout>
@@ -84,13 +86,36 @@ const StudentLogin = () => {
           name="Student Login Form"
         >
           {studentLoginFields.map((field, index) => (
-            <div key={index}>
+            <div key={index} className="flex gap-1">
               <input
-                type={field.type}
+                type={
+                  field.type == "password" && passwordVisible
+                    ? "text"
+                    : field.type
+                }
                 placeholder={field.placeholder}
                 onChange={field.onChange}
                 className="theme_box_bg drop-shadow-lg tracking-wider py-5 px-4 w-full text-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm placeholder:tracking-wide focus:border focus:border-theme_text_primary"
               />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPasswordVisible(!passwordVisible);
+                }}
+                className={field.type == "password" ? "theme_box_bg px-4" : "hidden"}
+              >
+                {passwordVisible ? (
+                  <img
+                    src="/icons/visiblity/secondary/off.svg"
+                    className="w-5"
+                  />
+                ) : (
+                  <img
+                    src="/icons/visiblity/secondary/on.svg"
+                    className="w-5"
+                  />
+                )}
+              </button>
             </div>
           ))}
           <div>
