@@ -13,6 +13,9 @@ const Attendance = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token")) {
+      router.push("/client/login/student");
+    }
     const result = JSON.parse(localStorage.getItem("studentData"));
 
     if (!result) {

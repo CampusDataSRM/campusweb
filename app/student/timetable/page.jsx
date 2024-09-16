@@ -18,6 +18,9 @@ const Timetable = () => {
   const [currentDayOrder, setCurrentDayOrder] = useState(null);
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
     const myHeaders = new Headers();

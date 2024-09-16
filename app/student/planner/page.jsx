@@ -60,6 +60,9 @@ const Planner = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const studentData = localStorage.getItem("studentData");
     if (studentData) {
       setUserJsonData(JSON.parse(studentData));

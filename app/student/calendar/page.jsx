@@ -29,6 +29,9 @@ const Calendar = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token")) {
+      router.push("/client/login/student");
+    }
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 

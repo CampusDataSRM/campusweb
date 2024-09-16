@@ -17,6 +17,9 @@ const Events = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const student = JSON.parse(localStorage.getItem("studentData"));
     setStudentID(student.registrationNumber);
     const requestOptions = {
