@@ -380,7 +380,7 @@ const ClubSignUpForm = () => {
   };
   return (
     <>
-      <div className="px-3 py-5 sm:hidden">
+      <div className="px-3 py-5 sm:hidden max-h-screen overflow-auto">
         <div className="py-5">
           <img
             src="/logo.svg"
