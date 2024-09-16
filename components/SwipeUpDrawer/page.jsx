@@ -97,7 +97,7 @@ export default function SwipeUpDrawer({
                   className="flex justify-stretch py-4 px-2 bg-[#071d3a] rounded-md gap-4 items-center"
                 >
                   <img src={item.icon} alt={item.name} className="h-5 w-auto" />
-                  <span className="text-white font-semibold">{item.name}</span>
+                  <span className="text-white font-medium">{item.name}</span>
                 </button>
               ))}
           </div>

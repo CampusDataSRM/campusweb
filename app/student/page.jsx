@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { studentPageLink } from "@/components/global/navbar/page-link";
 import DashboardTimetable from "@/components/student/timetable/dashboard";
 import { toTitleCase } from "@/functions/title-case-convert";
+import InstallButton from "@/components/global/InstallButton";
 
 const Student = () => {
   const router = useRouter();
@@ -72,6 +73,7 @@ const Student = () => {
   };
   return (
     <>
+    <InstallButton />
       <div className="py-4 max-h-screen overflow-auto">
         <div className="py-5">
           <img
