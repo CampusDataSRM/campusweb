@@ -9,6 +9,7 @@ import 'react-date-range/dist/theme/default.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import Head from "next/head";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,17 +27,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Head>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-C3JDRSD2G9"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
+      <body className={inter.className}>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-C3JDRSD2G9" />
+        <Script>
+          {`window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments)}
           gtag('js', new Date());
 
-          gtag('config', 'G-C3JDRSD2G9');
-        </script>
-      </Head>
-      <body className={inter.className}>
+          gtag('config', 'G-C3JDRSD2G9');`}
+        </Script>
         <Suspense fallback={<Loader />}>
           <Image
             src="/bg_vector.png"
