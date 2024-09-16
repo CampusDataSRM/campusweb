@@ -23,8 +23,6 @@ const EventCarousel = () => {
       .then((response) => response.json())
       .then((result) => {
         setEvents(result.data);
-        console.log(result.data);
-        
         setLoading(false);
       })
       .catch((error) => {

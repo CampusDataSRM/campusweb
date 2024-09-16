@@ -84,7 +84,7 @@ const Clubs = () => {
               <Loader />
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-4">
               {clubData?.clubs ? (
                 clubData?.clubs
                   .filter((e) => {

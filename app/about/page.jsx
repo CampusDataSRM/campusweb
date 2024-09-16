@@ -1,0 +1,5 @@
+const AboutTeam = () => {
+    return (
+        <></>
+    );
+};

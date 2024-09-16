@@ -67,8 +67,10 @@ const ClubLogin = () => {
           Cookies.set("clubAuth", result.token, { expires: 2 });
           router.push("/club/admin/dashboard");
         } else {
-          alert("Invalid credentials");
-          setLoading(false);
+          if (result.status === "fail") {
+            alert(result.message);
+            setLoading(false);
+          }
         }
       })
       .catch((error) => {

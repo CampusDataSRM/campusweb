@@ -145,7 +145,7 @@ const Dashboard = () => {
           <div>
             <SectionTitle title="Events" icon="/icons/event/secondary.svg" />
             <div className="flex flex-wrap justify-center gap-3 pb-1">
-              {club?.events &&
+              {club?.events ? (
                 club.events
                   .slice(0)
                   .reverse()
@@ -156,15 +156,32 @@ const Dashboard = () => {
                       key={index}
                       disabledPopularity={true}
                     />
-                  ))}
+                  ))
+              ) : (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    Failed to load Events
+                  </span>
+                </div>
+              )}
+              {club?.events?.length === 0 && (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    No Events to Showcase
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="mt-6">
-          <SectionTitle title="Club Standings" icon="/icons/event/secondary.svg" />
+            <SectionTitle
+              title="Club Standings"
+              icon="/icons/event/secondary.svg"
+            />
             <div className="grid grid-cols-2 gap-2 -mt-3">
               {clubStats.map((stat, index) => (
                 <div
-                  className="theme_box_bg rounded-md p-4 text-center flex flex-col justify-center items-center gap-4" 
+                  className="theme_box_bg rounded-md p-4 text-center flex flex-col justify-center items-center gap-4"
                   key={index}
                 >
                   <div className="text-theme_text_normal flex justify-center gap-2 text-xl text-bold">

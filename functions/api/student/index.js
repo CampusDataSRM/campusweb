@@ -9,6 +9,7 @@ const getStudentData = async (authToken) => {
     method: "GET",
     headers: myHeaders,
     redirect: "follow",
+    cache: "no-store",
   };
 
   try {

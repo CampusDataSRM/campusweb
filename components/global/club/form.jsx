@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authExpiry } from "@/functions/auth-expiry";
 import Link from "next/link";
@@ -366,6 +366,29 @@ const ClubSignUpForm = () => {
   };
   const [descriptionLength, setDescriptionLength] = useState(0);
 
+  const [passwordLength, setPasswordLength] = useState(0);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
+  const checkDisabled = () => {
+    if (passwordLength < 8 || club.password != club.confirmPassword) {
+      setSubmitDisabled(true);
+    } else if (
+      club.name.length == 0 ||
+      club.email.length == 0 ||
+      club.description.length == 0 ||
+      club.password.length == 0 ||
+      club.confirmPassword.length == 0
+    ) {
+      setSubmitDisabled(true);
+    } else if (club.logo == null) {
+      setSubmitDisabled(true);
+    } else if (!club.email.includes("@srmist.edu.in")) {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
+  };
+
   const onFormChange = (e) => {
     if (e.target.name == "isRecruiting") {
       setClub({ ...club, [e.target.name]: !club[e.target.name] });
@@ -374,10 +397,20 @@ const ClubSignUpForm = () => {
     } else if (e.target.name == "description") {
       setDescriptionLength(e.target.value.length);
       setClub({ ...club, [e.target.name]: e.target.value });
+    } else if (e.target.name == "password") {
+      setPasswordLength(e.target.value.length);
+      setClub({ ...club, [e.target.name]: e.target.value });
     } else {
       setClub({ ...club, [e.target.name]: e.target.value });
     }
   };
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    checkDisabled();
+  }, [club]);
+
   return (
     <>
       <div className="px-3 py-5 sm:hidden max-h-screen overflow-auto">
@@ -404,12 +437,14 @@ const ClubSignUpForm = () => {
           <form className="grid grid-cols-1 gap-4">
             <button
               className={`${defaultStyle} min-h-40`}
-              onClick={() => fileUpload.current.click()}
+              onClick={(e) => {
+                fileUpload.current.click();
+              }}
             >
               <div className="flex flex-col justify-center items-center h-full">
                 <input
                   type="file"
-                  placeholder="Event Image"
+                  placeholder="Club Logo"
                   className={`hidden`}
                   name="logo"
                   ref={fileUpload}
@@ -421,6 +456,8 @@ const ClubSignUpForm = () => {
                     <img src="/icons/camera/secondary.svg" className="w-7" />
                     <span className="text-theme_text_primary/80 text-sm py-2">
                       Upload Banner (1:1 Ratio preffered)
+                      <br />
+                      (Required)
                     </span>
                   </>
                 )}
@@ -435,7 +472,7 @@ const ClubSignUpForm = () => {
             </button>
             <input
               type="text"
-              placeholder="Club Name"
+              placeholder="Club Name (required)"
               className={`${defaultStyle}`}
               name="name"
               onChange={onFormChange}
@@ -443,37 +480,78 @@ const ClubSignUpForm = () => {
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Email (required)"
               className={`${defaultStyle}`}
               name="email"
               onChange={onFormChange}
               required
             />
+            {club.email.length > 0 &&
+              !club.email.includes("@srmist.edu.in") && (
+                <div className="flex gap-2 px-1">
+                  <img src="/icons/warning/red-nofill.svg" className="w-4" />
+                  <span className="text-theme_red text-sm font-medium tracking-wider">
+                    Use your SRM Email ID
+                  </span>
+                </div>
+              )}
+            <div className="flex gap-1">
+              <input
+                type={passwordVisible ? "text" : "password"}
+                placeholder="Password (required)"
+                className={`${defaultStyle} flex-grow`}
+                name="password"
+                onChange={onFormChange}
+                required
+              />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPasswordVisible(!passwordVisible);
+                }}
+                className="theme_box_bg py-3 px-4"
+              >
+                {passwordVisible ? (
+                  <img
+                    src="/icons/visiblity/secondary/off.svg"
+                    className="w-5"
+                  />
+                ) : (
+                  <img
+                    src="/icons/visiblity/secondary/on.svg"
+                    className="w-5"
+                  />
+                )}
+              </button>
+            </div>
+            {passwordLength > 0 && passwordLength < 8 && (
+              <div className="flex gap-2 px-1">
+                <img src="/icons/warning/red-nofill.svg" className="w-4" />
+                <span className="text-theme_red text-sm font-medium tracking-wider">
+                  Password must be atleast 8 characters long
+                </span>
+              </div>
+            )}
             <input
               type="password"
-              placeholder="Password"
-              className={`${defaultStyle}`}
-              name="password"
-              onChange={onFormChange}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
+              placeholder="Confirm Password (required)"
               className={`${defaultStyle}`}
               name="confirmPassword"
               onChange={onFormChange}
               required
             />
             {club.password != club.confirmPassword && (
-              <span className="text-theme_red text-sm font-sans">
-                The password and password conformation mismatch.
-              </span>
+              <div className="flex gap-2 px-1">
+                <img src="/icons/warning/red-nofill.svg" className="w-4" />
+                <span className="text-theme_red text-sm font-medium tracking-wider">
+                  The confirm password does not match
+                </span>
+              </div>
             )}
             <div className={`${defaultStyle}`}>
               <textarea
                 type="text"
-                placeholder="Description"
+                placeholder="Description (required)"
                 className={`bg-transparent w-full h-32 caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm`}
                 name="description"
                 maxLength={160}
@@ -505,7 +583,7 @@ const ClubSignUpForm = () => {
               </label>
             </div>
             <div className="grid grid-cols-1 gap-2 px-1">
-              <div className="text-theme_text_primary flex justify-start gap-2 content-center">
+              <div className="text-theme_text_primary flex items-center justify-start gap-2 content-center">
                 Labels
                 <button>
                   {" "}
@@ -517,27 +595,24 @@ const ClubSignUpForm = () => {
               </div>
               <input
                 type="text"
-                placeholder="Label 1"
+                placeholder="Label 1 (optional)"
                 className={`${defaultStyle}`}
                 name="label1"
                 onChange={onFormChange}
-                required
               />
               <input
                 type="text"
-                placeholder="Label 2"
+                placeholder="Label 2 (optional)"
                 className={`${defaultStyle}`}
                 name="label2"
                 onChange={onFormChange}
-                required
               />
               <input
                 type="text"
-                placeholder="Label 3"
+                placeholder="Label 3 (optional)"
                 className={`${defaultStyle}`}
                 name="label3"
                 onChange={onFormChange}
-                required
               />
             </div>
             <span className="flex items-start h-full text-xs py-2 gap-2 text-theme_primary">
@@ -545,37 +620,48 @@ const ClubSignUpForm = () => {
               By signing up you agree to the Campus Web's Terms and Conditions
               and Privacy Policy.
             </span>
-            <button
-              type="button"
-              className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
-              onClick={handleSubmit}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <svg
-                  className="animate-spin mx-auto h-7 w-7 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              ) : (
-                "Join the Campus Web"
-              )}
-            </button>
+            {submitDisabled ? (
+              <button
+                type="button"
+                className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-white font-semibold tracking-wide"
+                onClick={() => handleSubmit}
+                disabled
+              >
+                Join the Campus Web
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
+                onClick={handleSubmit}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <svg
+                    className="animate-spin mx-auto h-7 w-7 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Join the Campus Web"
+                )}
+              </button>
+            )}
           </form>
         </div>
         <div className={verification ? "" : "hidden"}>
@@ -611,7 +697,7 @@ const ClubSignUpForm = () => {
           >
             <path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z" />
           </svg>
-          <Link href="/" className="font-mono">
+          <Link href="/" className="font-semibold tracking-wider">
             Back to Sign In
           </Link>
         </div>
