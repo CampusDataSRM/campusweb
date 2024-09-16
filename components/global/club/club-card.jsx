@@ -85,8 +85,8 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
             ))}
         </div>
         <div className="flex justify-between items-end">
-          <div className="text-base text-theme_text_primary flex gap-2 items-center">
-            <span>Popularity: {clubPopularity}</span>
+          <div className="text-base text-theme_text_primary flex items-center">
+            <span>Popularity: {clubPopularity}</span><span className="italic">x</span>
             <button
               className="pl-1"
               onClick={actionLikeUnlike}

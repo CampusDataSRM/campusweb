@@ -86,8 +86,8 @@ const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => 
           )}
         </div>
         <div className="flex justify-between items-center px-2 py-3 mt-1">
-          <div className="text-base text-theme_text_primary flex gap-2 items-center">
-            <span>Popularity: {eventPopularity}</span>
+          <div className="text-base text-theme_text_primary flex items-center">
+            <span>Popularity: {eventPopularity}</span><span className="italic">x</span>
             <button
               className="pl-1"
               onClick={actionLikeUnlike}
