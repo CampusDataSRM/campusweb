@@ -49,8 +49,8 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
       <div className="w-full flex flex-col gap-3 theme_box_bg rounded-xl p-3">
         <div className="flex justify-between items-start gap-4 text-theme_text_normal font-light pb-3">
           <div className="grid grid-cols-1 gap-2 w-3/4">
-            <div className="text-xl tracking-wider">
-              {club?.name.toUpperCase()}
+            <div className="text-xl tracking-wider font-bold">
+              {club?.name}
             </div>
             <div className="text-sm tracking-wide pr-6">
               {club?.description}
