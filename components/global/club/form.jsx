@@ -95,7 +95,13 @@ const EventForm = () => {
           alert("File size exceeds 600kb");
           return;
         }
-        setClub({ ...club, [e.target.name]: file });
+
+        const fileType = file.type;
+        if (!fileType.startsWith("image/")) {
+          alert("Invalid file type. Please upload an image.");
+          return;
+        }
+        setEvent({ ...event, [e.target.name]: file });
       }
       setEvent((prevEvent) => ({ ...prevEvent, image: files[0] }));
     } else {
@@ -409,7 +415,23 @@ const ClubSignUpForm = () => {
           alert("File size exceeds 200kb");
           return;
         }
-        setClub({ ...club, [e.target.name]: file });
+        const fileType = file.type;
+        if (!fileType.startsWith("image/")) {
+          alert("Invalid file type. Please upload an image.");
+          return;
+        }
+
+        const image = new Image();
+        image.src = URL.createObjectURL(file);
+        image.onload = function() {
+          const width = this.width;
+          const height = this.height;
+          if (width != height) {
+            alert("Image should be of 1:1 ratio.");
+            return;
+          }
+          setClub({ ...club, [e.target.name]: file });
+        };
       }
     } else if (e.target.name === "description") {
       setDescriptionLength(e.target.value.length);
@@ -430,7 +452,7 @@ const ClubSignUpForm = () => {
 
   return (
     <>
-      <div className="px-3 py-5 max-h-screen overflow-auto">
+      <div className="px-3 py-5 sm:hidden max-h-screen overflow-auto">
         <div className="py-5">
           <img
             src="/logo.svg"
