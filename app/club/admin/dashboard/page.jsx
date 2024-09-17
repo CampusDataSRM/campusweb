@@ -64,15 +64,15 @@ const Dashboard = () => {
     {
       name: "Popularity",
       icon: "/icons/star.svg",
-      value: club?.popularity || 0,
+      value: club?.club?.popularity || 0,
     },
     { name: "Events", icon: null, value: club?.events?.length || 0 },
   ];
   const sessionLogout = () => {
-    console.log("Logging out");
     Cookies.remove("clubAuth");
     router.push("/");
   };
+  
   return (
     <>
       <div className="px-3 max-h-screen overflow-auto">
