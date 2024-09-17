@@ -96,8 +96,8 @@ export default function SwipeUpDrawer({
                   }
                   className="flex justify-stretch py-4 px-2 bg-[#071d3a] rounded-md gap-4 items-center"
                 >
-                  <img src={item.icon} alt={item.name} className="h-5 w-auto" />
-                  <span className="text-white font-medium">{item.name}</span>
+                  <img src={item.icon} alt={item.name} className={item.name.includes("About us") ? "h-4" : "h-5 w-auto"} />
+                  <span className={`text-white font-medium ${item.name.includes("About us") && "-mx-1"}`}>{item.name}</span>
                 </button>
               ))}
           </div>

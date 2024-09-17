@@ -18,8 +18,10 @@ import {
   getStudentData,
   getTimetableData,
 } from "@/functions/api/student";
+import { useRouter } from "next/navigation";
 
 const Planner = () => {
+  const router = useRouter();
   // const [planner, setPlanner] = useState();
   const [plannerData, setPlannerData] = useState();
   const [startDate, setStartDate] = useState(
@@ -60,6 +62,9 @@ const Planner = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const studentData = localStorage.getItem("studentData");
     if (studentData) {
       setUserJsonData(JSON.parse(studentData));

@@ -8,14 +8,21 @@ import Loader from "@/components/global/loader";
 import LineChart from "@/components/global/graph/line";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
+import { useRouter } from "next/navigation";
 
 const Marks = () => {
+  const router = useRouter();
   const [testreport, setTestreport] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    setLoading(true);
+    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+      router.push("/client/login/student");
+    }
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
     setTestreport(dataStudent?.testPerformances);
+    setLoading(false);
   }, []);
 
   const percentages = (obj) => {
