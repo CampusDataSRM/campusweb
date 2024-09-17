@@ -2,9 +2,17 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { useState } from "react";
 
-const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => {
-  const [eventPopularity, setEventPopularity] = useState(event?.popularity ? event?.popularity : 0);
-  
+const EventCard = ({
+  event,
+  club,
+  eventID,
+  checkLiked,
+  disabledPopularity,
+}) => {
+  const [eventPopularity, setEventPopularity] = useState(
+    event?.popularity ? event?.popularity : 0
+  );
+
   const [userClicked, setUserClicked] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(checkLiked);
 
@@ -87,11 +95,12 @@ const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => 
         </div>
         <div className="flex justify-between items-center px-2 py-3 mt-1">
           <div className="text-base text-theme_text_primary flex items-center">
-            <span>Popularity: {eventPopularity}</span><span className="italic">x</span>
+            <span>Popularity: {eventPopularity}</span>
+            <span className="italic">x</span>
             <button
               className="pl-1"
               onClick={actionLikeUnlike}
-              disabled={disabledPopularity ? true : userClicked} 
+              disabled={disabledPopularity ? true : userClicked}
             >
               {userClicked ? (
                 <>
@@ -118,11 +127,18 @@ const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => 
                 </>
               ) : (
                 <>
-                  {" "}
-                  {currentStatus ? (
-                    <img src="/icons/star/gold-solid.svg" alt="Not-like" />
+                  {disabledPopularity ? (
+                    <>
+                      <img src="/icons/star/gold-solid.svg" alt="Not-like" />
+                    </>
                   ) : (
-                    <img src="/icons/star/gold.svg" alt="like" />
+                    <>
+                      {currentStatus ? (
+                        <img src="/icons/star/gold-solid.svg" alt="Not-like" />
+                      ) : (
+                        <img src="/icons/star/gold.svg" alt="like" />
+                      )}
+                    </>
                   )}
                 </>
               )}

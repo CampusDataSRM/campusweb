@@ -63,7 +63,7 @@ const Dashboard = () => {
   const clubStats = [
     {
       name: "Popularity",
-      icon: "/icons/star.svg",
+      icon: "/icons/star/gold-solid.svg",
       value: club?.club?.popularity || 0,
     },
     { name: "Events", icon: null, value: club?.events?.length || 0 },
@@ -175,7 +175,7 @@ const Dashboard = () => {
           <div className="mt-6">
             <SectionTitle
               title="Club Standings"
-              icon="/icons/event/secondary.svg"
+              icon="/icons/trophy/secondary.svg"
             />
             <div className="grid grid-cols-2 gap-2 -mt-3">
               {clubStats.map((stat, index) => (
@@ -183,8 +183,8 @@ const Dashboard = () => {
                   className="theme_box_bg rounded-md p-4 text-center flex flex-col justify-center items-center gap-4"
                   key={index}
                 >
-                  <div className="text-theme_text_normal flex justify-center gap-2 text-xl text-bold">
-                    {stat.value}
+                  <div className="text-theme_text_normal flex justify-center items-center gap-1 text-xl text-bold">
+                    {`${stat.value} ${stat.icon ? 'x' :''}`}
                     {stat.icon && <img src={stat.icon} />}
                   </div>
                   <div className="text-theme_text_primary font-medium tracking-wide text-sm">
