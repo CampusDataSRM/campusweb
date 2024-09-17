@@ -11,7 +11,7 @@ import { teamData, contactData } from "@/components/global/team/data";
 const AboutTeam = () => {
   return (
     <>
-      <div className="max-h-screen overflow-auto sm:hidden">
+      <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "About us")} />
         <main className="px-3 pb-3">
           <div className="flex justify-start items-center gap-3 text-xl pt-6 pb-3 font-medium">

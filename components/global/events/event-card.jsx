@@ -50,7 +50,7 @@ const EventCard = ({ event, club, eventID, checkLiked, disabledPopularity }) => 
           <img
             src={event?.banner_url}
             alt={event?.title}
-            className="rounded-t-xl w-full max-h-[250px]"
+            className="rounded-t-xl w-full object-contain max-h-[250px]"
           />
         </div>
         <div className="flex justify-between px-3 mt-5 tracking-wider">

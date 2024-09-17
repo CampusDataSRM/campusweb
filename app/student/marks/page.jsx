@@ -47,7 +47,7 @@ const Marks = () => {
 
   return (
     <>
-      <div className="max-h-screen overflow-auto sm:hidden">
+      <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Marks")} />
         <main className="px-3">
           <SectionTitle title="Marks" />

@@ -82,7 +82,7 @@ const Student = () => {
             className="h-9 w-auto mx-auto"
           />
         </div>
-        <div className="sm:hidden px-[10px]">
+        <div className="px-[10px]">
           <div className="flex justify-between items-center px-1 mt-3">
             <div className="flex gap-2 items-center">
               <span

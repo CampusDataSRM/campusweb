@@ -26,7 +26,7 @@ const ClubProfile = () => {
   const [active, setActive] = useState(profileSection.map((ele) => ele.name));
   return (
     <>
-      <main className="max-h-screen overflow-auto sm:hidden px-3 pb-5">
+      <main className="max-h-screen overflow-auto px-3 pb-5">
         <div className="pt-10 pb-5">
           <img
             src="/logo.svg"

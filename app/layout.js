@@ -3,11 +3,11 @@ import "./globals.css";
 import Image from "next/image";
 import Loader from "@/components/global/loader";
 import { Suspense } from "react";
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
 import Script from "next/script";
 
@@ -43,9 +43,18 @@ export default function RootLayout({ children }) {
             layout="fill"
             className="filter blur-[60px] fixed top-0 left-0 -z-50"
           />
-          <div className="sm:hidden">{children}
-            <Analytics />
-            <SpeedInsights />
+          <div className="sm:flex sm:justify-center">
+            <div
+              className="md:w-[630px]"
+              style={{
+                scrollbarColor: "rgba(0, 0, 0, 0.0) rgba(0, 0, 0, 0.0)",
+                scrollbarWidth: "thin",
+              }}
+            >
+              {children}
+              <Analytics />
+              <SpeedInsights />
+            </div>
           </div>
         </Suspense>
       </body>

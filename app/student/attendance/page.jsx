@@ -38,7 +38,7 @@ const Attendance = () => {
   }, []);
   return (
     <>
-      <div className="pb-2 h-screen overflow-y-auto sm:hidden">
+      <div className="pb-2 h-screen overflow-y-auto">
         <Navbar items={pageNames.filter((item) => item !== "Attendance")} />
         <div className="px-3">
           <SectionTitle title="Attendance" />

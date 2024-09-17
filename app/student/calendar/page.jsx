@@ -74,7 +74,7 @@ const Calendar = () => {
   }, [currentMonthID, planner]);
   return (
     <>
-      <div className="max-h-screen overflow-auto sm:hidden">
+      <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Calendar")} />
         <main className="px-3 pb-3">
           <SectionTitle

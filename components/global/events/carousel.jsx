@@ -90,7 +90,7 @@ const EventCarousel = () => {
                             <img
                               src={event.banner_url}
                               alt={`slide-${index}`}
-                              className="rounded-t-lg w-[370px] h-[175px]"
+                              className="rounded-t-lg w-[370px] h-[175px] sm:w-full sm:h-[225px]"
                               onClick={() => handleEventClick(event.website_link)}
                             />
                             {/* <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div> */}

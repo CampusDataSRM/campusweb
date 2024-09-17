@@ -68,7 +68,6 @@ const Dashboard = () => {
     },
     { name: "Events", icon: null, value: club?.events?.length || 0 },
   ];
-
   const sessionLogout = () => {
     console.log("Logging out");
     Cookies.remove("clubAuth");

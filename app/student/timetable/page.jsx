@@ -50,7 +50,7 @@ const Timetable = () => {
 
   return (
     <>
-      <div className="max-h-screen overflow-auto sm:hidden">
+      <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter(item => item !== "Timetable")} />
         <main className="px-4">
           <SectionTitle title="Timetable" />

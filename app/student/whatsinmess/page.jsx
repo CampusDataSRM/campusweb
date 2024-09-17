@@ -126,7 +126,7 @@ const WhatsinmessPage = () => {
   }, [menu, currentDay, currentTime]);
 
   return (
-    <div className="max-h-screen overflow-auto sm:hidden">
+    <div className="max-h-screen overflow-auto">
       <Navbar items={pageNames.filter(item => item !== "WhatsInMess")} />
 
       <div className="px-4">

@@ -62,7 +62,7 @@ export default function SwipeUpDrawer({
 
   return (
     <div
-      className={`sticky bottom-0 h-auto overflow-hidden w-screen max-w-4xl ${
+      className={`sticky bottom-0 h-auto overflow-hidden w-screen max-w-4xl md:w-[630px] ${
         isDrawer ? "z-50" : "-z-50"
       }`}
       ref={ref}
