@@ -145,7 +145,7 @@ const UpdateClubProfile = () => {
                   <>
                     <img src="/icons/camera/secondary.svg" className="w-7" />
                     <span className="text-theme_text_primary/80 text-sm py-2">
-                      Upload Banner (1:1 Ratio preffered)
+                      Upload Logo (1:1 Ratio preffered)
                     </span>
                   </>
                 ))}
