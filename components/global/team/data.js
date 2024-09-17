@@ -78,10 +78,10 @@ const contactData = [
   {
     title: "The Campus Web Socials",
     links: [
-      {
-        name: "linkedin",
-        link: "",
-      },
+      // {
+      //   name: "linkedin",
+      //   link: "",
+      // },
       { name: "instagram", link: "https://www.instagram.com/thecampusweb/" },
     ],
   },
@@ -90,9 +90,9 @@ const contactData = [
     links: [
       {
         name: "whatsapp",
-        link: "",
+        link: "https://chat.whatsapp.com/CPzWkEnCXKEH897pgiNcMy",
       },
-      { name: "discord", link: "" },
+      // { name: "discord", link: "" },
     ],
   },
 ];
