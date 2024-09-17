@@ -20,7 +20,7 @@ const AboutTeam = () => {
           </div>
           <div className="theme_box_bg w-full py-6 px-4">
             <span className="text-theme_text_normal/80 tracking-wide flex justify-start">
-              We are still thinking about who we are...
+            We are Team loopify, still figuring out who we are and what we stand for. 
             </span>
           </div>
           <div className="mt-3">
