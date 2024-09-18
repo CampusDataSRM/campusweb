@@ -146,7 +146,7 @@ const UpdateClubProfile = () => {
                 name="logo"
                 ref={fileUpload}
                 onChange={onFormChange}
-                accept="image/*"
+                accept="image/png, image/jpeg, image/jpg"
               />
               {/* Image display logic based on logo state */}
               {club.logo == null ||

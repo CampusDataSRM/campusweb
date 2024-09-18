@@ -30,6 +30,22 @@ const EventForm = () => {
     label3: "",
   });
 
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const checkDisabled = () => {
+    if (
+      event.title.length == 0 ||
+      event.startDate.length == 0 ||
+      event.endDate.length == 0 ||
+      event.startTime.length == 0 ||
+      event.endTime.length == 0 ||
+      event.image == null
+    ) {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (Cookies.get("clubAuth")) {
@@ -91,7 +107,7 @@ const EventForm = () => {
       const file = e.target.files[0];
       if (file) {
         const fileSize = file.size;
-        if (fileSize > 610*1024) {
+        if (fileSize > 610 * 1024) {
           alert("File size exceeds 600kb");
           return;
         }
@@ -109,9 +125,13 @@ const EventForm = () => {
     }
   };
 
+  useEffect(() => {
+    checkDisabled();
+  }, [event]);
+
   return (
     <>
-      <div className="px-3 py-5">
+      <div className="px-3 py-5 max-h-screen overflow-auto">
         <SectionTitle title="Create Event" icon="/icons/event/secondary.svg" />
         <div>
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
@@ -127,13 +147,14 @@ const EventForm = () => {
                   name="image"
                   ref={fileUpload}
                   onChange={onFormChange}
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg"
                 />
                 {event.image == null && (
                   <>
                     <img src="/icons/camera/secondary.svg" className="w-7" />
                     <span className="text-theme_text_primary/80 text-sm py-2">
-                      Upload Banner (2:1 Ratio preferred)
+                      Upload Banner (2:1 Ratio preferred) <br /> (PNG, JPEG or
+                      JPG only) (Required)
                     </span>
                   </>
                 )}
@@ -256,7 +277,7 @@ const EventForm = () => {
               </div>
               <input
                 type="text"
-                placeholder="Label 1"
+                placeholder="eg - Technical etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label1"
                 onChange={onFormChange}
@@ -264,7 +285,7 @@ const EventForm = () => {
               />
               <input
                 type="text"
-                placeholder="Label 2"
+                placeholder="eg. - Hackathons etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label2"
                 onChange={onFormChange}
@@ -272,7 +293,7 @@ const EventForm = () => {
               />
               <input
                 type="text"
-                placeholder="Label 3"
+                placeholder="eg. - Fest etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label3"
                 onChange={onFormChange}
@@ -282,7 +303,7 @@ const EventForm = () => {
             <button
               type="submit"
               className="bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-semibold tracking-wide"
-              disabled={submitting}
+              disabled={submitting ? true : submitDisabled}
             >
               {submitting ? (
                 <svg
@@ -411,7 +432,7 @@ const ClubSignUpForm = () => {
       const file = e.target.files[0];
       if (file) {
         const fileSize = file.size;
-        if (fileSize > 205*1024) {
+        if (fileSize > 205 * 1024) {
           alert("File size exceeds 200kb");
           return;
         }
@@ -423,7 +444,7 @@ const ClubSignUpForm = () => {
 
         const image = new Image();
         image.src = URL.createObjectURL(file);
-        image.onload = function() {
+        image.onload = function () {
           const width = this.width;
           const height = this.height;
           if (width != height) {
@@ -488,7 +509,7 @@ const ClubSignUpForm = () => {
                   name="logo"
                   ref={fileUpload}
                   onChange={onFormChange}
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg"
                 />
                 {club.logo == null && (
                   <>
@@ -496,6 +517,7 @@ const ClubSignUpForm = () => {
                     <span className="text-theme_text_primary/80 text-sm py-2">
                       Upload Logo (1:1 Ratio preffered)
                       <br />
+                      (PNG, JPEG or JPG only) <br />
                       (Required)
                     </span>
                   </>
@@ -634,21 +656,21 @@ const ClubSignUpForm = () => {
               </div>
               <input
                 type="text"
-                placeholder="Label 1 (optional)"
+                placeholder="eg - Technical etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label1"
                 onChange={onFormChange}
               />
               <input
                 type="text"
-                placeholder="Label 2 (optional)"
+                placeholder="eg - Hackathons etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label2"
                 onChange={onFormChange}
               />
               <input
                 type="text"
-                placeholder="Label 3 (optional)"
+                placeholder="eg - Fest etc. (optional)"
                 className={`${defaultStyle}`}
                 name="label3"
                 onChange={onFormChange}
