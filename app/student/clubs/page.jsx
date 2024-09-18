@@ -22,21 +22,25 @@ const Clubs = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
-    }
-    const student = JSON.parse(localStorage.getItem("studentData"));
-    setStudentID(student.registrationNumber);
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
+    } else {
+      const student = JSON.parse(localStorage.getItem("studentData"));
+      setStudentID(student.registrationNumber);
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
 
-    fetch("https://campusapi-puce.vercel.app/api/users/allclub", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setClubData(result.data);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
+      fetch(
+        "https://campusapi-puce.vercel.app/api/users/allclub",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          setClubData(result.data);
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
+    }
   }, []);
 
   const [clubQuery, setClubQuery] = useState("");
@@ -137,7 +141,8 @@ const Clubs = () => {
                     query: { type: "clubSignUp" },
                   }}
                 >
-                  Are you a Club Organiser? <span className="text-theme_secondary">Register Now!</span>
+                  Are you a Club Organiser?{" "}
+                  <span className="text-theme_secondary">Register Now!</span>
                 </Link>
               </div>
             </div>

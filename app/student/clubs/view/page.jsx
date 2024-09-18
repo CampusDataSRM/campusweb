@@ -20,21 +20,25 @@ const ViewClub = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
-    }
-    const student = JSON.parse(localStorage.getItem("studentData"));
-    setStudentID(student.registrationNumber);
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
+    } else {
+      const student = JSON.parse(localStorage.getItem("studentData"));
+      setStudentID(student.registrationNumber);
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
 
-    fetch("https://campusapi-puce.vercel.app/api/users/allclub", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setClubData(result.data);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
+      fetch(
+        "https://campusapi-puce.vercel.app/api/users/allclub",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          setClubData(result.data);
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
+    }
   }, []);
 
   const [eventQuery, setEventQuery] = useState("");

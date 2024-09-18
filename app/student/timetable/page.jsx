@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getTimetableData } from "@/functions/api/student";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Timetable = () => {
   const router = useRouter();
@@ -21,37 +21,38 @@ const Timetable = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
+    } else {
+      const rawData = localStorage.getItem("studentData");
+      const dataStudent = JSON.parse(rawData);
+      const myHeaders = new Headers();
+      myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      fetch(
+        `https://campusapi-puce.vercel.app/api/auth/timetable/${dataStudent?.comboBatch}`,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          setTimetable(result);
+          setDayOrders(Object.keys(result.timetable && result.timetable));
+          setSelectedDay(result && "Day" + result?.day_order);
+          setCurrentDayOrder(result?.day_order);
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
     }
-    const rawData = localStorage.getItem("studentData");
-    const dataStudent = JSON.parse(rawData);
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch(
-      `https://campusapi-puce.vercel.app/api/auth/timetable/${dataStudent?.comboBatch}`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        setTimetable(result);
-        setDayOrders(Object.keys(result.timetable && result.timetable));
-        setSelectedDay(result && "Day" + result?.day_order);
-        setCurrentDayOrder(result?.day_order);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
   }, []);
 
   return (
     <>
       <div className="max-h-screen overflow-auto">
-        <Navbar items={pageNames.filter(item => item !== "Timetable")} />
+        <Navbar items={pageNames.filter((item) => item !== "Timetable")} />
         <main className="px-4">
           <SectionTitle title="Timetable" />
           {loading ? (
@@ -94,10 +95,14 @@ const Timetable = () => {
                           timetable.timetable[selectedDay][item].subject_type
                         }
                         classRoom={
-                          timetable.timetable[selectedDay][item].room_code ? timetable.timetable[selectedDay][item].room_code : "Not Assigned"
+                          timetable.timetable[selectedDay][item].room_code
+                            ? timetable.timetable[selectedDay][item].room_code
+                            : "Not Assigned"
                         }
                         timing={item}
-                        isCurrntDayOrder={currentDayOrder == selectedDay.split("Day")[1]}
+                        isCurrntDayOrder={
+                          currentDayOrder == selectedDay.split("Day")[1]
+                        }
                       />
                     ))}
                     {Object.keys(

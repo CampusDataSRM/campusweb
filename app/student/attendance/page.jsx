@@ -17,23 +17,24 @@ const Attendance = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
-    }
-    const result = JSON.parse(localStorage.getItem("studentData"));
-
-    if (!result) {
-      router.push("/client/login/student");
     } else {
-      setCourseData(result?.courses);
-      setLoading(false);
-      const someResult = getStudentData(Cookies.get("X-CSRF-Token"));
-      someResult.then((data) => {
-        if (data?.message === "failed_to_fetch") {
-          console.log("Failed to fetch data");
-        } else {
-          setCourseData(data?.content.courses);
-          localStorage.setItem("studentData", JSON.stringify(data?.content));
-        }
-      });
+      const result = JSON.parse(localStorage.getItem("studentData"));
+
+      if (!result) {
+        router.push("/client/login/student");
+      } else {
+        setCourseData(result?.courses);
+        setLoading(false);
+        const someResult = getStudentData(Cookies.get("X-CSRF-Token"));
+        someResult.then((data) => {
+          if (data?.message === "failed_to_fetch") {
+            console.log("Failed to fetch data");
+          } else {
+            setCourseData(data?.content.courses);
+            localStorage.setItem("studentData", JSON.stringify(data?.content));
+          }
+        });
+      }
     }
   }, []);
   return (

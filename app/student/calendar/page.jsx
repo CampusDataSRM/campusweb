@@ -33,24 +33,28 @@ const Calendar = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
+    } else {
+      const myHeaders = new Headers();
+      myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      fetch(
+        "https://campusapi-puce.vercel.app/api/auth/planner",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          setPlanner(result);
+          setGetMonth(Object.keys(result));
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
     }
-    const myHeaders = new Headers();
-    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch("https://campusapi-puce.vercel.app/api/auth/planner", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setPlanner(result);
-        setGetMonth(Object.keys(result));
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
   }, []);
 
   const handleMonthChange = (type) => {
@@ -70,7 +74,7 @@ const Calendar = () => {
   useEffect(() => {
     setTimeout(() => {
       scrollRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 500); 
+    }, 500);
   }, [currentMonthID, planner]);
   return (
     <>
@@ -143,10 +147,14 @@ const Calendar = () => {
                                         : ""
                                     }
                                     `}
-                                    ref={todayDate.getDate() ===
-                                      Number(item.Date) &&
-                                    monthArray[currentMonthID] ===
-                                      monthArray[todayDate.getMonth()] ? scrollRef : null}
+                                    ref={
+                                      todayDate.getDate() ===
+                                        Number(item.Date) &&
+                                      monthArray[currentMonthID] ===
+                                        monthArray[todayDate.getMonth()]
+                                        ? scrollRef
+                                        : null
+                                    }
                                   >
                                     <span className="font-normal text-sm">
                                       {item.Day}

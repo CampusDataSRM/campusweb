@@ -18,11 +18,12 @@ const Marks = () => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
+    } else {
+      const rawData = localStorage.getItem("studentData");
+      const dataStudent = JSON.parse(rawData);
+      setTestreport(dataStudent?.testPerformances);
+      setLoading(false);
     }
-    const rawData = localStorage.getItem("studentData");
-    const dataStudent = JSON.parse(rawData);
-    setTestreport(dataStudent?.testPerformances);
-    setLoading(false);
   }, []);
 
   const percentages = (obj) => {
@@ -80,7 +81,9 @@ const Marks = () => {
                           </span>
                         </div>
                         <div className="text-theme_primary font-bold flex items-end gap-[2px] pr-3">
-                          <span className="text-2xl ">{toTwoDecimalPlaces(test.totalMarkGot)}</span>
+                          <span className="text-2xl ">
+                            {toTwoDecimalPlaces(test.totalMarkGot)}
+                          </span>
                           <span className="text-lg ">/</span>
                           <span className="text-lg ">{test.totalMarks}</span>
                         </div>
@@ -88,10 +91,12 @@ const Marks = () => {
                       <div className="py-2">
                         {test.tests && Object.keys(test.tests).length > 0 && (
                           <>
-                          <div className="flex justify-center gap-2 items-center pb-2">
-                            <span className="bg-theme_text_normal/40 w-3 h-3 rounded-full border-2 border-theme_secondary"></span>
-                            <span className="text-xs font-light tracking-wide text-theme_text_normal">Percentage</span>
-                          </div>
+                            <div className="flex justify-center gap-2 items-center pb-2">
+                              <span className="bg-theme_text_normal/40 w-3 h-3 rounded-full border-2 border-theme_secondary"></span>
+                              <span className="text-xs font-light tracking-wide text-theme_text_normal">
+                                Percentage
+                              </span>
+                            </div>
                             <LineChart
                               chartDetails={{
                                 chartLabels: dataLabels(test.tests),
