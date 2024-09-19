@@ -93,7 +93,11 @@ const EventCard = ({
             </div>
           )}
         </div>
-        <div className="flex justify-between items-center px-2 py-3 mt-1">
+        <div
+          className={`flex justify-between items-center px-2 py-3 ${
+            event?.website_link ? "mt-1" : "mt-3 mb-1"
+          }`}
+        >
           <div className="text-base text-theme_text_primary flex items-center">
             <span>Popularity: {eventPopularity}</span>
             <span className="italic">x</span>
@@ -144,17 +148,19 @@ const EventCard = ({
               )}
             </button>
           </div>
-          <div className="text-base">
-            <Link
-              href={event?.website_link ? event.website_link : ""}
-              target="_blank"
-              rel="noopener noreffer"
-            >
-              <button className="bg-gradient-to-br from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
-                Register
-              </button>
-            </Link>
-          </div>
+          {event?.website_link && (
+            <div className="text-base">
+              <Link
+                href={event?.website_link ? (event?.website_link.includes('http') ? event?.website_link : `http://${event?.website_link}` ) : ""}
+                target="_blank"
+                rel="noopener noreffer"
+              >
+                <button className="bg-gradient-to-br from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
+                  Register
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -146,7 +146,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
               <>
                 {club?.websiteLink && (
                   <Link
-                    href={club?.websiteLink ? club?.websiteLink : ""}
+                    href={club?.websiteLink ? (club?.websiteLink.includes('http') ? club?.websiteLink : `http://${club?.websiteLink}`) : ""}
                     rel="noopener noreffer"
                   >
                     <button className="bg-gradient-to-r from-theme_primary to-theme_secondary flex gap-2 justify-center items-center tracking-wider font-medium p-3 rounded-lg text-theme_text_normal shadow-lg">

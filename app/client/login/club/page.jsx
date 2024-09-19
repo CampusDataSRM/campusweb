@@ -28,7 +28,7 @@ const ClubLogin = () => {
       name: "Club username",
       type: "text",
       placeholder: "Club Email",
-      onChange: (e) => setUserid(e.target.value),
+      onChange: (e) => setUserid(e.target.value.trim()),
     },
     {
       name: "Password",
