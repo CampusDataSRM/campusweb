@@ -50,6 +50,11 @@ const studentPageLink = [
         icon: "/icons/us/primary.svg",
     },
     {
+        name: "WhatsApp",
+        link: "https://chat.whatsapp.com/CPzWkEnCXKEH897pgiNcMy",
+        icon: "/icons/whatsapp_nav/no-fill.svg",
+   },
+    {
         name: "Logout",
         link: "/",
         icon: "/icons/logout/primary.svg",

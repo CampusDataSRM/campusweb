@@ -115,7 +115,7 @@ const Student = () => {
                   onClick={
                     menu.name === "Logout"
                       ? sessionLogout
-                      : () => router.push(menu.link)
+                      : menu.name === "WhatsApp" ?  () => router.replace(menu.link) : () => router.push(menu.link)
                   }
                   className="theme_box_bg py-6 px-4 flex justify-between items-center"
                 >

@@ -27,6 +27,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Head>
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="The Campus Web" />
+        <meta property="og:description" content="Your one-stop campus solution" />
+        <meta property="og:image" content="https://mvfejxbltzmknypuuain.supabase.co/storage/v1/object/public/Event/469f11c9-7472-11ef-9282-92877155d7f2.png" />
+        <meta property="og:url" content="https://campusweb.vercel.app/" />
+        <meta property="og:site_name" content="The Campus Web" />
+
+        <meta name="twitter:card" content="the_campus_web" />
+        <meta name="twitter:title" content="The Campus Web" />
+        <meta name="twitter:description" content="Your one-stop campus solution" />
+        <meta name="twitter:image" content="https://mvfejxbltzmknypuuain.supabase.co/storage/v1/object/public/Event/469f11c9-7472-11ef-9282-92877155d7f2.png" />
+      </Head>
       <body className={inter.className}>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-C3JDRSD2G9" />
         <Script>
@@ -39,7 +52,7 @@ export default function RootLayout({ children }) {
         <Suspense fallback={<Loader />}>
           <Image
             src="/bg_vector.png"
-            alt="Create Next App"
+            alt="Background Vector"
             layout="fill"
             className="filter blur-[60px] fixed top-0 left-0 -z-50"
           />
