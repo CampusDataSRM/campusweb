@@ -17,6 +17,7 @@ const DashboardTimetable = () => {
     setLoading(true);
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
+    const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -24,10 +25,11 @@ const DashboardTimetable = () => {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
+      cache: "no-store",
     };
 
     fetch(
-      `https://campusapi-puce.vercel.app/api/auth/timetable/${dataStudent?.comboBatch}`,
+      `https://campusapi-puce.vercel.app/api/auth/timetable/${studentBatch}`,
       requestOptions
     )
       .then((response) => response.json())

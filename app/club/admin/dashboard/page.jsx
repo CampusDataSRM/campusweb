@@ -154,6 +154,8 @@ const Dashboard = () => {
                       club={club.club}
                       key={index}
                       disabledPopularity={true}
+                      editEvent={true}
+                      eventID={event.ID}
                     />
                   ))
               ) : (

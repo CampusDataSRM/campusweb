@@ -21,6 +21,32 @@ const getStudentData = async (authToken) => {
   }
 };
 
+// Batch Data API
+const getStudentBatch = async (authToken) => {
+  const myHeaders = new Headers();
+  myHeaders.append(
+    "X-CSRF-Token",
+    authToken
+  );
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  try {
+    const response = await fetch(
+      "https://campusapi-puce.vercel.app/api/auth/batch",
+      requestOptions
+    );
+    const result = await response.json();
+    return { message: "success", content: result };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // Planner API
 const getPlannerData = async (authToken) => {
   const myHeaders = new Headers();
@@ -47,7 +73,6 @@ const getTimetableData = async (authToken) => {
   const dataStudent = JSON.parse(rawData);
   const batch = dataStudent?.comboBatch;
   console.log(batch);
-  
 
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
@@ -66,14 +91,13 @@ const getTimetableData = async (authToken) => {
     const result = await response.json();
 
     console.log("timetable result", result);
-    
-    
+
     return { message: "success", content: result };
   } catch (error) {
     console.log("ADGAERNIAERNO");
-    
+
     return { message: "error", content: error };
   }
 };
 
-export { getStudentData, getPlannerData, getTimetableData };
+export { getStudentData, getStudentBatch, getPlannerData, getTimetableData };
