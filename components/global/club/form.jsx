@@ -415,8 +415,6 @@ const ClubSignUpForm = () => {
       setSubmitDisabled(true);
     } else if (club.logo == null) {
       setSubmitDisabled(true);
-    } else if (!club.email.includes("@srmist.edu.in")) {
-      setSubmitDisabled(true);
     } else {
       setSubmitDisabled(false);
     }
@@ -544,12 +542,11 @@ const ClubSignUpForm = () => {
               onChange={onFormChange}
               required
             />
-            {club.email.length > 0 &&
-              !club.email.includes("@srmist.edu.in") && (
+            {club.email.length > 0 && (
                 <div className="flex gap-2 px-1">
-                  <img src="/icons/warning/red-nofill.svg" className="w-4" />
-                  <span className="text-theme_red text-sm font-medium tracking-wider">
-                    Use your SRM Email ID
+                  <img src="/icons/warning/yellow-nofill.svg" className="w-4" />
+                  <span className="text-yellow-400 text-sm font-medium tracking-wider">
+                  Use your Club's Official Mail ID
                   </span>
                 </div>
               )}
