@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import SectionTitle from "@/components/global/section-title";
-import EventCard from "@/components/global/events/event-card";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination, Autoplay } from "swiper";
+import { useRouter } from "next/navigation";
 
 const EventCarousel = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     setLoading(true);
@@ -30,9 +34,26 @@ const EventCarousel = () => {
       });
   }, []);
 
-  const handleEventClick = (websiteLink) => {
-    window.open(websiteLink, "_blank");
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
   };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const extractStartDate = (dateRange) => {
+    return dateRange.split(" to ")[0];
+  };
+
+  const sortedEvents = events?.events?.sort((a, b) => {
+    if (a.club_name === "The Campus Web") return -1;
+    if (b.club_name === "The Campus Web") return 1;
+    const dateA = new Date(extractStartDate(a.dates));
+    const dateB = new Date(extractStartDate(b.dates));
+    return dateB - dateA;
+  });
 
   return (
     <>
@@ -80,11 +101,13 @@ const EventCarousel = () => {
                   loop={true}
                   className="mySwiper bg-black rounded-lg pb-4 relative"
                 >
-                  {events?.events &&
-                    events.events
+                  {sortedEvents &&
+                    sortedEvents
                       .slice(0)
                       .reverse()
-                      .filter((event) => !event.club_name.includes("TCW-20240916"))
+                      .filter(
+                        (event) => !event.club_name.includes("TCW-20240916")
+                      )
                       .map((event, index) => (
                         <SwiperSlide key={index}>
                           <div>
@@ -92,9 +115,8 @@ const EventCarousel = () => {
                               src={event.banner_url}
                               alt={`slide-${index}`}
                               className="rounded-t-lg w-[370px] h-[175px] sm:w-full sm:h-[225px] object-contain"
-                              onClick={() => handleEventClick(event.website_link)}
+                              onClick={() => handleEventClick(event)}
                             />
-                            {/* <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div> */}
                           </div>
                         </SwiperSlide>
                       ))}
@@ -110,6 +132,44 @@ const EventCarousel = () => {
           )}
         </div>
       </main>
+
+      {/* Modal */}
+      {isModalOpen && selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className=" backdrop-blur-xl bg-theme_primary/10 p-5 rounded-lg shadow-lg w-11/12 md:w-1/2">
+            <button
+              className="absolute top-3 right-3 text-white text-xl font-bold"
+              onClick={closeModal}
+            >
+              &times;
+            </button>
+            <img
+              src={selectedEvent.banner_url}
+              alt="Event Banner"
+              className="w-full h-64 object-contain rounded-lg"
+            />
+            <div className="mt-5 flex flex-col justify-center items-center gap-5">
+              <button
+                className="bg-gradient-to-br rounded-xl from-theme_primary to-theme_secondary  text-white px-2 py-2 w-1/2 hover:bg-blue-600"
+                onClick={() =>
+                  window.open(selectedEvent.website_link, "_blank")
+                }
+              >
+                Register
+              </button>
+              <button
+                className="theme_box_bg text-theme_primary px-2 py-2 w-1/2 rounded whitespace-nowrap"
+                onClick={() => {
+                  closeModal();
+                  router.push("student/events");
+                }}
+              >
+                More Events &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

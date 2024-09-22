@@ -75,6 +75,23 @@ const EventCard = ({
     }
   };
 
+  function convertDateRangeToDDMMYY(dateRange) {
+    const [startDate, endDate] = dateRange.split(" to ");
+
+    const formatDateToDDMMYY = (dateString) => {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}-${month}-${year}`;
+    };
+
+    const formattedStartDate = formatDateToDDMMYY(startDate);
+    const formattedEndDate = formatDateToDDMMYY(endDate);
+
+    return `${formattedStartDate} to ${formattedEndDate}`;
+  }
+
   return (
     <>
       <div className={flaggedHidden ? (club?.name.includes("TCW-20240916") ? 'hidden' : "w-full theme_box_bg rounded-xl" ) : "w-full theme_box_bg rounded-xl"}>
@@ -92,7 +109,7 @@ const EventCard = ({
               by {String(club?.name).toUpperCase()}
             </div>
           </div>
-          <div className="">
+          <div className="shrink-0">
             <img
               src={club?.logo}
               alt={club?.name}
@@ -113,7 +130,7 @@ const EventCard = ({
             ))}
           {event?.dates && (
             <div className="theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full">
-              {event?.dates}
+              {convertDateRangeToDDMMYY(event?.dates)}
             </div>
           )}
         </div>

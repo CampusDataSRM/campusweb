@@ -42,6 +42,18 @@ const Events = () => {
     }
   }, []);
 
+  const extractStartDate = (dateRange) => {
+    return dateRange.split(" to ")[0];
+  };
+
+  const sortedEvents = eventData?.events?.sort((a, b) => {
+    if (a.club_name === "The Campus Web") return -1;
+    if (b.club_name === "The Campus Web") return 1;
+    const dateA = new Date(extractStartDate(a.dates));
+    const dateB = new Date(extractStartDate(b.dates));
+    return dateB - dateA;
+  });
+
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
@@ -92,8 +104,8 @@ const Events = () => {
             </div>
           ) : (
             <div className="flex flex-wrap justify-center gap-4 pb-4">
-              {eventData?.events ? (
-                eventData?.events
+              {sortedEvents ? (
+                sortedEvents
                   .filter((event) => {
                     if (eventQuery === "") return event;
                     else if (

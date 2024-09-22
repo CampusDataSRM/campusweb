@@ -78,12 +78,19 @@ const StudentLogin = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleStudentLogin(e);
+    }
+  }
+
   return (
     <>
       <LoginLayout>
         <form
           className={"grid grid-cols-1 gap-4 mt-3"}
           name="Student Login Form"
+          onKeyDown={handleKeyDown}
         >
           {studentLoginFields.map((field, index) => (
             <div key={index} className="flex gap-1">
