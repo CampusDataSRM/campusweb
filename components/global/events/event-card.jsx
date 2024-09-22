@@ -76,7 +76,7 @@ const EventCard = ({
 
   return (
     <>
-      <div className="w-full theme_box_bg rounded-xl">
+      <div className={club?.name.includes("TCW-20240916") ? 'hidden' : "w-full theme_box_bg rounded-xl"}>
         <div>
           <img
             src={event?.banner_url}
