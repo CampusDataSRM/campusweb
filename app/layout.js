@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="The Campus Web" />
         <meta property="og:description" content="Your one-stop campus solution" />
-        <meta property="og:image" content="https://mvfejxbltzmknypuuain.supabase.co/storage/v1/object/public/Event/469f11c9-7472-11ef-9282-92877155d7f2.png" />
+        <meta property="og:image" content="https://instagram.fmaa16-1.fna.fbcdn.net/v/t51.2885-19/285491934_436818284448295_2602708945600628499_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fmaa16-1.fna.fbcdn.net&_nc_cat=107&_nc_ohc=g6RfLJlbgjoQ7kNvgEHo_bk&edm=APNOSGoBAAAA&ccb=7-5&oh=00_AYCsehcuuHR4jAlBHMt0XXfF4SIDGU3c0EXuLk3TdCdk0Q&oe=66F596CD&_nc_sid=ca40e6" />
         <meta property="og:url" content="https://campusweb.vercel.app/" />
         <meta property="og:site_name" content="The Campus Web" />
 
