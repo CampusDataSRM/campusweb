@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="The Campus Web" />
         <meta property="og:description" content="Your one-stop campus solution" />
-        <meta property="og:image" content="https://campusweb.vercel.app/logo_png.png" />
+        <meta property="og:image" content="https://i.ibb.co/6rBVRnk/unknown-1.jpg" />
         <meta property="og:url" content="https://campusweb.vercel.app/" />
         <meta property="og:site_name" content="The Campus Web" />
 
