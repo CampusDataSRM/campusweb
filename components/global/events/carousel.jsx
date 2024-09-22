@@ -84,6 +84,7 @@ const EventCarousel = () => {
                     events.events
                       .slice(0)
                       .reverse()
+                      .filter((event) => !event.club_name.includes("TCW-20240916"))
                       .map((event, index) => (
                         <SwiperSlide key={index}>
                           <div>

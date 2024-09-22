@@ -106,7 +106,7 @@ const EventCard = ({
               <div
                 name={value}
                 key={index}
-                className="theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full"
+                className={value.length > 0 ? "theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full" : "hidden"}
               >
                 {value}
               </div>

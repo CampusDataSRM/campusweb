@@ -281,7 +281,6 @@ const EventForm = () => {
                 className={`${defaultStyle}`}
                 name="label1"
                 onChange={onFormChange}
-                required
               />
               <input
                 type="text"
@@ -289,7 +288,6 @@ const EventForm = () => {
                 className={`${defaultStyle}`}
                 name="label2"
                 onChange={onFormChange}
-                required
               />
               <input
                 type="text"
@@ -297,7 +295,6 @@ const EventForm = () => {
                 className={`${defaultStyle}`}
                 name="label3"
                 onChange={onFormChange}
-                required
               />
             </div>
             <button
