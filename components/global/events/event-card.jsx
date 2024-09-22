@@ -11,6 +11,7 @@ const EventCard = ({
   checkLiked,
   disabledPopularity,
   editEvent,
+  flaggedHidden,
 }) => {
   const [eventPopularity, setEventPopularity] = useState(
     event?.popularity ? event?.popularity : 0
@@ -76,7 +77,7 @@ const EventCard = ({
 
   return (
     <>
-      <div className={club?.name.includes("TCW-20240916") ? 'hidden' : "w-full theme_box_bg rounded-xl"}>
+      <div className={flaggedHidden ? (club?.name.includes("TCW-20240916") ? 'hidden' : "w-full theme_box_bg rounded-xl" ) : "w-full theme_box_bg rounded-xl"}>
         <div>
           <img
             src={event?.banner_url}

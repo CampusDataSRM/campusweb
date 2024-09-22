@@ -125,6 +125,7 @@ const Events = () => {
                           ? event.likedby.includes(studentID)
                           : false
                       }
+                      flaggedHidden={true}
                     />
                   ))
               ) : (
