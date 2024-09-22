@@ -13,16 +13,51 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const APP_NAME = "The Campus Web";
+const APP_DEFAULT_TITLE = "The Campus Web";
+const APP_DESCRIPTION = "Your one-stop campus solution";
+
 export const metadata = {
   title: "The Campus Web",
   description: "Your one-stop campus solution",
   manifest: "/manifest.json",
   applicationName: "Campus Web",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_DEFAULT_TITLE,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+    },
+    description: APP_DESCRIPTION,
+    images: [
+      {
+        url: "/logo_png.png",
+        alt: APP_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "the_campus_web",
+    title: {
+      default: APP_DEFAULT_TITLE,
+    },
+    description: APP_DESCRIPTION,
+    images: ["/logo_png.png"],
+  },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
   },
 };
+
 
 export default function RootLayout({ children }) {
   return (
