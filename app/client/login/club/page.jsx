@@ -101,6 +101,7 @@ const ClubLogin = () => {
                   setPasswordVisible(!passwordVisible);
                 }}
                 className={field.type == "password" ? "theme_box_bg px-4" : "hidden"}
+                type="button"
               >
                 {passwordVisible ? (
                   <img
