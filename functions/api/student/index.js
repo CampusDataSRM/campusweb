@@ -37,7 +37,7 @@ const getStudentBatch = async (authToken) => {
 
   try {
     const response = await fetch(
-      "https://campusapi-puce.vercel.app/api/auth/batch",
+      `${baseUrl}/api/auth/batch`,
       requestOptions
     );
     const result = await response.json();
