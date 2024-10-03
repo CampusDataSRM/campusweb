@@ -25,11 +25,11 @@ const UpdateClubProfile = () => {
     label1: "",
     label2: "",
     label3: "",
-    logo: null,  // Added 'logo' to club state
+    logo: null, // Added 'logo' to club state
   });
 
-  const [newLogo, setNewLogo] = useState(null);  // Handle new uploaded logo
-  const [clubLogoUrl, setClubLogoUrl] = useState("");  // For displaying existing logo
+  const [newLogo, setNewLogo] = useState(null); // Handle new uploaded logo
+  const [clubLogoUrl, setClubLogoUrl] = useState(""); // For displaying existing logo
 
   // Fetch club profile data
   useEffect(() => {
@@ -60,11 +60,12 @@ const UpdateClubProfile = () => {
                 name: result.data.name,
                 description: result.data.description,
                 websiteLink: result.data.websiteLink,
+                isRecruiting: result.data.isRecruiting,
                 email: result.data.email,
                 label1: result.data.labels[0] || "",
                 label2: result.data.labels[1] || "",
                 label3: result.data.labels[2] || "",
-                logo: result.data.logo,  // Set existing logo
+                logo: result.data.logo, // Set existing logo
               });
               setClubLogoUrl(result.data.logo);
             }
@@ -125,7 +126,7 @@ const UpdateClubProfile = () => {
     if (e.target.name === "isRecruiting") {
       setClub({ ...club, [e.target.name]: !club[e.target.name] });
     } else if (e.target.type === "file") {
-      setNewLogo(e.target.files[0]);  // Handle new logo
+      setNewLogo(e.target.files[0]); // Handle new logo
     } else {
       setClub({ ...club, [e.target.name]: e.target.value });
     }
@@ -136,7 +137,7 @@ const UpdateClubProfile = () => {
       <div className="">
         <form className="grid grid-cols-1 -mt-2 gap-4" onSubmit={handleSubmit}>
           <button
-            type="button"  // Changed to 'button' to prevent form submission
+            type="button" // Changed to 'button' to prevent form submission
             className={`${defaultStyle} min-h-40`}
             onClick={() => fileUpload.current.click()}
           >
@@ -151,14 +152,14 @@ const UpdateClubProfile = () => {
               />
               {/* Image display logic based on logo state */}
               {club.logo == null ||
-              (clubLogoUrl && (
-                <>
-                  <img src="/icons/camera/secondary.svg" className="w-7" />
-                  <span className="text-theme_text_primary/80 text-sm py-2">
-                    Upload Logo (1:1 Ratio preferred)
-                  </span>
-                </>
-              ))}
+                (clubLogoUrl && (
+                  <>
+                    <img src="/icons/camera/secondary.svg" className="w-7" />
+                    <span className="text-theme_text_primary/80 text-sm py-2">
+                      Upload Logo (1:1 Ratio preferred)
+                    </span>
+                  </>
+                ))}
               {club.logo ? (
                 <img
                   src={newLogo ? URL.createObjectURL(newLogo) : clubLogoUrl}
@@ -210,8 +211,28 @@ const UpdateClubProfile = () => {
             onChange={onFormChange}
             value={club.websiteLink}
           />
-
+          <div className={`flex justify-between ${defaultStyle}`}>
+            <span className="text-theme_text_primary">Is Recruiting</span>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                id="isRecruiting"
+                type="checkbox"
+                className="peer sr-only"
+                name="isRecruiting"
+                onChange={onFormChange}
+                checked={club.isRecruiting}
+              />
+              <div className="peer h-6 w-11 rounded-full bg-theme_text_primary/10 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:bg-white after:transition-all after:content-[''] peer-checked:bg-gradient-to-r peer-checked:from-theme_primary peer-checked:to-theme_secondary peer-checked:after:translate-x-full peer-focus:ring-green-300"></div>
+            </label>
+          </div>
           {/* Label inputs */}
+          <div className="text-theme_text_primary flex items-center mt-2 justify-start gap-2 content-center">
+            Labels
+            <button>
+              {" "}
+              <img src="/icons/info/primary.svg" className="w-4" />{" "}
+            </button>{" "}
+          </div>
           <input
             type="text"
             placeholder="Label 1"

@@ -81,8 +81,8 @@ const EventCard = ({
 
     const formatDateToDDMMYY = (dateString) => {
       const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = String(date.getFullYear()).slice(-2);
       return `${day}-${month}-${year}`;
     };
@@ -95,12 +95,20 @@ const EventCard = ({
 
   return (
     <>
-      <div className={flaggedHidden ? (club?.name.includes("TCW-20240916") ? 'hidden' : "w-full theme_box_bg rounded-xl" ) : "w-full theme_box_bg rounded-xl"}>
-        <div>
+      <div
+        className={
+          flaggedHidden
+            ? club?.name.includes("TCW-20240916")
+              ? "hidden"
+              : "w-full theme_box_bg rounded-xl"
+            : "w-full theme_box_bg rounded-xl"
+        }
+      >
+        <div style={{backgroundImage: `url(${event?.banner_url})`}} className="bg-cover rounded-t-xl">
           <img
             src={event?.banner_url}
             alt={event?.title}
-            className="rounded-t-xl w-full object-contain max-h-[250px]"
+            className="rounded-t-xl w-full object-contain max-h-[250px] backdrop-blur"
           />
         </div>
         <div className="flex justify-between px-3 mt-5 tracking-wider">
@@ -124,7 +132,11 @@ const EventCard = ({
               <div
                 name={value}
                 key={index}
-                className={value.length > 0 ? "theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full" : "hidden"}
+                className={
+                  value.length > 0
+                    ? "theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full"
+                    : "hidden"
+                }
               >
                 {value}
               </div>

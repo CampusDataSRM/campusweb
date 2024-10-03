@@ -25,7 +25,7 @@ ChartJS.register(
   scales
 );
 
-ChartJS.defaults.borderColor = "rgba(255,255,255,0.4)";
+ChartJS.defaults.borderColor = "rgba(255,255,255,0.15)";
 ChartJS.defaults.color = "rgba(255,255,255,0.7)";
 ChartJS.defaults.font.size = 13;
 ChartJS.defaults.transitions.duration = 1000;

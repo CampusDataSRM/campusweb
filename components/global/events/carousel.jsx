@@ -111,11 +111,11 @@ const EventCarousel = () => {
                       )
                       .map((event, index) => (
                         <SwiperSlide key={index}>
-                          <div>
+                          <div style={{backgroundImage: `url(${event.banner_url})`}} className="bg-cover">
                             <img
                               src={event.banner_url}
                               alt={`slide-${index}`}
-                              className="rounded-t-lg w-[370px] h-[175px] sm:w-full sm:h-[225px] object-contain"
+                              className="rounded-t-lg w-[370px] h-[175px] sm:w-full sm:h-[225px] object-contain backdrop-blur"
                               onClick={() => handleEventClick(event)}
                             />
                           </div>
