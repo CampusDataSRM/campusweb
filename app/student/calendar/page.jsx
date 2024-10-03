@@ -74,7 +74,7 @@ const Calendar = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      scrollRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 500);
   }, [currentMonthID, planner]);
   return (
