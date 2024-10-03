@@ -1,4 +1,8 @@
+import { useEffect } from "react";
+import { useState } from "react";
+
 const TimetableCard = ({ subjectName, subjectType, classRoom, timing, isCurrntDayOrder }) => {
+  const [progressWidth, setProgressWidth] = useState(0);
   const calculateProgress = () => {
     if (!timing) return 0;
 
@@ -30,9 +34,19 @@ const TimetableCard = ({ subjectName, subjectType, classRoom, timing, isCurrntDa
     }
   };
 
-  const progressWidth = calculateProgress();
+  // const progressWidth = calculateProgress();
 
-  
+  useEffect(() => {
+    setProgressWidth(calculateProgress());
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProgressWidth(calculateProgress());
+      console.log("Progress Width", progressWidth);
+      
+    }, 1000*60);
+  }, [progressWidth]);
 
   return (
     <>

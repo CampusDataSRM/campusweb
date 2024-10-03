@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { authExpiry } from "@/functions/auth-expiry";
 import SectionTitle from "@/components/global/section-title";
+import { baseURL } from "@/constants/baseURL";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
@@ -51,7 +52,7 @@ const UpdatePassword = () => {
     };
 
     fetch(
-      "https://campusapi-puce.vercel.app/api/users/updatepassword",
+      `${baseURL}/api/users/updatepassword`,
       requestOptions
     )
       .then((response) => response.json())

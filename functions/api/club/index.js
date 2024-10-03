@@ -1,3 +1,5 @@
+import { baseURL } from "@/constants/baseURL";
+
 const baseUrl = "https://campusapi-puce.vercel.app";
 
 // Delete Event API
@@ -17,7 +19,7 @@ const deleteEvent = async ({eventID, authToken}) => {
 
   try {
     const response = await fetch(
-      "https://campusapi-puce.vercel.app/api/users/deleteevent",
+      `${baseURL}/api/users/deleteevent`,
       requestOptions
     );
     const result = await response.json();

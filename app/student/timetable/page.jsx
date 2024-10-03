@@ -9,6 +9,7 @@ import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getTimetableData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const Timetable = () => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const Timetable = () => {
       };
 
       fetch(
-        `https://campusapi-puce.vercel.app/api/auth/timetable/${studentBatch}`,
+        `${baseURL}/api/auth/timetable/${studentBatch}`,
         requestOptions
       )
         .then((response) => response.json())

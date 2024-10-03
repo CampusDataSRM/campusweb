@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { baseURL } from "@/constants/baseURL";
 
 const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
   const [clubPopularity, setClubPopularity] = useState(
@@ -27,7 +28,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
     };
 
     fetch(
-      "https://campusapi-puce.vercel.app/api/users/clubaction/",
+      `${baseURL}/api/users/clubaction/`,
       requestOptions
     )
       .then((response) => response.text())

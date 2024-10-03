@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authExpiry } from "@/functions/auth-expiry";
 import LoginLayout from "@/components/global/layout";
+import { baseURL } from "@/constants/baseURL";
 
 const ClubLogin = () => {
   useEffect(() => {
@@ -58,7 +59,7 @@ const ClubLogin = () => {
     };
 
     fetch(
-      "https://campusapi-puce.vercel.app/api/auth/club-login",
+      `${baseURL}/api/auth/club-login`,
       requestOptions
     )
       .then((response) => response.json())

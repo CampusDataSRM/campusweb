@@ -7,6 +7,7 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { authExpiry } from "@/functions/auth-expiry";
 import SectionTitle from "@/components/global/section-title";
+import { baseURL } from "@/constants/baseURL";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -43,7 +44,7 @@ const Dashboard = () => {
         };
 
         fetch(
-          "https://campusapi-puce.vercel.app/api/users/club-events",
+          `${baseURL}/api/users/club-events`,
           requestOptions
         )
           .then((response) => response.json())

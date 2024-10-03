@@ -8,6 +8,7 @@ import EventCard from "@/components/global/events/event-card";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { baseURL } from "@/constants/baseURL";
 
 const ViewClub = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const ViewClub = () => {
       };
 
       fetch(
-        "https://campusapi-puce.vercel.app/api/users/allclub",
+        `${baseURL}/api/users/allclub`,
         requestOptions
       )
         .then((response) => response.json())

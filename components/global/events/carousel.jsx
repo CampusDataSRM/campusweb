@@ -5,6 +5,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination, Autoplay } from "swiper";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const EventCarousel = () => {
   const [events, setEvents] = useState([]);
@@ -21,7 +22,7 @@ const EventCarousel = () => {
       redirect: "follow",
     };
     fetch(
-      "https://campusapi-puce.vercel.app/api/users/allevent",
+      `${baseURL}/api/users/allevent`,
       requestOptions
     )
       .then((response) => response.json())

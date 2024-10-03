@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const DashboardTimetable = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const DashboardTimetable = () => {
     };
 
     fetch(
-      `https://campusapi-puce.vercel.app/api/auth/timetable/${studentBatch}`,
+      `${baseURL}/api/auth/timetable/${studentBatch}`,
       requestOptions
     )
       .then((response) => response.json())

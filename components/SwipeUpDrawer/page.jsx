@@ -4,6 +4,7 @@ import React from "react";
 import SettingsInDrawer from "./DrawerComponents/SettingsInDrawer";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { baseURL } from "@/constants/baseURL";
 
 const useClickOutside = (ref, callback) => {
   const handleClick = (e) => {
@@ -49,7 +50,7 @@ export default function SwipeUpDrawer({
       redirect: "follow",
     };
 
-    fetch("https://campusapi-puce.vercel.app/api/auth/logoutuser/", requestOptions)
+    fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
         localStorage.removeItem("studentData");

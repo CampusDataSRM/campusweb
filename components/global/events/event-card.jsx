@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import { deleteEvent } from "@/functions/api/club";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const EventCard = ({
   event,
@@ -39,7 +40,7 @@ const EventCard = ({
     };
 
     fetch(
-      "https://campusapi-puce.vercel.app/api/users/eventaction/",
+      `${baseURL}/api/users/eventaction/`,
       requestOptions
     )
       .then((response) => response.text())

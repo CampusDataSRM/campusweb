@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import { authExpiry } from "@/functions/auth-expiry";
+import { baseURL } from "@/constants/baseURL";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl disabled:text-theme_text_normal_60";
@@ -48,7 +49,7 @@ const UpdateClubProfile = () => {
         };
 
         fetch(
-          "https://campusapi-puce.vercel.app/api/users/getprofile",
+          `${baseURL}/api/users/getprofile`,
           requestOptions
         )
           .then((response) => response.json())
@@ -104,7 +105,7 @@ const UpdateClubProfile = () => {
     };
 
     fetch(
-      "https://campusapi-puce.vercel.app/api/users/updateprofile",
+      `${baseURL}/api/users/updateprofile`,
       requestOptions
     )
       .then((response) => response.json())

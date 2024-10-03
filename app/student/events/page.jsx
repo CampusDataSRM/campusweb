@@ -10,6 +10,7 @@ import {
   studentPageLink,
 } from "@/components/global/navbar/page-link";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const Events = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ const Events = () => {
       };
 
       fetch(
-        "https://campusapi-puce.vercel.app/api/users/allevent",
+        `${baseURL}/api/users/allevent`,
         requestOptions
       )
         .then((response) => response.json())

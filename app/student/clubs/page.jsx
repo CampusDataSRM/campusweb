@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { baseURL } from "@/constants/baseURL";
 
 const Clubs = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const Clubs = () => {
       };
 
       fetch(
-        "https://campusapi-puce.vercel.app/api/users/allclub",
+        `${baseURL}/api/users/allclub`,
         requestOptions
       )
         .then((response) => response.json())

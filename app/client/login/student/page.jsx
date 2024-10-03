@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
+import {baseURL} from "@/constants/baseURL";
 
 const StudentLogin = () => {
   useEffect(() => {
@@ -56,7 +57,7 @@ const StudentLogin = () => {
       mode: "cors",
     };
 
-    fetch("https://campusapi-puce.vercel.app/api/auth/login/", requestOptions)
+    fetch(`${baseURL}/api/auth/login/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (
@@ -65,7 +66,7 @@ const StudentLogin = () => {
           result.Status === "success"
         ) {
           // Cookies.remove("X-CSRF-Token");
-          Cookies.set("X-CSRF-Token", result.Cookies, { expires: 2 });
+          Cookies.set("X-CSRF-Token", result.Cookies, { expires: 365 });
           // Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {

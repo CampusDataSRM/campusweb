@@ -1,4 +1,5 @@
-const baseUrl = "https://campusapi-puce.vercel.app";
+import { baseURL } from "@/constants/baseURL";
+
 
 // Student Data API
 const getStudentData = async (authToken) => {
@@ -13,7 +14,7 @@ const getStudentData = async (authToken) => {
   };
 
   try {
-    const response = await fetch(`${baseUrl}/api/auth/user/`, requestOptions);
+    const response = await fetch(`${baseURL}/api/auth/user/`, requestOptions);
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {
@@ -37,7 +38,7 @@ const getStudentBatch = async (authToken) => {
 
   try {
     const response = await fetch(
-      "https://campusapi-puce.vercel.app/api/auth/batch",
+      `${baseURL}/api/auth/batch`,
       requestOptions
     );
     const result = await response.json();

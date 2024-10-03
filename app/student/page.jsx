@@ -9,6 +9,7 @@ import { studentPageLink } from "@/components/global/navbar/page-link";
 import DashboardTimetable from "@/components/student/timetable/dashboard";
 import { toTitleCase } from "@/functions/title-case-convert";
 import InstallButton from "@/components/global/InstallButton";
+import { baseURL } from "@/constants/baseURL";
 
 const Student = () => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const Student = () => {
         cache: "no-store",
       };
 
-      fetch("https://campusapi-puce.vercel.app/api/auth/user/", requestOptions)
+      fetch(`${baseURL}/api/auth/user/`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           setStudentName(result?.name);
@@ -61,7 +62,7 @@ const Student = () => {
       redirect: "follow",
     };
 
-    fetch("https://campusapi-puce.vercel.app/api/auth/logoutuser/", requestOptions)
+    fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
         localStorage.removeItem("studentData");

@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { useRouter } from "next/navigation";
+import { baseURL } from "@/constants/baseURL";
 
 const Calendar = () => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const Calendar = () => {
       };
 
       fetch(
-        "https://campusapi-puce.vercel.app/api/auth/planner",
+        `${baseURL}/api/auth/planner`,
         requestOptions
       )
         .then((response) => response.json())
