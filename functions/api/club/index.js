@@ -1,6 +1,6 @@
 import { baseURL } from "@/constants/baseURL";
 
-const baseUrl = "https://campusapi-puce.vercel.app";
+const baseUrl = "https://campuswebapi.up.railway.app";
 
 // Delete Event API
 const deleteEvent = async ({eventID, authToken}) => {

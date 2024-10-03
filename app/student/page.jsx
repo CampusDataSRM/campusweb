@@ -74,7 +74,7 @@ const Student = () => {
   };
   return (
     <>
-    <InstallButton />
+      <InstallButton />
       <div className="py-4 max-h-screen overflow-auto">
         <div className="py-5">
           <img
@@ -116,7 +116,9 @@ const Student = () => {
                   onClick={
                     menu.name === "Logout"
                       ? sessionLogout
-                      : menu.name === "WhatsApp" ?  () => router.replace(menu.link) : () => router.push(menu.link)
+                      : menu.name === "WhatsApp"
+                      ? () => router.replace(menu.link)
+                      : () => router.push(menu.link)
                   }
                   className="theme_box_bg py-6 px-4 flex justify-between items-center"
                 >
