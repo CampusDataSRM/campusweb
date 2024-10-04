@@ -33,7 +33,6 @@ const Student = () => {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
-        mode: "cors",
         cache: "no-store",
       };
 
