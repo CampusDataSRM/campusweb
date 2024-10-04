@@ -38,7 +38,7 @@ const Student = () => {
 
       fetch(`${baseURL}/api/auth/user/`, requestOptions)
         .then((response) => {
-          if (response.status === 204) {
+          if (typeof response === "string") {
             return null;
           } else if (response.ok) {
             return response.json();
