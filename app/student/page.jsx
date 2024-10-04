@@ -38,7 +38,15 @@ const Student = () => {
       };
 
       fetch(`${baseURL}/api/auth/user/`, requestOptions)
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status === 204) {
+            return null;
+          } else if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Failed to fetch data");
+          }
+        })
         .then((result) => {
           setStudentName(result?.name);
           localStorage.removeItem("studentData");
