@@ -28,6 +28,7 @@ const Student = () => {
     } else {
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+      myHeaders.append("Content-Type", "application/json");
 
       const requestOptions = {
         method: "GET",
