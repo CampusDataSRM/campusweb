@@ -12,4 +12,5 @@ const authExpiry = (token) => {
   }
 };
 
+
 export { authExpiry };
