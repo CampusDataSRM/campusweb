@@ -74,7 +74,13 @@ const StudentLogin = () => {
           setLoading(false);
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        if(error == "Too many requests, slow down!"){
+          alert("Too many requests, slow down! Try again after 60 seconds.");
+        } else {
+          alert(JSON.stringify(error));
+        }
+      });
   };
 
   const [passwordVisible, setPasswordVisible] = useState(false);

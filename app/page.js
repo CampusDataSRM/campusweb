@@ -1,11 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
+import StudentLogin from "@/app/client/login/student/page";
 
 export default function Home() {
   const router = useRouter();
   return (
     <>
-      <div className="flex flex-wrap justify-center page-center items-center gap-4 lg:gap-12">
+      {/*<div className="flex flex-wrap justify-center page-center items-center gap-4 lg:gap-12">
         <div className="">
           <img
             src="/logo2.svg"
@@ -37,7 +38,8 @@ export default function Home() {
             </div>
           </button>
         </div>
-      </div>
+      </div>*/}
+      <StudentLogin />
     </>
   );
 }

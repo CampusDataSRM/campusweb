@@ -44,6 +44,8 @@ const Student = () => {
           } else if (response.ok) {
             return response.json();
           } else {
+            alert("Failed to fetch data. Please try again later.");
+            router.push("/client/login/student");
             throw new Error("Failed to fetch data");
           }
         })
