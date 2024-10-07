@@ -29,6 +29,7 @@ const Clubs = () => {
       const requestOptions = {
         method: "GET",
         redirect: "follow",
+        cache: "no-store",
       };
 
       fetch(

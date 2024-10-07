@@ -20,6 +20,7 @@ const EventCarousel = () => {
     const requestOptions = {
       method: "GET",
       redirect: "follow",
+      cache: "no-store",
     };
     fetch(
       `${baseURL}/api/users/allevent`,

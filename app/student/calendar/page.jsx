@@ -42,6 +42,7 @@ const Calendar = () => {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
+        cache: "no-store",
       };
 
       fetch(
