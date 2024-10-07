@@ -41,6 +41,7 @@ const Dashboard = () => {
           method: "GET",
           headers: myHeaders,
           mode: "cors",
+          cache: "no-store",
         };
 
         fetch(
