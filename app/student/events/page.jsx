@@ -28,7 +28,7 @@ const Events = () => {
       const requestOptions = {
         method: "GET",
         redirect: "follow",
-        cache: "no-store",
+        cache: "no-cache",
       };
 
       fetch(
