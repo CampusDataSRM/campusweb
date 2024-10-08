@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getStudentData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const Attendance = () => {
   const router = useRouter();
@@ -29,7 +30,10 @@ const Attendance = () => {
         someResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
             console.log("Failed to fetch data");
-          } else {
+          } else if (data?.message === "too_many_requests") {
+            toast.error("Too many requests. Please try again later.");
+          } 
+          else {
             setCourseData(data?.content.courses);
             localStorage.setItem("studentData", JSON.stringify(data?.content));
           }

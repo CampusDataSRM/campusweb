@@ -15,6 +15,9 @@ const getStudentData = async (authToken) => {
 
   try {
     const response = await fetch(`${baseURL}/api/auth/user/`, requestOptions);
+    if (response.status === 429) {
+      return { message: "too_many_requests" };
+    }
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {

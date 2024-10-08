@@ -10,6 +10,7 @@ import DashboardTimetable from "@/components/student/timetable/dashboard";
 import { toTitleCase } from "@/functions/title-case-convert";
 import InstallButton from "@/components/global/InstallButton";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const Student = () => {
   const router = useRouter();
@@ -26,6 +27,13 @@ const Student = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (localStorage.getItem("studentData")) {
+        const studentData = JSON.parse(localStorage.getItem("studentData"));
+        setStudentName(studentData?.name);
+        setCourseData(studentData?.courses);
+        setTestPerformance(studentData?.testPerformances);
+        setLoading(false);
+      }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
       myHeaders.append("Content-Type", "application/json");
@@ -41,20 +49,23 @@ const Student = () => {
         .then((response) => {
           if (typeof response === "string") {
             return null;
+          } else if (response.status === 429) {
+            return 'Too many requests';
           } else if (response.ok) {
             return response.json();
           } else {
-            alert("Failed to fetch data. Please try again later.");
-            router.push("/client/login/student");
             throw new Error("Failed to fetch data");
           }
         })
         .then((result) => {
-          setStudentName(result?.name);
-          localStorage.removeItem("studentData");
-          localStorage.setItem("studentData", result && JSON.stringify(result));
-          setCourseData(result?.courses);
-          setTestPerformance(result?.testPerformances);
+          if (result === 'Too many requests') {
+            toast.error('Too many requests. Please try again later.');
+          } else {
+            setStudentName(result?.name);
+            localStorage.setItem("studentData", result && JSON.stringify(result));
+            setCourseData(result?.courses);
+            setTestPerformance(result?.testPerformances); 
+          }
           setLoading(false);
         })
         .catch((error) => console.error(error));
