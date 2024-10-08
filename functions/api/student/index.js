@@ -63,7 +63,7 @@ const getPlannerData = async (authToken) => {
   };
 
   try {
-    const response = await fetch(`${baseUrl}/api/auth/planner`, requestOptions);
+    const response = await fetch(`${baseURL}/api/auth/planner`, requestOptions);
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {

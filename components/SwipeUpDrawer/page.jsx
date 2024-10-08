@@ -53,7 +53,7 @@ export default function SwipeUpDrawer({
     fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        localStorage.removeItem("studentData");
+        localStorage.clear();
         Cookies.remove("X-CSRF-Token");
         router.push("/");
         console.log(result);

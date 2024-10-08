@@ -59,7 +59,7 @@ const Student = () => {
         })
         .then((result) => {
           if (result === 'Too many requests') {
-            toast.error('Too many requests. Please try again later.');
+            toast.error('Too many requests. Try again in a min.');
           } else {
             setStudentName(result?.name);
             localStorage.setItem("studentData", result && JSON.stringify(result));
@@ -86,7 +86,7 @@ const Student = () => {
     fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        localStorage.removeItem("studentData");
+        localStorage.clear();
         Cookies.remove("X-CSRF-Token");
         router.push("/");
         console.log(result);

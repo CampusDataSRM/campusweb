@@ -104,6 +104,7 @@ export default function RootLayout({ children }) {
               draggable
               pauseOnHover
               theme="dark"
+              bodyClassName={`font-['Nunito'] tracking-wide`}
             />
             <div
               className="md:w-[630px]"

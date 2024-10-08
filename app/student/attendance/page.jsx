@@ -31,7 +31,7 @@ const Attendance = () => {
           if (data?.message === "failed_to_fetch") {
             console.log("Failed to fetch data");
           } else if (data?.message === "too_many_requests") {
-            toast.error("Too many requests. Please try again later.");
+            toast.error("Too many requests. Try again in a min.");
           } 
           else {
             setCourseData(data?.content.courses);

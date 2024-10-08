@@ -7,6 +7,8 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
+import { set } from "date-fns";
 
 const DashboardTimetable = () => {
   const router = useRouter();
@@ -15,10 +17,19 @@ const DashboardTimetable = () => {
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState("");
   useEffect(() => {
-    setLoading(true);
+    if (localStorage.getItem("studentTimetable")) {
+      const res = JSON.parse(localStorage.getItem("studentTimetable"));
+      setTimetable(res);
+      setDayOrders(Object.keys(res.timetable && res.timetable));
+      setSelectedDay("Day" + res?.day_order);
+    }
+    if (!localStorage.getItem("studentData")) {
+      setLoading(true);
+    }
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
-    const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+    const studentBatch =
+      dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -29,15 +40,27 @@ const DashboardTimetable = () => {
       cache: "no-store",
     };
 
-    fetch(
-      `${baseURL}/api/auth/timetable/${studentBatch}`,
-      requestOptions
-    )
-      .then((response) => response.json())
+    fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
+      .then((response) => {
+        if (typeof response === "string") {
+          return null;
+        } else if (response.status === 429) {
+          return "Too many requests";
+        } else if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to fetch data");
+        }
+      })
       .then((result) => {
-        setTimetable(result);
-        setDayOrders(Object.keys(result.timetable && result.timetable));
-        setSelectedDay(result && "Day" + result?.day_order);
+        if (result === "Too many requests") {
+          toast.error("Too many requests. Try again in a min.");
+        } else {
+          setTimetable(result);
+          localStorage.setItem("studentTimetable", JSON.stringify(result));
+          setDayOrders(Object.keys(result.timetable && result.timetable));
+          setSelectedDay(result && "Day" + result?.day_order);
+        }
         setLoading(false);
       })
       .catch((error) => console.error(error));

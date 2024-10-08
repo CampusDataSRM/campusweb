@@ -7,6 +7,7 @@ import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const Calendar = () => {
   const router = useRouter();
@@ -35,6 +36,12 @@ const Calendar = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (localStorage.getItem("studentCalendar")) {
+        const res = JSON.parse(localStorage.getItem("studentCalendar"));
+        setPlanner(res);
+        setGetMonth(Object.keys(res));
+        setLoading(false);
+      }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -45,14 +52,28 @@ const Calendar = () => {
         cache: "no-store",
       };
 
-      fetch(
-        `${baseURL}/api/auth/planner`,
-        requestOptions
-      )
-        .then((response) => response.json())
+      fetch(`${baseURL}/api/auth/planner`, requestOptions)
+        .then((response) => {
+          if (typeof response === "string") {
+            return null;
+          } else if (response.status === 429) {
+            return "Too many requests";
+          } else if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Failed to fetch data");
+          }
+        })
         .then((result) => {
-          setPlanner(result);
-          setGetMonth(Object.keys(result));
+          if (result === "Too many requests" || result === null) {
+            result == null
+              ? toast.error("Something went wrong.")
+              : toast.error("Too many requests. Try again in a min.");
+          } else {
+            setPlanner(result);
+            setGetMonth(Object.keys(result));
+            localStorage.setItem("studentCalendar", JSON.stringify(result));
+          }
           setLoading(false);
         })
         .catch((error) => console.error(error));
@@ -75,7 +96,10 @@ const Calendar = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      scrollRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }, 500);
   }, [currentMonthID, planner]);
   return (

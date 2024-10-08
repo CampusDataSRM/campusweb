@@ -10,6 +10,7 @@ import { pageNames } from "@/components/global/navbar/page-link";
 import { getTimetableData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const Timetable = () => {
   const router = useRouter();
@@ -23,32 +24,54 @@ const Timetable = () => {
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
     } else {
-      const rawData = localStorage.getItem("studentData");
-      const dataStudent = JSON.parse(rawData);
-      const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
-      const myHeaders = new Headers();
-      myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+      if (localStorage.getItem("studentTimetable")) {
+        const res = JSON.parse(localStorage.getItem("studentTimetable"));
+        setTimetable(res);
+        setDayOrders(Object.keys(res.timetable && res.timetable));
+        setSelectedDay("Day" + res?.day_order);
+        setCurrentDayOrder(res?.day_order);
+        setLoading(false);
+      } else {
+        const rawData = localStorage.getItem("studentData");
+        const dataStudent = JSON.parse(rawData);
+        const studentBatch =
+          dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        const myHeaders = new Headers();
+        myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow",
-        cache: "no-store",
-      };
+        const requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+          redirect: "follow",
+          cache: "no-store",
+        };
 
-      fetch(
-        `${baseURL}/api/auth/timetable/${studentBatch}`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          setTimetable(result);
-          setDayOrders(Object.keys(result.timetable && result.timetable));
-          setSelectedDay(result && "Day" + result?.day_order);
-          setCurrentDayOrder(result?.day_order);
-          setLoading(false);
-        })
-        .catch((error) => console.error(error));
+        fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
+          .then((response) => {
+            if (typeof response === "string") {
+              return null;
+            } else if (response.status === 429) {
+              return "Too many requests";
+            } else if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch data");
+            }
+          })
+          .then((result) => {
+            if (result === "Too many requests") {
+              toast.error("Too many requests. Try again in a min.");
+            } else {
+              setTimetable(result);
+              localStorage.setItem("studentTimetable", JSON.stringify(result));
+              setDayOrders(Object.keys(result.timetable && result.timetable));
+              setSelectedDay("Day" + result?.day_order);
+              setCurrentDayOrder(result?.day_order);
+            }
+            setLoading(false);
+          })
+          .catch((error) => console.error(error));
+      }
     }
   }, []);
 
