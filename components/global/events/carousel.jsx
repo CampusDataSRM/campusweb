@@ -119,6 +119,11 @@ const EventCarousel = () => {
                               className="rounded-t-lg w-[370px] h-[175px] sm:w-full sm:h-[225px] object-contain backdrop-blur"
                               onClick={() => handleEventClick(event)}
                             />
+                            <img
+                            src={event.logo}
+                            alt="Club Logo"
+                            className="w-10 h-10 rounded-md object-cover absolute bottom-2 right-2"
+                             />
                           </div>
                         </SwiperSlide>
                       ))}

@@ -24,10 +24,10 @@ const UpdatePassword = () => {
     if (Cookies.get("clubAuth")) {
       if (authExpiry(Cookies.get("clubAuth"))) {
         Cookies.remove("clubAuth");
-        router.push("/");
+        router.push("/client/login/club");
       }
     } else {
-      router.push("/");
+      router.push("/client/login/club");
     }
   }, []);
 

@@ -31,7 +31,7 @@ const Dashboard = () => {
     if (Cookies.get("clubAuth")) {
       if (authExpiry(Cookies.get("clubAuth"))) {
         Cookies.remove("clubAuth");
-        router.push("/");
+        router.push("/client/login/club");
       } else {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -58,7 +58,7 @@ const Dashboard = () => {
           });
       }
     } else {
-      router.push("/");
+      router.push("/client/login/club");
     }
   }, []);
 
@@ -72,13 +72,13 @@ const Dashboard = () => {
   ];
   const sessionLogout = () => {
     Cookies.remove("clubAuth");
-    router.push("/");
+    router.push("/client/login/club");
   };
   
   return (
     <>
-      <div className="px-3 max-h-screen overflow-auto">
-        <div className="py-10">
+      <div className="px-3 pt-3 max-h-screen overflow-auto">
+        <div className="py-5">
           <img
             src="/logo.svg"
             alt="Campus Web"

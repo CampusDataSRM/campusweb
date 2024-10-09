@@ -36,7 +36,7 @@ const UpdateClubProfile = () => {
     if (Cookies.get("clubAuth")) {
       if (authExpiry(Cookies.get("clubAuth"))) {
         Cookies.remove("clubAuth");
-        router.push("/");
+        router.push("/client/login/club");
       } else {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${Cookies.get("clubAuth")}`);
@@ -73,7 +73,7 @@ const UpdateClubProfile = () => {
           .catch((error) => console.error(error));
       }
     } else {
-      router.push("/");
+      router.push("/client/login/club");
     }
   }, [profileUpdate]);
 
