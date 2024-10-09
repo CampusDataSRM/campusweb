@@ -9,7 +9,6 @@ import LineChart from "@/components/global/graph/line";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 
 const Marks = () => {
   const router = useRouter();
@@ -24,7 +23,6 @@ const Marks = () => {
       const dataStudent = JSON.parse(rawData);
       setTestreport(dataStudent?.testPerformances);
       setLoading(false);
-      toast && toast.success("Data fetched successfully");
     }
   }, []);
 
