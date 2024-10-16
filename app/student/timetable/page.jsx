@@ -8,12 +8,14 @@ import Cookies from "js-cookie";
 import Loader from "@/components/global/loader";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getTimetableData } from "@/functions/api/student";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 
 const Timetable = () => {
   const router = useRouter();
+  const query = useSearchParams();
+  
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,8 +30,8 @@ const Timetable = () => {
         const res = JSON.parse(localStorage.getItem("studentTimetable"));
         setTimetable(res);
         setDayOrders(Object.keys(res.timetable && res.timetable));
-        setSelectedDay("Day" + res?.day_order);
-        setCurrentDayOrder(res?.day_order);
+        setSelectedDay("Day" + (query.get("do") || res?.day_order));
+        setCurrentDayOrder(query.get("do") || res?.day_order);
         setLoading(false);
       } else {
         const rawData = localStorage.getItem("studentData");
@@ -65,8 +67,8 @@ const Timetable = () => {
               setTimetable(result);
               localStorage.setItem("studentTimetable", JSON.stringify(result));
               setDayOrders(Object.keys(result.timetable && result.timetable));
-              setSelectedDay("Day" + result?.day_order);
-              setCurrentDayOrder(result?.day_order);
+              setSelectedDay("Day" + (query.get("do") || res?.day_order));
+              setCurrentDayOrder(query.get("do") || res?.day_order);
             }
             setLoading(false);
           })

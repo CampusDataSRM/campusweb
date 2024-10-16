@@ -8,6 +8,7 @@ import { pageNames } from "@/components/global/navbar/page-link";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 const Calendar = () => {
   const router = useRouter();
@@ -189,7 +190,7 @@ const Calendar = () => {
                                       {item.Date}
                                     </span>
                                   </div>
-                                  <div
+                                  <Link href={`/student/timetable?do=${item.Dayorder}`}
                                     className={`w-full text-theme_text_normal flex justify-between gap-2 items-center rounded-xl px-3 py-1 ${
                                       item.Event.includes("Holiday") ||
                                       item.Dayorder == "-"
@@ -214,7 +215,7 @@ const Calendar = () => {
                                     <span className="overflow-hidden text-ellipsis text-sm tracking-wide whitespace-nowrap w-[17%]">
                                       {`DO ${item.Dayorder}`}
                                     </span>
-                                  </div>
+                                  </Link>
                                 </div>
                               )
                             )}
