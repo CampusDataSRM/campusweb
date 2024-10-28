@@ -49,13 +49,22 @@ const EventCarousel = () => {
     return dateRange.split(" to ")[0];
   };
 
-  const sortedEvents = events?.events?.sort((a, b) => {
-    if (a.club_name === "The Campus Web") return -1;
-    if (b.club_name === "The Campus Web") return 1;
-    const dateA = new Date(extractStartDate(a.dates));
-    const dateB = new Date(extractStartDate(b.dates));
-    return dateB - dateA;
-  });
+  const sortEventsByDate = (events) => {
+    const currentDate = new Date();
+    
+    return events?.sort((a, b) => {
+      const dateA = new Date(extractStartDate(a?.dates));
+      const dateB = new Date(extractStartDate(b?.dates));
+      
+      // Calculate absolute difference from current date
+      const diffA = Math.abs(currentDate - dateA);
+      const diffB = Math.abs(currentDate - dateB);
+      
+      return diffA - diffB;
+    });
+  };
+
+  const sortedEvents = sortEventsByDate(events?.events);
 
   return (
     <>
@@ -105,8 +114,6 @@ const EventCarousel = () => {
                 >
                   {sortedEvents &&
                     sortedEvents
-                      .slice(0)
-                      .reverse()
                       .filter(
                         (event) => !event.club_name.includes("TCW-20240916")
                       )
