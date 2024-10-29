@@ -142,7 +142,7 @@ const Timetable = () => {
                     ).length === 0 && (
                       <div className="theme_box_bg px-4 py-6">
                         <span className="text-theme_text_normal flex justify-center">
-                          No classes scheduled for today
+                          No classes scheduled for {query.get("do") ? "this day" : "today"}
                         </span>
                       </div>
                     )}
