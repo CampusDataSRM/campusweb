@@ -66,7 +66,7 @@ const ClubLogin = () => {
       .then((result) => {
         if (result.status === "success") {
           Cookies.set("clubAuth", result.token, { expires: 2 });
-          Cookies.set("clubLoggedIn", true, { expires: 7 });
+          Cookies.set("clubLoggedIn", true, { expires: 365 });
           router.push("/club/admin/dashboard");
         } else {
           if (result.status === "fail") {
