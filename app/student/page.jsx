@@ -55,6 +55,8 @@ const Student = () => {
         .then((response) => {
           if (typeof response === "string") {
             return null;
+          }else if(response.status === 500) {
+            sessionLogout()
           } else if (response.status === 429) {
             return "Too many requests";
           } else if (response.ok) {
@@ -79,10 +81,20 @@ const Student = () => {
         })
         .catch((error) => console.error(error));
     }
+
+    // const cookieDate = localStorage.getItem("cookieDate");
+    // let dateDifference = 0;
+    // if (cookieDate) {
+    //   dateDifference = (new Date() - new Date(cookieDate)) / (1000 * 60 * 60 * 24);
+    // }
+    // if (dateDifference > 25 || !cookieDate) {
+    // sessionLogout();
+    // }
+
   }, []);
 
   const sessionLogout = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -131,7 +143,7 @@ const Student = () => {
                     </div>
                   ) : (
                     <span className="text-base font-normal tracking-widest text-theme_text_normal">
-                      {studentName.length > 20
+                      {studentName?.length > 20
                         ? `${studentName.slice(0, 20)}...`
                         : toTitleCase(studentName)}
                     </span>

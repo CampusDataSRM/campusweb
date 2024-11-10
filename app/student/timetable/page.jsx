@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 const Timetable = () => {
   const router = useRouter();
   const query = useSearchParams();
-  
+
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,14 @@ const Timetable = () => {
       if (localStorage.getItem("studentTimetable")) {
         const res = JSON.parse(localStorage.getItem("studentTimetable"));
         setTimetable(res);
-        setDayOrders(Object.keys(res.timetable && res.timetable));
+
+        
+        if (res?.timetable) {
+          setDayOrders(Object.keys(res.timetable));
+        } else {
+          setDayOrders([]);
+        }
+
         setSelectedDay("Day" + (query.get("do") || res?.day_order));
         setCurrentDayOrder(query.get("do") || res?.day_order);
         setLoading(false);
@@ -50,8 +57,12 @@ const Timetable = () => {
 
         fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
           .then((response) => {
+            console.log(" : ", response);
+
             if (typeof response === "string") {
               return null;
+            } else if (response.status === 500) {
+              sessionLogout();
             } else if (response.status === 429) {
               return "Too many requests";
             } else if (response.ok) {
@@ -76,6 +87,28 @@ const Timetable = () => {
       }
     }
   }, []);
+
+  const sessionLogout = (e) => {
+    e?.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        localStorage.clear();
+        Cookies.remove("X-CSRF-Token");
+        router.push("/");
+        console.log(result);
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <>
@@ -142,7 +175,8 @@ const Timetable = () => {
                     ).length === 0 && (
                       <div className="theme_box_bg px-4 py-6">
                         <span className="text-theme_text_normal flex justify-center">
-                          No classes scheduled for {query.get("do") ? "this day" : "today"}
+                          No classes scheduled for{" "}
+                          {query.get("do") ? "this day" : "today"}
                         </span>
                       </div>
                     )}

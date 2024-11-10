@@ -67,6 +67,10 @@ const StudentLogin = () => {
         ) {
           // Cookies.remove("X-CSRF-Token");
           Cookies.set("X-CSRF-Token", result.Cookies, { expires: 365 });
+
+            // const cookieDate = new Date().toLocaleDateString();
+            // localStorage.setItem("cookieDate", cookieDate);
+            
           // Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {

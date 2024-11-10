@@ -29,7 +29,7 @@ const DashboardTimetable = () => {
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
     const studentBatch =
-      dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+      (dataStudent?.comboBatch)?dataStudent?.comboBatch[dataStudent?.comboBatch?.length - 1]:null; // Go to error page when data is not available instead of setting null
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
