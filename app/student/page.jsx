@@ -55,8 +55,8 @@ const Student = () => {
         .then((response) => {
           if (typeof response === "string") {
             return null;
-          }else if(response.status === 500) {
-            sessionLogout()
+          } else if (response.status === 500) {
+            sessionLogout();
           } else if (response.status === 429) {
             return "Too many requests";
           } else if (response.ok) {
@@ -90,7 +90,6 @@ const Student = () => {
     // if (dateDifference > 25 || !cookieDate) {
     // sessionLogout();
     // }
-
   }, []);
 
   const sessionLogout = (e) => {
@@ -152,6 +151,19 @@ const Student = () => {
               </div>
             </div>
             <div className="flex gap-2 items-center justify-end">
+              {swapToClub && (
+                <button
+                  className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
+                  onClick={() => router.push("/client/login/club")}
+                >
+                  <span>Club</span>
+                  <img
+                    src="/icons/swap/white.svg"
+                    alt="Club Swap"
+                    className="w-4 h-auto"
+                  />
+                </button>
+              )}
               <div>
                 <RWebShare
                   data={{
@@ -169,19 +181,6 @@ const Student = () => {
                   </button>
                 </RWebShare>
               </div>
-              {swapToClub && (
-                <button
-                  className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
-                  onClick={() => router.push("/client/login/club")}
-                >
-                  <span>Club</span>
-                  <img
-                    src="/icons/swap/white.svg"
-                    alt="Club Swap"
-                    className="w-4 h-auto"
-                  />
-                </button>
-              )}
             </div>
           </div>
           <div className="grid grid-cols-2 justify-center gap-2 mt-2">
