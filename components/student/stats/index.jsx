@@ -49,7 +49,7 @@ const YourStats = ({ courseData, testPerformance }) => {
             onClick={() => Router.push(stat.goTo)}
           >
             <span className="text-xl text-theme_text_normal font-semibold tracking-wide text-center text-nowrap">
-              {stat.value}
+              {stat.value.includes("NaN") ? "NA" : stat.value}
             </span>
             <span className="text-base text-theme_text_normal/80 font-medium tracking-wide">
               {stat.name}

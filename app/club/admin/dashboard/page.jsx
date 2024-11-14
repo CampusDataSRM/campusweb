@@ -44,10 +44,7 @@ const Dashboard = () => {
           cache: "no-store",
         };
 
-        fetch(
-          `${baseURL}/api/users/club-events`,
-          requestOptions
-        )
+        fetch(`${baseURL}/api/users/club-events`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             setClub(result.data);
@@ -74,7 +71,9 @@ const Dashboard = () => {
     Cookies.remove("clubAuth");
     router.push("/client/login/club");
   };
-  
+
+  const testName = "Club Dashboard Page Component Test Case 1 - Check for the presence of the component";
+
   return (
     <>
       <div className="px-3 pt-3 max-h-screen overflow-auto">
@@ -101,27 +100,42 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <span className="text-base font-normal tracking-widest text-theme_text_normal">
-                  {club?.club?.name}
+                  {club?.club?.name?.length > 18
+                    ? `${club?.club?.name.slice(0, 18)}...`
+                    : club?.club?.name}
                 </span>
               )}
             </div>
           </div>
-          <button
-            className="flex items-center gap-2 text-theme_text_primary text-lg py-2 font-mono font-semibold"
-            onClick={sessionLogout}
-            type="button"
-            title="Logout"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20px"
-              viewBox="0 -960 960 960"
-              width="20px"
-              fill="#91c3e7"
+          <div className="flex gap-2 items-center justify-end">
+            <button
+              className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
+              onClick={() => router.push("/")}
             >
-              <path d="M480-48q-89.64 0-168.48-34.02-78.84-34.02-137.16-92.34-58.32-58.32-92.34-137.16T48-480q0-90.6 33.5-168.8Q115-727 174-786l75 75q-44.95 44.55-69.97 103.28Q154-549 154-480.33 154-343 248.74-248.5 343.49-154 480-154t231.26-94.74Q806-343.49 806-480q0-69-25.03-127.72Q755.95-666.45 711-711l75-75q59 59 92.5 137.2Q912-570.6 912-480q0 89.52-33.5 168.26t-91.99 137.16q-58.48 58.42-137.55 92.5Q569.9-48 480-48Zm-53-379v-485h106v485H427Z" />
-            </svg>
-          </button>
+              <span>Student</span>
+              <img
+                src="/icons/swap/white.svg"
+                alt="Club Swap"
+                className="w-4 h-auto"
+              />
+            </button>
+            <button
+              className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
+              onClick={sessionLogout}
+              type="button"
+              title="Logout"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="16px"
+                viewBox="0 -960 960 960"
+                width="16px"
+                fill="#ffffff"
+              >
+                <path d="M480-48q-89.64 0-168.48-34.02-78.84-34.02-137.16-92.34-58.32-58.32-92.34-137.16T48-480q0-90.6 33.5-168.8Q115-727 174-786l75 75q-44.95 44.55-69.97 103.28Q154-549 154-480.33 154-343 248.74-248.5 343.49-154 480-154t231.26-94.74Q806-343.49 806-480q0-69-25.03-127.72Q755.95-666.45 711-711l75-75q59 59 92.5 137.2Q912-570.6 912-480q0 89.52-33.5 168.26t-91.99 137.16q-58.48 58.42-137.55 92.5Q569.9-48 480-48Zm-53-379v-485h106v485H427Z" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-2 text-theme_text_normal font-medium mt-2">
           {clubNav.map((nav, index) => (
@@ -188,7 +202,7 @@ const Dashboard = () => {
                   key={index}
                 >
                   <div className="text-theme_text_normal flex justify-center items-center gap-1 text-xl text-bold">
-                    {`${stat.value} ${stat.icon ? 'x' :''}`}
+                    {`${stat.value} ${stat.icon ? "x" : ""}`}
                     {stat.icon && <img src={stat.icon} />}
                   </div>
                   <div className="text-theme_text_primary font-medium tracking-wide text-sm">
