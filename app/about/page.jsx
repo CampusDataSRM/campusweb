@@ -12,7 +12,7 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 const AboutTeam = () => {
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-24">
         <Navbar items={pageNames.filter((item) => item !== "About us")} />
         <FloatingNavbar />
         <main className="px-3 pb-3">
