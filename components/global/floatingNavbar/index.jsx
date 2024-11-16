@@ -56,7 +56,7 @@ const FloatingNavbar = () => {
 
   return (
     <div className="relative">
-          <nav className="fixed bottom-5 md:w-full  max-w-[615px] md:mx-0 mx-5 z-50 bg-black/50 backdrop-blur-lg rounded-xl shadow-lg py-1">
+          <nav className="fixed bottom-4 md:w-full  max-w-[615px] md:mx-0 mx-5 z-50 bg-black/50 backdrop-blur-lg rounded-xl shadow-lg py-1">
         <ul className="flex justify-around relative md:max-w-[615px] w-[90vw]">
           {studentPageLink.slice(0, 5).map((item) => (
             <li
@@ -68,14 +68,14 @@ const FloatingNavbar = () => {
                   src={item.icon+(currentRoute === item.link ? "secondary.svg" : "primary.svg")}
                   alt={item.name}
                   className={`w-6 h-6 mb-1 ${
-                    currentRoute === item.link ? "scale-125" : ""
+                    currentRoute === item.link ? "scale-125 opacity-100" : "opacity-80"
                   }`}
                 />
                 <span
                   className={` ${
                     currentRoute === item.link
-                      ? "font-bold text-sm text-theme_secondary"
-                      : "text-gray-50 text-xs"
+                      ? "font-extrabold text-sm text-theme_primary"
+                      : "text-gray-200 text-xs"
                   }`}
                 >
                   {item.name.slice(0, 5)}
@@ -93,10 +93,10 @@ const FloatingNavbar = () => {
                 alt="More"
                 className="w-6 h-6 mb-1"
               />
-              <span className="text-xs text-gray-50">More</span>
+              <span className="text-xs text-gray-200">More</span>
             </button>
             {showMore && (
-              <ul className="absolute bottom-[4.4rem] -right-2 bg-black/70 backdrop-filter backdrop-blur-2xl rounded-xl shadow-lg p-2 space-y-2">
+              <ul className="absolute bottom-[4.4rem] -right-2 bg-black/80 backdrop-filter backdrop-blur-2xl rounded-xl shadow-lg p-2 space-y-2">
                 {studentPageLink.slice(5).reverse().map((item) => (
                   <li
                     key={item.name}
@@ -116,8 +116,8 @@ const FloatingNavbar = () => {
                       <span
                         className={`${
                           currentRoute === item.link
-                            ? "font-bold text-sm text-theme_secondary"
-                      : "text-gray-50 text-xs"
+                            ? "font-extrabold text-sm text-theme_primary"
+                      : "text-gray-200 text-xs"
                         }`}
                       >
                         {item.name.slice(0, 6)}
