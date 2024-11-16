@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const ViewClub = () => {
   const router = useRouter();
@@ -48,6 +49,7 @@ const ViewClub = () => {
     <>
       <div className="max-h-screen overflow-auto">
         <Navbar items={["Dashboard", "Timetable", "Attendance", "Events"]} />
+        <FloatingNavbar />
         <main className="px-3">
           <SectionTitle
             title="Profile"

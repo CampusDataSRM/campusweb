@@ -9,6 +9,7 @@ import LineChart from "@/components/global/graph/line";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
 import { useRouter } from "next/navigation";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Marks = () => {
   const router = useRouter();
@@ -48,8 +49,9 @@ const Marks = () => {
 
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-floatingNavHeight">
         <Navbar items={pageNames.filter((item) => item !== "Marks")} />
+        <FloatingNavbar />
         <main className="px-3">
           <SectionTitle title="Marks" />
           {testreport ? (

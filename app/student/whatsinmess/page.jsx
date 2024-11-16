@@ -7,6 +7,7 @@ import Loader from "@/components/global/loader";
 import SwipeUpDrawer from "../../../components/SwipeUpDrawer/page";
 import PrevNextButton from "../../../components/PrevNextButton/page";
 import { pageNames } from "@/components/global/navbar/page-link";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const WhatsinmessPage = () => {
   const [menu, setMenu] = useState();
@@ -128,6 +129,7 @@ const WhatsinmessPage = () => {
   return (
     <div className="max-h-screen overflow-auto">
       <Navbar items={pageNames.filter(item => item !== "WhatsInMess")} />
+      <FloatingNavbar />
 
       <div className="px-4">
         {/* Heading and settings button */}

@@ -31,6 +31,9 @@ module.exports = {
             transform: 'translate3d(0, -1rem, 0)'
           }
         }
+      },
+      padding: {
+        'floatingNavHeight': '6rem',
       }
     },
   },

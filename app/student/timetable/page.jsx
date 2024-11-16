@@ -11,6 +11,7 @@ import { getTimetableData } from "@/functions/api/student";
 import { useRouter, useSearchParams } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Timetable = () => {
   const router = useRouter();
@@ -114,6 +115,7 @@ const Timetable = () => {
     <>
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Timetable")} />
+        <FloatingNavbar />
         <main className="px-4">
           <SectionTitle title="Timetable" />
           {loading ? (
@@ -122,7 +124,7 @@ const Timetable = () => {
             </div>
           ) : (
             <>
-              <div className="theme_box_bg backdrop-blur-lg px-6 py-3 flex gap-6 items-center absolute bottom-5 left-1/2 -translate-x-1/2">
+              <div className="theme_box_bg backdrop-blur-lg px-6 py-3 flex gap-6 items-center mb-5">
                 {dayOrders.map((day, index) => (
                   <button
                     key={index}
@@ -139,7 +141,7 @@ const Timetable = () => {
               </div>
               <div className="grid grid-cols-1 gap-5 -mt-2">
                 <div className="grid grid-cols-1 gap-4 pb-3">
-                  <div className={"grid grid-cols-1 gap-4 pb-20"}>
+                  <div className={"grid grid-cols-1 gap-4 pb-floatingNavHeight"}>
                     {Object.keys(
                       timetable.timetable
                         ? timetable.timetable[selectedDay]

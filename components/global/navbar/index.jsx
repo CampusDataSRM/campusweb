@@ -13,7 +13,7 @@ const Navbar = ({ items }) => {
           <div onClick={() => router.push("/student")}>
             <img src="/logo.svg" alt="logo" className="h-7" />
           </div>
-          {isOpen ? (
+          {/* {isOpen ? (
             <button onClick={() => setIsOpen(false)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ const Navbar = ({ items }) => {
                 <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" />
               </svg>
             </button>
-          )}
+          )} */}
         </div>
         <div className={`absolute bottom-0 h-auto overflow-hidden w-screen max-w-4xl ${isOpen ? "z-50" : "-z-50"}`}>
           <SwipeUpDrawer isDrawer={isOpen ? "nav" : null} studentPageLink={studentPageLink} items={items} setDrawer={setIsOpen} />

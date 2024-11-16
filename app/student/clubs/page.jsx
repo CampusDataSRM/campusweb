@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Clubs = () => {
   const router = useRouter();
@@ -48,8 +49,9 @@ const Clubs = () => {
   const [clubQuery, setClubQuery] = useState("");
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-floatingNavHeight">
         <Navbar items={pageNames.filter((item) => item !== "Clubs")} />
+        <FloatingNavbar />
         <main className="px-3">
           <SectionTitle
             title="Clubs"

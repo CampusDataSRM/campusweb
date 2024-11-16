@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Calendar = () => {
   const router = useRouter();
@@ -105,8 +106,9 @@ const Calendar = () => {
   }, [currentMonthID, planner]);
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-floatingNavHeight">
         <Navbar items={pageNames.filter((item) => item !== "Calendar")} />
+        <FloatingNavbar />
         <main className="px-3 pb-3">
           <SectionTitle
             title="Calendar"

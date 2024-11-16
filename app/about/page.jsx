@@ -6,6 +6,7 @@ import SectionTitle from "@/components/global/section-title";
 import { pageNames } from "@/components/global/navbar/page-link";
 import TeamCard from "@/components/global/team/card";
 import { teamData, contactData } from "@/components/global/team/data";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 
 const AboutTeam = () => {
@@ -13,6 +14,7 @@ const AboutTeam = () => {
     <>
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "About us")} />
+        <FloatingNavbar />
         <main className="px-3 pb-3">
           <div className="flex justify-start items-center gap-3 text-xl pt-6 pb-3 font-medium">
             <img src="/icons/us/secondary.svg" alt="team" className="h-4" />

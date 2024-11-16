@@ -11,6 +11,7 @@ import {
 } from "@/components/global/navbar/page-link";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Events = () => {
   const router = useRouter();
@@ -76,8 +77,9 @@ const Events = () => {
   const [eventQuery, setEventQuery] = useState("");
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-floatingNavHeight">
         <Navbar items={pageNames.filter((item) => item !== "Events")} />
+        <FloatingNavbar />
         <main className="px-4">
           <SectionTitle title="Events" icon={"/icons/event/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">

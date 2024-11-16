@@ -19,6 +19,7 @@ import {
   getTimetableData,
 } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Planner = () => {
   const router = useRouter();
@@ -182,8 +183,9 @@ const Planner = () => {
 
   return (
     <>
-      <div className="max-h-screen overflow-auto">
+      <div className="max-h-screen overflow-auto pb-floatingNavHeight">
         <Navbar items={pageNames.filter((item) => item !== "Planner")} />
+        <FloatingNavbar />
         <main className="px-3 pb-3">
           <SectionTitle title="Planner" />
           <CWDateRangePicker

@@ -12,6 +12,7 @@ import InstallButton from "@/components/global/InstallButton";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import { RWebShare } from "react-web-share";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Student = () => {
   const router = useRouter();
@@ -115,8 +116,9 @@ const Student = () => {
   };
   return (
     <>
+      <FloatingNavbar />
       <InstallButton />
-      <div className="py-4 max-h-screen overflow-auto">
+      <div className="py-4 max-h-screen overflow-auto pb-floatingNavHeight">
         <div className="py-5">
           <img
             src="/logo.svg"

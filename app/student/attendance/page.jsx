@@ -9,6 +9,7 @@ import { pageNames } from "@/components/global/navbar/page-link";
 import { getStudentData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import FloatingNavbar from "@/components/global/floatingNavbar";
 
 const Attendance = () => {
   const router = useRouter();
@@ -43,8 +44,9 @@ const Attendance = () => {
   }, []);
   return (
     <>
-      <div className="pb-2 h-screen overflow-y-auto">
+      <div className="pb-floatingNavHeight h-screen overflow-y-auto">
         <Navbar items={pageNames.filter((item) => item !== "Attendance")} />
+        <FloatingNavbar />
         <div className="px-3">
           <SectionTitle title="Attendance" />
           {loading ? (
