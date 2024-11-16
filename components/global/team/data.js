@@ -90,7 +90,7 @@ const contactData = [
     links: [
       {
         name: "whatsapp",
-        link: "https://chat.whatsapp.com/CPzWkEnCXKEH897pgiNcMy",
+        link: "https://chat.whatsapp.com/BeywTQOA1hlD1krovsr8sm",
       },
       { name: "discord", link: "https://discord.gg/z254yum6" },
     ],

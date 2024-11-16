@@ -51,7 +51,7 @@ const studentPageLink = [
     },
     {
         name: "WhatsApp",
-        link: "https://chat.whatsapp.com/CPzWkEnCXKEH897pgiNcMy",
+        link: "https://chat.whatsapp.com/BeywTQOA1hlD1krovsr8sm",
         icon: "/icons/whatsapp_nav/no-fill.svg",
    },
     {

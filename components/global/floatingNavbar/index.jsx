@@ -37,7 +37,7 @@ const studentPageLink = [
   { name: "About us", link: "/about", icon: "/icons/us/" },
   {
     name: "WhatsApp",
-    link: "https://chat.whatsapp.com/CPzWkEnCXKEH897pgiNcMy",
+    link: "https://chat.whatsapp.com/BeywTQOA1hlD1krovsr8sm",
     icon: "/icons/whatsapp_nav/",
   },
   { name: "Logout", link: "/", icon: "/icons/logout/" },
