@@ -212,7 +212,7 @@ const Calendar = () => {
                                           : "Holiday"
                                         : item.Event
                                         ? item.Event
-                                        : "Nothing Today"}
+                                        : "Regular Classes"}
                                     </span>
                                     <span className="overflow-hidden text-ellipsis text-sm tracking-wide whitespace-nowrap w-[17%]">
                                       {`DO ${item.Dayorder}`}
