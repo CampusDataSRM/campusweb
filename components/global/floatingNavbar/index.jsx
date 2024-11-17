@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 const studentPageLink = [
-  { name: "Dashboard", link: "/student", icon: "/icons/home/" },
+  { name: "Home", link: "/student", icon: "/icons/home/" },
   {
-    name: "Attendance",
+    name: "Atten",
     link: "/student/attendance",
     icon: "/icons/percent/",
   },
   {
-    name: "Timetable",
+    name: "TimeT",
     link: "/student/timetable",
     icon: "/icons/clock/",
   },
@@ -19,7 +19,7 @@ const studentPageLink = [
     icon: "/icons/bar-chart/",
   },
   {
-    name: "Calendar",
+    name: "Calen",
     link: "/student/calendar",
     icon: "/icons/calender/",
   },
@@ -30,7 +30,7 @@ const studentPageLink = [
     icon: "/icons/user-group/",
   },
   {
-    name: "WhatsInMess",
+    name: "WIM",
     link: "/student/whatsinmess",
     icon: "/icons/whatsinmess/",
   },
@@ -55,9 +55,9 @@ const FloatingNavbar = () => {
   }, []);
 
   return (
-    <div className="relative">
-          <nav className="fixed bottom-4 md:w-full  max-w-[615px] md:mx-0 mx-5 z-50 bg-black/50 backdrop-blur-lg rounded-xl shadow-lg py-1">
-        <ul className="flex justify-around relative md:max-w-[615px] w-[90vw]">
+    <div className="fixed bottom-4 z-50 w-full px-2 max-w-[630px]">
+      <nav className="w-full md:mx-0  rounded-xl bg-black/50 backdrop-blur-lg shadow-lg py-1">
+        <ul className="flex justify-around relative">
           {studentPageLink.slice(0, 5).map((item) => (
             <li
               key={item.name}
@@ -65,25 +65,32 @@ const FloatingNavbar = () => {
             >
               <a href={item.link} className={`flex flex-col items-center `}>
                 <img
-                  src={item.icon+(currentRoute === item.link ? "secondary.svg" : "primary.svg")}
+                  src={
+                    item.icon +
+                    (currentRoute === item.link
+                      ? "secondary.svg"
+                      : "primary.svg")
+                  }
                   alt={item.name}
                   className={`w-6 h-6 mb-1 ${
-                    currentRoute === item.link ? "scale-125 opacity-100" : "opacity-80"
+                    currentRoute === item.link
+                      ? "scale-125 opacity-100"
+                      : "opacity-80"
                   }`}
                 />
                 <span
                   className={` ${
                     currentRoute === item.link
                       ? "font-extrabold text-sm text-theme_primary"
-                      : "text-gray-200 text-xs"
+                      : "text-gray-200/80 text-xs font-semibold"
                   }`}
                 >
-                  {item.name.slice(0, 5)}
+                  {item.name.slice(0, 7)}
                 </span>
               </a>
             </li>
           ))}
-          <li className="relative flex flex-col items-center p-2">
+          <li className="flex flex-col items-center p-2">
             <button
               onClick={handleMoreClick}
               className="flex flex-col items-center"
@@ -93,39 +100,89 @@ const FloatingNavbar = () => {
                 alt="More"
                 className="w-6 h-6 mb-1"
               />
-              <span className="text-xs text-gray-200">More</span>
+              <span className="text-xs text-gray-200/80">More</span>
             </button>
             {showMore && (
-              <ul className="absolute bottom-[4.4rem] -right-2 bg-black/80 backdrop-filter backdrop-blur-2xl rounded-xl shadow-lg p-2 space-y-2">
-                {studentPageLink.slice(5).reverse().map((item) => (
-                  <li
-                    key={item.name}
-                    className="flex flex-col items-center px-[5px] py-2"
-                  >
-                    <a
-                      href={item.link}
-                      className={`flex flex-col items-center `}
-                    >
-                      <img
-                        src={item.icon+(currentRoute === item.link ? "secondary.svg" : "primary.svg")}
-                        alt={item.name}
-                        className={`w-6 h-6 mb-1 ${
-                          currentRoute === item.link ? "scale-125" : ""
-                        }`}
-                      />
-                      <span
-                        className={`${
-                          currentRoute === item.link
-                            ? "font-extrabold text-sm text-theme_primary"
-                      : "text-gray-200 text-xs"
-                        }`}
+              <>
+              {/* for background blur */}
+                <ul className="absolute bottom-[4.4rem] right-0 bg-black rounded-xl shadow-lg p-2 space-y-2 blur-md">
+                  {studentPageLink
+                    .slice(5)
+                    .reverse()
+                    .map((item) => (
+                      <li
+                        key={item.name}
+                        className="flex flex-col items-center px-[5px] py-2"
                       >
-                        {item.name.slice(0, 6)}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                        <a
+                          href={item.link}
+                          className={`flex flex-col items-center `}
+                        >
+                          <img
+                            src={
+                              item.icon +
+                              (currentRoute === item.link
+                                ? "secondary.svg"
+                                : "primary.svg")
+                            }
+                            alt={item.name}
+                            className={`w-6 h-6 mb-1 ${
+                              currentRoute === item.link ? "scale-125" : ""
+                            }`}
+                          />
+                          <span
+                            className={`${
+                              currentRoute === item.link
+                                ? "font-extrabold text-sm text-theme_primary"
+                                : "text-gray-200/80 text-xs font-semibold"
+                            }`}
+                          >
+                            {item.name.slice(0, 6)}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+                {/* original menu */}
+                <ul className="absolute bottom-[4.4rem] right-0 bg-black/40 rounded-xl shadow-lg p-2 space-y-2">
+                  {studentPageLink
+                    .slice(5)
+                    .reverse()
+                    .map((item) => (
+                      <li
+                        key={item.name}
+                        className="flex flex-col items-center px-[5px] py-2"
+                      >
+                        <a
+                          href={item.link}
+                          className={`flex flex-col items-center `}
+                        >
+                          <img
+                            src={
+                              item.icon +
+                              (currentRoute === item.link
+                                ? "secondary.svg"
+                                : "primary.svg")
+                            }
+                            alt={item.name}
+                            className={`w-6 h-6 mb-1 ${
+                              currentRoute === item.link ? "scale-125" : ""
+                            }`}
+                          />
+                          <span
+                            className={`${
+                              currentRoute === item.link
+                                ? "font-extrabold text-sm text-theme_primary"
+                                : "text-gray-200/80 text-xs font-semibold"
+                            }`}
+                          >
+                            {item.name.slice(0, 6)}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+                </>
             )}
           </li>
         </ul>
