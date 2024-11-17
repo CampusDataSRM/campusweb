@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { baseURL } from "@/constants/baseURL";
 
 const studentPageLink = [
   { name: "Home", link: "/student", icon: "/icons/home/" },
@@ -50,9 +52,29 @@ const FloatingNavbar = () => {
 
   const handleMoreClick = () => setShowMore(!showMore);
 
-  useEffect(() => {
-    console.log(currentRoute);
-  }, []);
+  const sessionLogout = (e) => {
+    console.log("logout");
+
+    e?.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        localStorage.clear();
+        Cookies.remove("X-CSRF-Token");
+        router.push("/");
+        console.log(result);
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <div className="fixed bottom-4 z-50 w-full px-2 max-w-[630px]">
@@ -63,7 +85,16 @@ const FloatingNavbar = () => {
               key={item.name}
               className="flex flex-col items-center px-[5px] py-2"
             >
-              <a href={item.link} className={`flex flex-col items-center `}>
+              <button
+                onClick={
+                  item.name === "Logout"
+                    ? sessionLogout
+                    : item.name === "WhatsApp"
+                    ? () => router.replace(item.link)
+                    : () => router.push(item.link)
+                }
+                className={`flex flex-col items-center `}
+              >
                 <img
                   src={
                     item.icon +
@@ -87,7 +118,7 @@ const FloatingNavbar = () => {
                 >
                   {item.name.slice(0, 7)}
                 </span>
-              </a>
+              </button>
             </li>
           ))}
           <li className="flex flex-col items-center p-2">
@@ -104,8 +135,8 @@ const FloatingNavbar = () => {
             </button>
             {showMore && (
               <>
-              {/* for background blur */}
-                <ul className="absolute bottom-[4.4rem] right-0 bg-black rounded-xl shadow-lg p-2 space-y-2 blur-md">
+                {/* for background blur */}
+                <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c] rounded-xl shadow-lg p-2 space-y-2 blur">
                   {studentPageLink
                     .slice(5)
                     .reverse()
@@ -114,8 +145,8 @@ const FloatingNavbar = () => {
                         key={item.name}
                         className="flex flex-col items-center px-[5px] py-2"
                       >
-                        <a
-                          href={item.link}
+                        <button
+                          
                           className={`flex flex-col items-center `}
                         >
                           <img
@@ -139,12 +170,12 @@ const FloatingNavbar = () => {
                           >
                             {item.name.slice(0, 6)}
                           </span>
-                        </a>
+                        </button>
                       </li>
                     ))}
                 </ul>
                 {/* original menu */}
-                <ul className="absolute bottom-[4.4rem] right-0 bg-black/40 rounded-xl shadow-lg p-2 space-y-2">
+                <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c]/40 rounded-xl shadow-lg p-2 space-y-2">
                   {studentPageLink
                     .slice(5)
                     .reverse()
@@ -153,8 +184,15 @@ const FloatingNavbar = () => {
                         key={item.name}
                         className="flex flex-col items-center px-[5px] py-2"
                       >
-                        <a
-                          href={item.link}
+                        <button
+                          // href={item.link}
+                          onClick={
+                            item.name === "Logout"
+                              ? sessionLogout
+                              : item.name === "WhatsApp"
+                              ? () => router.replace(item.link)
+                              : () => router.push(item.link)
+                          }
                           className={`flex flex-col items-center `}
                         >
                           <img
@@ -178,11 +216,11 @@ const FloatingNavbar = () => {
                           >
                             {item.name.slice(0, 6)}
                           </span>
-                        </a>
+                        </button>
                       </li>
                     ))}
                 </ul>
-                </>
+              </>
             )}
           </li>
         </ul>
