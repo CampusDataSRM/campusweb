@@ -135,47 +135,8 @@ const FloatingNavbar = () => {
             </button>
             {showMore && (
               <>
-                {/* for background blur */}
-                <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c] rounded-xl shadow-lg p-2 space-y-2 blur">
-                  {studentPageLink
-                    .slice(5)
-                    .reverse()
-                    .map((item) => (
-                      <li
-                        key={item.name}
-                        className="flex flex-col items-center px-[5px] py-2"
-                      >
-                        <button
-                          
-                          className={`flex flex-col items-center `}
-                        >
-                          <img
-                            src={
-                              item.icon +
-                              (currentRoute === item.link
-                                ? "secondary.svg"
-                                : "primary.svg")
-                            }
-                            alt={item.name}
-                            className={`w-6 h-6 mb-1 ${
-                              currentRoute === item.link ? "scale-125" : ""
-                            }`}
-                          />
-                          <span
-                            className={`${
-                              currentRoute === item.link
-                                ? "font-extrabold text-sm text-theme_primary"
-                                : "text-gray-200/80 text-xs font-semibold"
-                            }`}
-                          >
-                            {item.name.slice(0, 6)}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                </ul>
                 {/* original menu */}
-                <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c]/40 rounded-xl shadow-lg p-2 space-y-2">
+                <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c]/95 rounded-xl shadow-lg p-2 space-y-2">
                   {studentPageLink
                     .slice(5)
                     .reverse()
