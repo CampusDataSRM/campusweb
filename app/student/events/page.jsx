@@ -147,7 +147,7 @@ const Events = () => {
                   })
                   .map((event, index) => (
                     <EventCard
-                      key={index}
+                      key={index+event.id}
                       event={event}
                       club={{ name: event.club_name, logo: event.logo }}
                       eventID={event.id}

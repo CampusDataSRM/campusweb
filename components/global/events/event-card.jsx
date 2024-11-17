@@ -130,7 +130,7 @@ const EventCard = ({
           {event?.labels &&
             event?.labels.map((value, index) => (
               <div
-                name={value}
+                name={value+value.id}
                 key={index}
                 className={
                   value.length > 0

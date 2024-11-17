@@ -65,7 +65,7 @@ const ViewClub = () => {
                 clubData.clubs
                   .filter((data) => data.id == clubID)
                   .map((club, index) => (
-                    <div key={index} className="w-full">
+                    <div key={index+club.id} className="w-full">
                       <ClubCard
                         key={index}
                         club={club}
@@ -143,7 +143,7 @@ const ViewClub = () => {
                               .reverse()
                               .map((event, index) => (
                                 <EventCard
-                                  key={index}
+                                  key={index+event.ID}
                                   event={event}
                                   club={{
                                     name: club.name,
