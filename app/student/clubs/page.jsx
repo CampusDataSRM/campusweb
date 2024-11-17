@@ -119,7 +119,7 @@ const Clubs = () => {
                   .sort((a, b) => b.popularity - a.popularity)
                   .map((club, index) => (
                     <ClubCard
-                      key={index}
+                      key={index+club.name}
                       club={club}
                       clubID={club?.id}
                       checkLiked={

@@ -87,7 +87,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
             club?.labels.map((tag, index) => (
               <div
                 name={tag}
-                key={index}
+                key={index+club.name}
                 className={
                   tag.length == 0
                     ? `hidden`
