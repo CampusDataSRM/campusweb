@@ -3,6 +3,7 @@ import { baseURL } from "@/constants/baseURL";
 
 // Student Data API
 const getStudentData = async (authToken) => {
+
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
 
