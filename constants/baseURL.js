@@ -1,3 +1,1 @@
-
-export const baseURL = "https://campuswebapi.up.railway.app";
-
+export const baseURL = process.env.NEXT_PUBLIC_SERVER;
