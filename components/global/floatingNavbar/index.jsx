@@ -36,6 +36,12 @@ const studentPageLink = [
     link: "/student/whatsinmess",
     icon: "/icons/whatsinmess/",
   },
+  
+  {
+    name: "CGPA",
+    link: "/student/cgpacalc",
+    icon: "/icons/CGPA/",
+},
   { name: "About us", link: "/about", icon: "/icons/us/" },
   {
     name: "WhatsApp",

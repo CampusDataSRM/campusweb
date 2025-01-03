@@ -45,6 +45,11 @@ const studentPageLink = [
         icon: "/whatsinmess_bulletpoint.svg",
     },
     {
+        name: "CGPA Calculator",
+        link: "/student/cgpacalc",
+        icon: "/icons/CGPA/primary.svg",
+    },
+    {
         name: "About us",
         link: "/about",
         icon: "/icons/us/primary.svg",
