@@ -20,12 +20,9 @@ const EventCarousel = () => {
     const requestOptions = {
       method: "GET",
       redirect: "follow",
-      cache: "no-cache", 
+      cache: "no-cache",
     };
-    fetch(
-      `${baseURL}/api/users/allevent`,
-      requestOptions
-    )
+    fetch(`${baseURL}/api/users/allevent`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         setEvents(result.data);
@@ -51,20 +48,24 @@ const EventCarousel = () => {
 
   const sortEventsByDate = (events) => {
     const currentDate = new Date();
-    
+
     return events?.sort((a, b) => {
       const dateA = new Date(extractStartDate(a?.dates));
       const dateB = new Date(extractStartDate(b?.dates));
-      
+
       // Calculate absolute difference from current date
       const diffA = Math.abs(currentDate - dateA);
       const diffB = Math.abs(currentDate - dateB);
-      
+
       return diffA - diffB;
     });
   };
 
   const sortedEvents = sortEventsByDate(events?.events);
+
+  const extractEndDate = (dateRange) => {
+    return dateRange.split(" to ")[1];
+  };
 
   return (
     <>
@@ -117,9 +118,18 @@ const EventCarousel = () => {
                       .filter(
                         (event) => !event.club_name.includes("TCW-20240916")
                       )
+                      .filter(
+                        (event) =>
+                          new Date(extractEndDate(event.dates)) >= new Date() || event.club_name == "The Campus Web"
+                      )
                       .map((event, index) => (
                         <SwiperSlide key={index}>
-                          <div style={{backgroundImage: `url(${event.banner_url})`}} className="bg-cover">
+                          <div
+                            style={{
+                              backgroundImage: `url(${event.banner_url})`,
+                            }}
+                            className="bg-cover"
+                          >
                             <img
                               src={event.banner_url}
                               alt={`slide-${index}`}
@@ -127,10 +137,10 @@ const EventCarousel = () => {
                               onClick={() => handleEventClick(event)}
                             />
                             <img
-                            src={event.logo}
-                            alt="Club Logo"
-                            className="w-10 h-10 rounded-md object-cover absolute bottom-2 right-2"
-                             />
+                              src={event.logo}
+                              alt="Club Logo"
+                              className="w-10 h-10 rounded-md object-cover absolute bottom-2 right-2"
+                            />
                           </div>
                         </SwiperSlide>
                       ))}

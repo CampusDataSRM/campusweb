@@ -32,10 +32,7 @@ const Events = () => {
         cache: "no-cache",
       };
 
-      fetch(
-        `${baseURL}/api/users/allevent`,
-        requestOptions
-      )
+      fetch(`${baseURL}/api/users/allevent`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           setEventData(result.data);
@@ -49,30 +46,38 @@ const Events = () => {
     return dateRange.split(" to ")[0];
   };
 
-  {/*const sortedEvents = eventData?.events?.sort((a, b) => {
+  const extractEndDate = (dateRange) => {
+    return dateRange.split(" to ")[1];
+  };
+
+  {
+    /*const sortedEvents = eventData?.events?.sort((a, b) => {
     if (a.club_name == "The Campus Web") return -1;
     if (b.club_name == "The Campus Web") return 1;
     const dateA = new Date(extractStartDate(a.dates));
     const dateB = new Date(extractStartDate(b.dates));
     return dateB - dateA;
-  });*/}
+  });*/
+  }
 
   const sortEventsByDate = (events) => {
     const currentDate = new Date();
-    
+
     return events?.sort((a, b) => {
       const dateA = new Date(extractStartDate(a?.dates));
       const dateB = new Date(extractStartDate(b?.dates));
-      
+
       // Calculate absolute difference from current date
       const diffA = Math.abs(currentDate - dateA);
       const diffB = Math.abs(currentDate - dateB);
-      
+
       return diffA - diffB;
     });
   };
 
   const sortedEvents = sortEventsByDate(eventData?.events);
+
+  const [eventStatusFilter, setEventStatusFilter] = useState("Upcoming");
 
   const [eventQuery, setEventQuery] = useState("");
   return (
@@ -119,6 +124,23 @@ const Events = () => {
               </svg>
             </button>
           </form>
+          {sortedEvents && (
+            <div className="flex flex-row justify-start items-center gap-3 pb-4">
+              {["Upcoming", "Ongoing", "Past", "All"].map((item, index) => (
+                <button
+                  className={`${
+                    eventStatusFilter == item
+                      ? "bg-theme_primary text-theme_text_normal"
+                      : "theme_box_bg text-theme_text_normal_60"
+                  } px-[14px] py-[3px] text-sm font-normal rounded-full tracking-wide`}
+                  key={index}
+                  onClick={() => setEventStatusFilter(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          )}
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />
@@ -145,9 +167,31 @@ const Events = () => {
                     )
                       return event;
                   })
+                  .filter((event) => {
+                    if (eventStatusFilter === "All") return event;
+                    else if (eventStatusFilter === "Upcoming") {
+                      return (
+                        new Date(extractStartDate(event.dates)) >= new Date() ||
+                        event.club_name == "The Campus Web"
+                      );
+                    } else if (eventStatusFilter === "Ongoing") {
+                      return (
+                        (new Date(extractStartDate(event.dates)) <=
+                          new Date() &&
+                          new Date(extractEndDate(event.dates)) >=
+                            new Date()) ||
+                        event.club_name == "The Campus Web"
+                      );
+                    } else if (eventStatusFilter === "Past") {
+                      return (
+                        new Date(extractEndDate(event.dates)) < new Date() ||
+                        event.club_name == "The Campus Web"
+                      );
+                    }
+                  })
                   .map((event, index) => (
                     <EventCard
-                      key={index+event.id}
+                      key={index + event.id}
                       event={event}
                       club={{ name: event.club_name, logo: event.logo }}
                       eventID={event.id}
