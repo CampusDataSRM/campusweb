@@ -93,6 +93,8 @@ const EventCard = ({
     return `${formattedStartDate} to ${formattedEndDate}`;
   }
 
+  console.log(event);
+
   return (
     <>
       <div
@@ -144,6 +146,11 @@ const EventCard = ({
           {event?.dates && (
             <div className="theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full">
               {convertDateRangeToDDMMYY(event?.dates)}
+            </div>
+          )}
+          {event?.timing && (
+            <div className="theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full">
+              {"from "}{(event?.timing).split(" ")[0]}{" IST to "}{(event?.timing).split(" ")[2]}{" IST"}
             </div>
           )}
         </div>
