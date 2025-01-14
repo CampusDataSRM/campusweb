@@ -192,7 +192,8 @@ const Calendar = () => {
                                       {item.Date}
                                     </span>
                                   </div>
-                                  <Link href={`/student/timetable?do=${item.Dayorder}`}
+                                  <Link
+                                    href={`/student/timetable?do=${item.Dayorder}`}
                                     className={`w-full text-theme_text_normal flex justify-between gap-2 items-center rounded-xl px-3 py-1 ${
                                       item.Event.includes("Holiday") ||
                                       item.Dayorder == "-"
