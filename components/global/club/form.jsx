@@ -5,6 +5,7 @@ import { authExpiry } from "@/functions/auth-expiry";
 import Link from "next/link";
 import SectionTitle from "@/components/global/section-title";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const defaultStyle =
   "theme_box_bg px-3 py-4 rounded-lg text-theme_text_normal tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-sm shadow-xl";
@@ -109,13 +110,13 @@ const EventForm = () => {
       if (file) {
         const fileSize = file.size;
         if (fileSize > 610 * 1024) {
-          alert("File size exceeds 600kb");
+          toast.warning("File size exceeds 600kb");
           return;
         }
 
         const fileType = file.type;
         if (!fileType.startsWith("image/")) {
-          alert("Invalid file type. Please upload an image.");
+          toast.error("Invalid file type. Please upload an image.");
           return;
         }
         setEvent({ ...event, [e.target.name]: file });
@@ -385,11 +386,10 @@ const ClubSignUpForm = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "success") {
-          console.log(result);
           setVerification(true);
           setSubmitting(false);
         } else {
-          console.log(result);
+          toast.error(result.message);
           setSubmitting(false);
         }
       })
@@ -429,12 +429,12 @@ const ClubSignUpForm = () => {
       if (file) {
         const fileSize = file.size;
         if (fileSize > 205 * 1024) {
-          alert("File size exceeds 200kb");
+          toast.warning("File size exceeds 200kb");
           return;
         }
         const fileType = file.type;
         if (!fileType.startsWith("image/")) {
-          alert("Invalid file type. Please upload an image.");
+          toast.error("Invalid file type. Please upload an image.");
           return;
         }
 
@@ -444,7 +444,7 @@ const ClubSignUpForm = () => {
           const width = this.width;
           const height = this.height;
           if (width != height) {
-            alert("Image should be of 1:1 ratio.");
+            toast.warning("Image should be of 1:1 ratio.");
             return;
           }
           setClub({ ...club, [e.target.name]: file });

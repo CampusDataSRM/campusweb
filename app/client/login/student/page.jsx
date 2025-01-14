@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
 import {baseURL} from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const StudentLogin = () => {
   useEffect(() => {
@@ -74,15 +75,15 @@ const StudentLogin = () => {
           // Cookies.set("X-CSRF-Token", result.Cookies);
           router.push("/student");
         } else {
-          alert("Invalid credentials");
+          toast.error("Invalid credentials");
           setLoading(false);
         }
       })
       .catch((error) => {
         if(error == "Too many requests, slow down!"){
-          alert("Too many requests, slow down! Try again after 60 seconds.");
+          toast.error("Too many requests, slow down! Try again after 60 seconds.");
         } else {
-          alert(JSON.stringify(error));
+          toast.error(JSON.stringify(error));
         }
       });
   };

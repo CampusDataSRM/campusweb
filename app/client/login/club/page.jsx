@@ -7,6 +7,7 @@ import Link from "next/link";
 import { authExpiry } from "@/functions/auth-expiry";
 import LoginLayout from "@/components/global/layout";
 import { baseURL } from "@/constants/baseURL";
+import { toast } from "react-toastify";
 
 const ClubLogin = () => {
   useEffect(() => {
@@ -70,7 +71,7 @@ const ClubLogin = () => {
           router.push("/club/admin/dashboard");
         } else {
           if (result.status === "fail") {
-            alert(result.message);
+            toast.error(result.message);
             setLoading(false);
           }
         }
