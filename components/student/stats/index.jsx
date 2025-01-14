@@ -1,29 +1,34 @@
-'use client';
+"use client";
 
 import SectionTitle from "@/components/global/section-title";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
 import { useRouter } from "next/navigation";
 
 const YourStats = ({ courseData, testPerformance }) => {
-
   const Router = useRouter();
+
+  console.log(courseData);
 
   let attendance = 0;
   for (let i = 0; i < courseData?.length; i++) {
     attendance += Number(courseData[i]?.attendancePercent);
   }
 
+  let applicableCoursesForAvgAttendance = courseData?.filter(
+    (course) => Number(course?.hoursConducted) > 0
+  );
+
   let marksObtained = 0;
   let totalMarksObtained = 0;
-    for (let i = 0; i < testPerformance?.length; i++) {
+  for (let i = 0; i < testPerformance?.length; i++) {
     marksObtained += testPerformance[i]?.totalMarkGot;
     totalMarksObtained += testPerformance[i]?.totalMarks;
-    }
+  }
 
   const stats = [
     {
       name: "Attendance",
-      value: `${(attendance / courseData?.length).toFixed(2)} %`,
+      value: `${(attendance / applicableCoursesForAvgAttendance?.length).toFixed(2)} %`,
       goTo: "/student/attendance",
     },
     {
