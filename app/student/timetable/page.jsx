@@ -12,6 +12,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import PrintTimetable from "@/components/student/timetable/print";
+import { generatePDF } from "@/functions/generatePDF";
 
 const Timetable = () => {
   const router = useRouter();
@@ -31,7 +33,6 @@ const Timetable = () => {
         const res = JSON.parse(localStorage.getItem("studentTimetable"));
         setTimetable(res);
 
-        
         if (res?.timetable) {
           setDayOrders(Object.keys(res.timetable));
         } else {
@@ -113,11 +114,29 @@ const Timetable = () => {
 
   return (
     <>
+      <PrintTimetable />
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Timetable")} />
         <FloatingNavbar />
         <main className="px-4">
-          <SectionTitle title="Timetable" />
+          <div className="flex justify-between items-center">
+            <SectionTitle title="Timetable" />
+            <button
+              className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
+              onClick={() => generatePDF("timetable")}
+            >
+              <span>Download</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 -960 960 960"
+                width="20px"
+                fill="#ffffff"
+              >
+                <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+              </svg>
+            </button>
+          </div>
           {loading ? (
             <div className="flex justify-center mt-60">
               <Loader />
@@ -141,7 +160,9 @@ const Timetable = () => {
               </div>
               <div className="grid grid-cols-1 gap-5 -mt-2">
                 <div className="grid grid-cols-1 gap-4 pb-3">
-                  <div className={"grid grid-cols-1 gap-4 pb-floatingNavHeight"}>
+                  <div
+                    className={"grid grid-cols-1 gap-4 pb-floatingNavHeight"}
+                  >
                     {Object.keys(
                       timetable.timetable
                         ? timetable.timetable[selectedDay]
