@@ -64,34 +64,33 @@ const PrintTimetable = () => {
   console.log(timetable?.timetable?.Day5);
   const getBgColor = (type) => {
     if (type == "Practical") {
-      return "purple";
+      return "#4b237e";
     } else if (type == "Theory") {
-      return "indigo";
+      return "#004a7e";
     }
   };
   return (
     <>
-      <div style={{ position: "absolute", top: "-9999px", left: "-9999px", height: "100vh", width: "100%" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          height: "100vh",
+          width: "100%",
+        }}
+      >
         {!loading && (
           <>
             <table className="timetable" id="timetable">
               <thead>
                 <tr>
-                  <th
-                    style={{
-                      fontWeight: "600",
-                      fontStretch: "expanded",
-                      backgroundColor: "#0094FF",
-                      color: "black",
-                    }}
-                  >
-                    Time
-                  </th>
-                  <th>Day 1</th>
-                  <th>Day 2</th>
-                  <th>Day 3</th>
-                  <th>Day 4</th>
-                  <th>Day 5</th>
+                  <th>Time</th>
+                  <th>DO1</th>
+                  <th>DO2</th>
+                  <th>DO3</th>
+                  <th>DO4</th>
+                  <th>DO5</th>
                 </tr>
               </thead>
               <tbody>
@@ -106,8 +105,9 @@ const PrintTimetable = () => {
                               textAlign: "center",
                               fontWeight: "600",
                               fontStretch: "expanded",
-                              backgroundColor: "#0094FF",
-                              color: "black",
+                              backgroundColor: "#000",
+                              color: "#fff",
+                              padding: "20px",
                             }}
                           >
                             {key}
@@ -121,7 +121,7 @@ const PrintTimetable = () => {
                           >
                             {timetable?.timetable?.Day1[key]?.subject_name ==
                             "No class"
-                              ? "N / A"
+                              ? "-"
                               : timetable?.timetable?.Day1[key]?.subject_name}
                           </td>
                           <td
@@ -133,7 +133,7 @@ const PrintTimetable = () => {
                           >
                             {timetable?.timetable?.Day2[key]?.subject_name ==
                             "No class"
-                              ? "N / A"
+                              ? "-"
                               : timetable?.timetable?.Day2[key]?.subject_name}
                           </td>
                           <td
@@ -145,7 +145,7 @@ const PrintTimetable = () => {
                           >
                             {timetable?.timetable?.Day3[key]?.subject_name ==
                             "No class"
-                              ? "N / A"
+                              ? "-"
                               : timetable?.timetable?.Day3[key]?.subject_name}
                           </td>
                           <td
@@ -157,7 +157,7 @@ const PrintTimetable = () => {
                           >
                             {timetable?.timetable?.Day4[key]?.subject_name ==
                             "No class"
-                              ? "N / A"
+                              ? "-"
                               : timetable?.timetable?.Day4[key]?.subject_name}
                           </td>
                           <td
@@ -169,7 +169,7 @@ const PrintTimetable = () => {
                           >
                             {timetable?.timetable?.Day5[key]?.subject_name ==
                             "No class"
-                              ? "N / A"
+                              ? "-"
                               : timetable?.timetable?.Day5[key]?.subject_name}
                           </td>
                         </tr>

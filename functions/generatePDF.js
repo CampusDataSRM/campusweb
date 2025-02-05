@@ -6,12 +6,12 @@ export const generatePDF = async (elementToPrintId) => {
     if (!element) {
       throw new Error(`Element with id ${elementToPrintId} not found`);
     }
-    const canvas = await html2canvas(element, { scale: 1 });
+    const canvas = await html2canvas(element, { scale: 2 });
     const data = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
       orientation: "potrait",
       unit: "mm",
-      format: [100, 220],
+      format: [100, 222],
     });
     const imgProperties = pdf.getImageProperties(data);
     const pdfWidth = pdf.internal.pageSize.getWidth();
