@@ -93,6 +93,33 @@ const PrintTimetable = () => {
     }
   };
 
+  const truncateWord = (word) => {
+    if (word.length > 37) {
+      return word.slice(0, 31) + "...";
+    } else {
+      return word;
+    }
+  };
+
+  const roomCodeComponent = (room_code) => {
+    return (
+      <span
+        className="mt-3 tracking-wider"
+        style={{
+          padding: "",
+          fontSize: "12px",
+          fontWeight: "800",
+          color: "#fff",
+          display: "inline-block",
+          borderRadius: "5px",
+          textAlign: "center",
+        }}
+      >
+        {''}
+      </span>
+    );
+  };
+
   return (
     <>
       <div
@@ -150,7 +177,18 @@ const PrintTimetable = () => {
                           {timetable?.timetable?.Day1[key]?.subject_name ==
                           "No class"
                             ? "-"
-                            : timetable?.timetable?.Day1[key]?.subject_name}
+                            : truncateWord(
+                                timetable?.timetable?.Day1[key]?.subject_name
+                              )}
+                          <br />
+                          {timetable?.timetable?.Day1[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day1[key]?.room_code)}
+                            </>
+                          )}
                         </td>
                         <td
                           style={{
@@ -162,7 +200,17 @@ const PrintTimetable = () => {
                           {timetable?.timetable?.Day2[key]?.subject_name ==
                           "No class"
                             ? "-"
-                            : timetable?.timetable?.Day2[key]?.subject_name}
+                            : truncateWord(
+                                timetable?.timetable?.Day2[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day2[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day2[key]?.room_code)}
+                            </>
+                          )}
                         </td>
                         <td
                           style={{
@@ -174,7 +222,17 @@ const PrintTimetable = () => {
                           {timetable?.timetable?.Day3[key]?.subject_name ==
                           "No class"
                             ? "-"
-                            : timetable?.timetable?.Day3[key]?.subject_name}
+                            : truncateWord(
+                                timetable?.timetable?.Day3[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day3[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day3[key]?.room_code)}
+                            </>
+                          )}
                         </td>
                         <td
                           style={{
@@ -186,7 +244,17 @@ const PrintTimetable = () => {
                           {timetable?.timetable?.Day4[key]?.subject_name ==
                           "No class"
                             ? "-"
-                            : timetable?.timetable?.Day4[key]?.subject_name}
+                            : truncateWord(
+                                timetable?.timetable?.Day4[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day4[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day4[key]?.room_code)}
+                            </>
+                          )}
                         </td>
                         <td
                           style={{
@@ -198,7 +266,17 @@ const PrintTimetable = () => {
                           {timetable?.timetable?.Day5[key]?.subject_name ==
                           "No class"
                             ? "-"
-                            : timetable?.timetable?.Day5[key]?.subject_name}
+                            : truncateWord(
+                                timetable?.timetable?.Day5[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day5[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day5[key]?.room_code)}
+                            </>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -212,19 +290,19 @@ const PrintTimetable = () => {
                     style={{ textAlign: "center", color: "#fff" }}
                   >
                     <div className="flex flex-row justify-center items-end w-full gap-2">
-                    <span className="text-base">Made with</span>
-                    <span className="">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="16px"
-                        viewBox="0 -960 960 960"
-                        width="16px"
-                        fill="#BB271A"
-                      >
-                        <path d="M480-147q-14 0-28.5-5T426-168l-69-63q-106-97-191.5-192.5T80-634q0-94 63-157t157-63q53 0 100 22.5t80 61.5q33-39 80-61.5T660-854q94 0 157 63t63 157q0 115-85 211T602-230l-68 62q-11 11-25.5 16t-28.5 5Z" />
-                      </svg>
-                    </span>
-                    <span className="text-base">by The Campus Web</span>
+                      <span className="text-base">Made with</span>
+                      <span className="">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="16px"
+                          viewBox="0 -960 960 960"
+                          width="16px"
+                          fill="#BB271A"
+                        >
+                          <path d="M480-147q-14 0-28.5-5T426-168l-69-63q-106-97-191.5-192.5T80-634q0-94 63-157t157-63q53 0 100 22.5t80 61.5q33-39 80-61.5T660-854q94 0 157 63t63 157q0 115-85 211T602-230l-68 62q-11 11-25.5 16t-28.5 5Z" />
+                        </svg>
+                      </span>
+                      <span className="text-base">by The Campus Web</span>
                     </div>
                   </td>
                 </tr>

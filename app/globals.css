@@ -198,12 +198,7 @@ body{
   padding: 20px;
 }
 
-.timetable tr:hover {
-  background-color: #333;
-}
-
 .timetable td {
   max-width: 200px;
-  overflow-wrap: break-word;
-  padding: 12px 15px;
+  padding: 12px;
 }

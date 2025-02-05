@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 const YourStats = ({ courseData, testPerformance }) => {
   const Router = useRouter();
 
-  console.log(courseData);
-
   let attendance = 0;
   for (let i = 0; i < courseData?.length; i++) {
     attendance += Number(courseData[i]?.attendancePercent);
