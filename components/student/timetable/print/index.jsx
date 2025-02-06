@@ -115,7 +115,7 @@ const PrintTimetable = () => {
           textAlign: "center",
         }}
       >
-        {'CLS 524'}
+        {''}
       </span>
     );
   };
@@ -141,7 +141,9 @@ const PrintTimetable = () => {
             >
               <thead>
                 <tr>
-                  <th>Time</th>
+                  <th>
+                    <img src="/logo_png.png" alt="logo" className="w-10 h-auto" />
+                  </th>
                   <th>DO1</th>
                   <th>DO2</th>
                   <th>DO3</th>
@@ -283,7 +285,7 @@ const PrintTimetable = () => {
                   </>
                 )}
               </tbody>
-              <tfoot>
+              {/*<tfoot>
                 <tr style={{ paddingBottom: "20px" }}>
                   <td
                     colSpan="6"
@@ -306,7 +308,7 @@ const PrintTimetable = () => {
                     </div>
                   </td>
                 </tr>
-              </tfoot>
+              </tfoot>*/}
             </table>
           </>
         )}
