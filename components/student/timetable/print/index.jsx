@@ -109,13 +109,13 @@ const PrintTimetable = () => {
           padding: "",
           fontSize: "12px",
           fontWeight: "800",
-          color: "#fff",
+          color: "rgba(255, 255, 255, 0.7)",
           display: "inline-block",
           borderRadius: "5px",
           textAlign: "center",
         }}
       >
-        {''}
+        {'CLS 524'}
       </span>
     );
   };

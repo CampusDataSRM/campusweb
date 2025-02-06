@@ -190,6 +190,8 @@ body{
   font-size: 12px;
   font-family: "Nunito" !important;
   margin: auto !important;
+  border-bottom: 1px solid #181818;
+  border-left: 1px solid #181818;
 }
 
 .timetable th {
