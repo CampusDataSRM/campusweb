@@ -91,9 +91,7 @@ const EventCard = ({
     const formattedEndDate = formatDateToDDMMYY(endDate);
 
     return `${formattedStartDate} to ${formattedEndDate}`;
-  }
-
-  console.log(event);
+  };
 
   return (
     <>

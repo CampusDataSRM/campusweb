@@ -61,123 +61,254 @@ const PrintTimetable = () => {
       }
     }
   }, []);
-  console.log(timetable?.timetable?.Day5);
+
   const getBgColor = (type) => {
     if (type == "Practical") {
-      return "purple";
+      return "#4b237e";
     } else if (type == "Theory") {
-      return "indigo";
+      return "#004a7e";
     }
   };
+
+  const arrayTimeSlot = () => {
+    let c = 0;
+    if (timetable?.timetable) {
+      const dayArray = Object.keys(timetable?.timetable);
+
+      for (let i = 0; i < dayArray.length; i++) {
+        if (
+          timetable?.timetable[dayArray[i]]["04:50 - 05:30"]["subject_name"] ==
+            "No class" &&
+          timetable?.timetable[dayArray[i]]["05:30 - 06:10"]["subject_name"] ==
+            "No class"
+        ) {
+          c++;
+        }
+      }
+    }
+    if (c == 5) {
+      return Object.keys(timetable?.timetable?.Day1).slice(0, 10);
+    } else {
+      return Object.keys(timetable?.timetable?.Day1);
+    }
+  };
+
+  const truncateWord = (word) => {
+    if (word.length > 37) {
+      return word.slice(0, 31) + "...";
+    } else {
+      return word;
+    }
+  };
+
+  const roomCodeComponent = (room_code) => {
+    return (
+      <span
+        className="mt-3 tracking-wider"
+        style={{
+          padding: "",
+          fontSize: "12px",
+          fontWeight: "800",
+          color: "rgba(255, 255, 255, 0.7)",
+          display: "inline-block",
+          borderRadius: "5px",
+          textAlign: "center",
+        }}
+      >
+        {''}
+      </span>
+    );
+  };
+
   return (
     <>
-      <div style={{ position: "absolute", top: "-9999px", left: "-9999px", height: "100vh", width: "100%" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "-99999px",
+          left: "-99999px",
+          height: "100vh",
+          width: "100%",
+          backgroundColor: "#000",
+        }}
+      >
         {!loading && (
           <>
-            <table className="timetable" id="timetable">
+            <table
+              className="timetable"
+              id="timetable"
+              style={{ width: "100%", backgroundColor: "#000" }}
+            >
               <thead>
                 <tr>
-                  <th
-                    style={{
-                      fontWeight: "600",
-                      fontStretch: "expanded",
-                      backgroundColor: "#0094FF",
-                      color: "black",
-                    }}
-                  >
-                    Time
+                  <th>
+                    <img src="/logo_png.png" alt="logo" className="w-10 h-auto" />
                   </th>
-                  <th>Day 1</th>
-                  <th>Day 2</th>
-                  <th>Day 3</th>
-                  <th>Day 4</th>
-                  <th>Day 5</th>
+                  <th>DO1</th>
+                  <th>DO2</th>
+                  <th>DO3</th>
+                  <th>DO4</th>
+                  <th>DO5</th>
                 </tr>
               </thead>
               <tbody>
                 {timetable?.timetable && timetable?.timetable?.Day1 && (
                   <>
-                    {Object.keys(timetable?.timetable?.Day1).map(
-                      (key, index) => (
-                        <tr key={index}>
-                          <td
-                            style={{
-                              width: "150px",
-                              textAlign: "center",
-                              fontWeight: "600",
-                              fontStretch: "expanded",
-                              backgroundColor: "#0094FF",
-                              color: "black",
-                            }}
-                          >
-                            {key}
-                          </td>
-                          <td
-                            style={{
-                              backgroundColor: getBgColor(
-                                timetable?.timetable?.Day1[key]?.subject_type
-                              ),
-                            }}
-                          >
-                            {timetable?.timetable?.Day1[key]?.subject_name ==
-                            "No class"
-                              ? "N / A"
-                              : timetable?.timetable?.Day1[key]?.subject_name}
-                          </td>
-                          <td
-                            style={{
-                              backgroundColor: getBgColor(
-                                timetable?.timetable?.Day2[key]?.subject_type
-                              ),
-                            }}
-                          >
-                            {timetable?.timetable?.Day2[key]?.subject_name ==
-                            "No class"
-                              ? "N / A"
-                              : timetable?.timetable?.Day2[key]?.subject_name}
-                          </td>
-                          <td
-                            style={{
-                              backgroundColor: getBgColor(
-                                timetable?.timetable?.Day3[key]?.subject_type
-                              ),
-                            }}
-                          >
-                            {timetable?.timetable?.Day3[key]?.subject_name ==
-                            "No class"
-                              ? "N / A"
-                              : timetable?.timetable?.Day3[key]?.subject_name}
-                          </td>
-                          <td
-                            style={{
-                              backgroundColor: getBgColor(
-                                timetable?.timetable?.Day4[key]?.subject_type
-                              ),
-                            }}
-                          >
-                            {timetable?.timetable?.Day4[key]?.subject_name ==
-                            "No class"
-                              ? "N / A"
-                              : timetable?.timetable?.Day4[key]?.subject_name}
-                          </td>
-                          <td
-                            style={{
-                              backgroundColor: getBgColor(
-                                timetable?.timetable?.Day5[key]?.subject_type
-                              ),
-                            }}
-                          >
-                            {timetable?.timetable?.Day5[key]?.subject_name ==
-                            "No class"
-                              ? "N / A"
-                              : timetable?.timetable?.Day5[key]?.subject_name}
-                          </td>
-                        </tr>
-                      )
-                    )}
+                    {arrayTimeSlot().map((key, index) => (
+                      <tr key={index}>
+                        <td
+                          style={{
+                            width: "150px",
+                            textAlign: "center",
+                            fontWeight: "600",
+                            fontStretch: "expanded",
+                            backgroundColor: "#000",
+                            color: "#fff",
+                            padding: "20px",
+                          }}
+                        >
+                          {key}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: getBgColor(
+                              timetable?.timetable?.Day1[key]?.subject_type
+                            ),
+                          }}
+                        >
+                          {timetable?.timetable?.Day1[key]?.subject_name ==
+                          "No class"
+                            ? "-"
+                            : truncateWord(
+                                timetable?.timetable?.Day1[key]?.subject_name
+                              )}
+                          <br />
+                          {timetable?.timetable?.Day1[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day1[key]?.room_code)}
+                            </>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: getBgColor(
+                              timetable?.timetable?.Day2[key]?.subject_type
+                            ),
+                          }}
+                        >
+                          {timetable?.timetable?.Day2[key]?.subject_name ==
+                          "No class"
+                            ? "-"
+                            : truncateWord(
+                                timetable?.timetable?.Day2[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day2[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day2[key]?.room_code)}
+                            </>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: getBgColor(
+                              timetable?.timetable?.Day3[key]?.subject_type
+                            ),
+                          }}
+                        >
+                          {timetable?.timetable?.Day3[key]?.subject_name ==
+                          "No class"
+                            ? "-"
+                            : truncateWord(
+                                timetable?.timetable?.Day3[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day3[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day3[key]?.room_code)}
+                            </>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: getBgColor(
+                              timetable?.timetable?.Day4[key]?.subject_type
+                            ),
+                          }}
+                        >
+                          {timetable?.timetable?.Day4[key]?.subject_name ==
+                          "No class"
+                            ? "-"
+                            : truncateWord(
+                                timetable?.timetable?.Day4[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day4[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day4[key]?.room_code)}
+                            </>
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: getBgColor(
+                              timetable?.timetable?.Day5[key]?.subject_type
+                            ),
+                          }}
+                        >
+                          {timetable?.timetable?.Day5[key]?.subject_name ==
+                          "No class"
+                            ? "-"
+                            : truncateWord(
+                                timetable?.timetable?.Day5[key]?.subject_name
+                              )}
+                              {timetable?.timetable?.Day5[key]?.room_code ==
+                          "N/A" ? (
+                            <></>
+                          ) : (
+                            <>
+                            {roomCodeComponent(timetable?.timetable?.Day5[key]?.room_code)}
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   </>
                 )}
               </tbody>
+              {/*<tfoot>
+                <tr style={{ paddingBottom: "20px" }}>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: "center", color: "#fff" }}
+                  >
+                    <div className="flex flex-row justify-center items-end w-full gap-2">
+                      <span className="text-base">Made with</span>
+                      <span className="">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="16px"
+                          viewBox="0 -960 960 960"
+                          width="16px"
+                          fill="#BB271A"
+                        >
+                          <path d="M480-147q-14 0-28.5-5T426-168l-69-63q-106-97-191.5-192.5T80-634q0-94 63-157t157-63q53 0 100 22.5t80 61.5q33-39 80-61.5T660-854q94 0 157 63t63 157q0 115-85 211T602-230l-68 62q-11 11-25.5 16t-28.5 5Z" />
+                        </svg>
+                      </span>
+                      <span className="text-base">by The Campus Web</span>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>*/}
             </table>
           </>
         )}

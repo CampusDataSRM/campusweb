@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import PrintTimetable from "@/components/student/timetable/print";
 import { generatePDF } from "@/functions/generatePDF";
+import { downloadImage } from "@/functions/generateImage";
 
 const Timetable = () => {
   const router = useRouter();
@@ -114,7 +115,7 @@ const Timetable = () => {
 
   return (
     <>
-      <PrintTimetable />
+      
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Timetable")} />
         <FloatingNavbar />
@@ -123,7 +124,7 @@ const Timetable = () => {
             <SectionTitle title="Timetable" />
             <button
               className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2"
-              onClick={() => generatePDF("timetable")}
+              onClick={() => downloadImage("timetable")}
             >
               <span>Download</span>
               <svg
@@ -210,6 +211,7 @@ const Timetable = () => {
           )}
         </main>
       </div>
+      <PrintTimetable />
     </>
   );
 };
