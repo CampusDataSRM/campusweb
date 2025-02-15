@@ -99,12 +99,22 @@ export default function RootLayout({ children }) {
           gtag('config', 'G-C3JDRSD2G9');`}
           </Script>
           <Suspense fallback={<Loader />}>
-            <Image
+            {/* <Image
               src="/bg_vector.png"
               alt="Background Vector"
               layout="fill"
               className="filter blur-[60px] fixed top-0 left-0 -z-50"
-            />
+            /> */}
+
+            {/* New animated bg Start */}
+            <div className="-z-50 fixed top-0 left-0 w-full h-full overflow-hidden">
+              <div class="-z-50 absolute top-0 -left-44 w-96 h-96 bg-theme_text_primary/20 rounded-full filter blur-2xl -translate-x-20 translate-y-20 duration-[600ms] ease-in-out"></div>
+              <div class="-z-50 absolute top-0 -right-4 w-72 h-72 bg-theme_primary/20 rounded-full filter blur-2xl translate-x-20 -translate-y-20 duration-[600ms] ease-in-out"></div>
+              <div class="-z-50 absolute -bottom-8 left-20 w-[500px] h-[500px] bg-theme_secondary/20 rounded-full filter blur-3xl translate-x-20 -translate-y-20 duration-[600ms] ease-in-out"></div>
+            </div>
+            {/* New animated bg stop */}
+
+
             <div className="sm:flex sm:justify-center">
               <ToastContainer
                 position="top-right"
