@@ -170,11 +170,9 @@ export const predictAttendance = async (
       }
     });
 
-    // Print the updated course data
     return userJsonData;
   }
 
-  // Test with current date as '14/10/24', start date '28/10/24', and end date '07/11/24'
   try {
     const result = getDayOrder(currentDate, startDate, endDate);
     return result;

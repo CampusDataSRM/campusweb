@@ -33,7 +33,7 @@ const Attendance = () => {
   const [predictBox, setPredictBox] = useState(false);
   const [predictState, setPredictState] = useState(false);
   const [predictionDate, setPredictionDate] = useState({
-    currentDate: new Date().toISOString().split("T")[0],
+    currentDate: new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
     startDate: "",
     endDate: "",
   });
@@ -95,6 +95,8 @@ const Attendance = () => {
       formatDate(predictionDate.startDate),
       formatDate(predictionDate.endDate)
     );
+
+    console.log(predictionDate);
 
     result.then((data) => {
       if (data) {
