@@ -41,19 +41,9 @@ const Attendance = () => {
   });
 
   const getMinDate = (currentDate) => {
-    const options = { timeZone: "Asia/Kolkata" };
-    const year = new Intl.DateTimeFormat("en-US", {
-      ...options,
-      year: "numeric",
-    }).format(currentDate);
+    const options = { timeZone: 'Asia/Kolkata' };
+    return new Date(new Intl.DateTimeFormat('en-US', { ...options, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(currentDate));
 
-    const june30 = new Date(Date.UTC(year, 5, 30, 18, 30)); // Adjusting for IST (UTC+5:30)
-
-    if (currentDate.getTime() <= june30.getTime()) {
-      return new Date(Date.UTC(year, 0, 1, 18, 30)); // January 1st in IST
-    } else {
-      return new Date(Date.UTC(year, 6, 1, 18, 30)); // July 1st in IST
-    }
   };
 
   const getMaxDate = (currentDate) => {
@@ -202,7 +192,7 @@ const Attendance = () => {
                 {" "}
                 Set Holiday Period{" "}
               </span>
-              <div className="grid grid-cols-11 items-center gap-3 w-fit mt-3">
+              <div className="grid grid-cols-11 items-center gap-3 w-full mt-3">
                 <input
                   type="date"
                   value={predictionDate.startDate}
