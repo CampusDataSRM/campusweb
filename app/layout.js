@@ -12,6 +12,10 @@ import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
 import Script from "next/script";
 import { CampusWebPostHogProvider } from "@/functions/providers/posthog-analytics";
+import Clarity from "@microsoft/clarity";
+
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_KEY;
+Clarity.init(CLARITY_ID);    
 
 const inter = Inter({ subsets: ["latin"] });
 
