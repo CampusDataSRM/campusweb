@@ -33,10 +33,44 @@ const Attendance = () => {
   const [predictBox, setPredictBox] = useState(false);
   const [predictState, setPredictState] = useState(false);
   const [predictionDate, setPredictionDate] = useState({
-    currentDate: new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
+    currentDate: new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    }),
     startDate: "",
     endDate: "",
   });
+
+  const getMinDate = (currentDate) => {
+    const options = { timeZone: "Asia/Kolkata" };
+    const year = new Intl.DateTimeFormat("en-US", {
+      ...options,
+      year: "numeric",
+    }).format(currentDate);
+
+    const june30 = new Date(Date.UTC(year, 5, 30, 18, 30)); // Adjusting for IST (UTC+5:30)
+
+    if (currentDate.getTime() <= june30.getTime()) {
+      return new Date(Date.UTC(year, 0, 1, 18, 30)); // January 1st in IST
+    } else {
+      return new Date(Date.UTC(year, 6, 1, 18, 30)); // July 1st in IST
+    }
+  };
+
+  const getMaxDate = (currentDate) => {
+    const options = { timeZone: "Asia/Kolkata" };
+    const year = new Intl.DateTimeFormat("en-US", {
+      ...options,
+      year: "numeric",
+    }).format(currentDate);
+
+    const june30 = new Date(Date.UTC(year, 5, 30, 18, 30)); // Adjusting for IST (UTC+5:30)
+
+    if (currentDate.getTime() <= june30.getTime()) {
+      return new Date(Date.UTC(year, 5, 30, 18, 30)); // June 30th in IST
+    } else {
+      return new Date(Date.UTC(year, 11, 31, 18, 30)); // December 31st in IST
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -96,8 +130,6 @@ const Attendance = () => {
       formatDate(predictionDate.endDate)
     );
 
-    console.log(predictionDate);
-
     result.then((data) => {
       if (data) {
         setCourseData(data);
@@ -123,6 +155,13 @@ const Attendance = () => {
               onClick={() => {
                 setPredictBox(!predictBox);
                 setPredictState(false);
+                setPredictionDate({
+                  currentDate: new Date().toLocaleString("en-US", {
+                    timeZone: "Asia/Kolkata",
+                  }),
+                  startDate: "",
+                  endDate: "",
+                });
               }}
             >
               <span>Predict</span>
@@ -167,13 +206,19 @@ const Attendance = () => {
                 <input
                   type="date"
                   value={predictionDate.startDate}
-                  min={predictionDate.currentDate}
-                  onChange={(e) =>
+                  min={getMinDate(new Date()).toISOString().split("T")[0]}
+                  max={getMaxDate(new Date()).toISOString().split("T")[0]}
+                  onChange={(e) => {
                     setPredictionDate({
                       ...predictionDate,
                       startDate: e.target.value,
-                    })
-                  }
+                      endDate: predictionDate.endDate
+                        ? predictionDate.endDate < e.target.value
+                          ? e.target.value
+                          : predictionDate.endDate
+                        : predictionDate.endDate,
+                    });
+                  }}
                   className={`col-span-5 ${defaultStyle} border border-theme_primary/10`}
                   placeholder="Start Date"
                 />
@@ -183,11 +228,20 @@ const Attendance = () => {
                 <input
                   type="date"
                   value={predictionDate.endDate}
-                  min={predictionDate.startDate}
+                  min={
+                    predictionDate.startDate ||
+                    getMinDate(new Date()).toISOString().split("T")[0]
+                  }
+                  max={getMaxDate(new Date()).toISOString().split("T")[0]}
                   onChange={(e) =>
                     setPredictionDate({
                       ...predictionDate,
                       endDate: e.target.value,
+                      startDate: predictionDate.startDate
+                        ? predictionDate.startDate > e.target.value
+                          ? e.target.value
+                          : predictionDate.startDate
+                        : predictionDate.startDate,
                     })
                   }
                   className={`col-span-5 ${defaultStyle} border border-theme_primary/10`}
@@ -200,6 +254,13 @@ const Attendance = () => {
                   onClick={() => {
                     setPredictBox(false);
                     setPredictState(false);
+                    setPredictionDate({
+                      currentDate: new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Kolkata",
+                      }),
+                      startDate: "",
+                      endDate: "",
+                    });
                   }}
                 >
                   <span>Close</span>
