@@ -15,7 +15,7 @@ import { CampusWebPostHogProvider } from "@/functions/providers/posthog-analytic
 import Clarity from "@microsoft/clarity";
 
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_KEY;
-Clarity.init(CLARITY_ID);    
+Clarity.init(CLARITY_ID);
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -91,6 +91,13 @@ export default function RootLayout({ children }) {
           name="twitter:image"
           content="https://mvfejxbltzmknypuuain.supabase.co/storage/v1/object/public/Event/469f11c9-7472-11ef-9282-92877155d7f2.png"
         />
+        <script type="text/javascript">
+          {`(function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qdypyyr4iv");`}
+        </script>
       </Head>
       <CampusWebPostHogProvider>
         <body className={inter.className}>
@@ -117,7 +124,6 @@ export default function RootLayout({ children }) {
               <div className="-z-50 absolute -bottom-8 left-20 w-[500px] h-[500px] bg-theme_secondary/20 rounded-full filter blur-3xl translate-x-20 -translate-y-20 duration-[600ms] ease-in-out"></div>
             </div>
             {/* New animated bg stop */}
-
 
             <div className="sm:flex sm:justify-center">
               <ToastContainer
