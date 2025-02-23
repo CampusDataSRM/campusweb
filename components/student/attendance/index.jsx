@@ -10,7 +10,7 @@ const AttendanceCard = ({ attendance }) => {
   };
   return (
     <>
-      <div className="px-3 py-5 w-full theme_box_bg">
+      <div className={`px-3 py-5 w-full ${attendanceColor(attendance?.margin, attendance.required).label !== "Required" ? (attendance?.category === "Theory" ? "theme_box_bg_margin": "theme_box_bg_practical") : "theme_box_bg_low"}`}>
         <div className="flex gap-3 justify-between items-end">
           <div className="flex flex-col gap-1 justify-start">
             <span className="text-base font-normal text-theme_text_normal tracking-wide text-wrap">
