@@ -60,7 +60,7 @@ const Marks = () => {
                 <div className="flex flex-col gap-3 justify-center pb-3">
                   {testreport.map((test, index) => (
                     <div
-                      className="theme_box_bg px-4 py-5 flex flex-col gap-5 justify-center"
+                      className={`px-4 py-5 flex flex-col gap-5 justify-center ${test.courseType === "Theory" ? "theme_box_bg" : "theme_box_bg_practical" }`}
                       key={index}
                     >
                       <div className="flex justify-between gap-4 items-center">
