@@ -18,15 +18,6 @@ body{
   .theme_box_bg {
     @apply bg-[#0C4DA2]/20 rounded-xl shadow-2xl;
   }
-  .theme_box_bg_margin {
-    @apply bg-gradient-to-l from-[#0C4DA2]/20 to-[#0CADA2]/20 rounded-xl shadow-2xl p-4;
-  }
-  .theme_box_bg_practical {
-    @apply bg-gradient-to-r from-[#0C4DA2]/20 to-[#9747FF]/20 rounded-xl shadow-2xl p-4;
-  }
-  .theme_box_bg_low {
-    @apply bg-gradient-to-l from-[#0C4DA2]/20 to-[#9C4DA2]/20 rounded-xl shadow-2xl p-4;
-  }
   .animation-delay-200 {
     animation-delay: 0.2s;
   }
