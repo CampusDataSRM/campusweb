@@ -59,10 +59,7 @@ const ClubLogin = () => {
       mode: "cors",
     };
 
-    fetch(
-      `${baseURL}/api/auth/club-login`,
-      requestOptions
-    )
+    fetch(`${baseURL}/api/auth/club-login`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "success") {
@@ -103,7 +100,9 @@ const ClubLogin = () => {
                   e.preventDefault();
                   setPasswordVisible(!passwordVisible);
                 }}
-                className={field.type == "password" ? "theme_box_bg px-4" : "hidden"}
+                className={
+                  field.type == "password" ? "theme_box_bg px-4" : "hidden"
+                }
                 type="button"
               >
                 {passwordVisible ? (
@@ -153,7 +152,16 @@ const ClubLogin = () => {
               )}
             </button>
           </div>
-          <div className="text-center mt-5">
+          <div className="text-center mt-5 flex flex-col gap-5">
+            <Link
+              className="text-theme_text_primary font-medium hover:cursor-pointer"
+              href={{
+                pathname: "/client/login/club/forgot-password",
+                query: { email: userid },
+              }}
+            >
+              Forgot Password?
+            </Link>
             <Link
               className="text-theme_text_primary font-medium hover:cursor-pointer"
               href={{
