@@ -16,12 +16,14 @@ const DashboardTimetable = () => {
   const [dayOrders, setDayOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState("");
+  const [currentDayOrder, setCurrentDayOrder] = useState("");
   useEffect(() => {
     if (localStorage.getItem("studentTimetable")) {
       const res = JSON.parse(localStorage.getItem("studentTimetable"));
       setTimetable(res);
       setDayOrders(Object.keys(res.timetable && res.timetable));
       setSelectedDay("Day" + res?.day_order);
+      setCurrentDayOrder("Day" + res?.day_order);
     }
     if (!localStorage.getItem("studentData")) {
       setLoading(true);
@@ -60,6 +62,7 @@ const DashboardTimetable = () => {
           localStorage.setItem("studentTimetable", JSON.stringify(result));
           setDayOrders(Object.keys(result.timetable && result.timetable));
           setSelectedDay(result && "Day" + result?.day_order);
+          setCurrentDayOrder(result && "Day" + result?.day_order);
         }
         setLoading(false);
       })
@@ -110,7 +113,9 @@ const DashboardTimetable = () => {
                         selectedDay === day
                           ? "bg-theme_primary font-black"
                           : "bg-theme_primary/40"
-                      } bg-theme_primary text-theme_text_normal rounded-md text-sm h-[30px] w-[30px] font-medium`}
+                      } bg-theme_primary text-theme_text_normal rounded-md text-sm h-[30px] w-[30px] font-medium
+                      ${currentDayOrder === day ? "border border-theme_green" : ""}
+                      `}
                     >
                       {day[day.length - 1]}
                     </button>
