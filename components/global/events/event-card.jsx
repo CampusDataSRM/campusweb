@@ -4,6 +4,7 @@ import { useState } from "react";
 import { deleteEvent } from "@/functions/api/club";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import { RWebShare } from "react-web-share";
 
 const EventCard = ({
   event,
@@ -39,10 +40,7 @@ const EventCard = ({
       redirect: "follow",
     };
 
-    fetch(
-      `${baseURL}/api/users/eventaction/`,
-      requestOptions
-    )
+    fetch(`${baseURL}/api/users/eventaction/`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log(result);
@@ -91,7 +89,7 @@ const EventCard = ({
     const formattedEndDate = formatDateToDDMMYY(endDate);
 
     return `${formattedStartDate} to ${formattedEndDate}`;
-  };
+  }
 
   return (
     <>
@@ -103,8 +101,12 @@ const EventCard = ({
               : "w-full theme_box_bg rounded-xl"
             : "w-full theme_box_bg rounded-xl"
         }
+        id={`${event?.title}_${eventID}`}
       >
-        <div style={{backgroundImage: `url(${event?.banner_url})`}} className="bg-cover rounded-t-xl">
+        <div
+          style={{ backgroundImage: `url(${event?.banner_url})` }}
+          className="bg-cover rounded-t-xl"
+        >
           <img
             src={event?.banner_url}
             alt={event?.title}
@@ -130,7 +132,7 @@ const EventCard = ({
           {event?.labels &&
             event?.labels.map((value, index) => (
               <div
-                name={value+value.id}
+                name={value + value.id}
                 key={index}
                 className={
                   value.length > 0
@@ -148,7 +150,11 @@ const EventCard = ({
           )}
           {event?.timing && (
             <div className="theme_box_bg text-theme_text_primary text-sm px-3 py-1 rounded-full">
-              {"from "}{(event?.timing).split(" ")[0]}{" IST to "}{(event?.timing).split(" ")[2]}{" IST"}
+              {"from "}
+              {(event?.timing).split(" ")[0]}
+              {" IST to "}
+              {(event?.timing).split(" ")[2]}
+              {" IST"}
             </div>
           )}
         </div>
@@ -228,25 +234,45 @@ const EventCard = ({
             </>
           ) : (
             <>
-              {event?.website_link && (
-                <div className="text-base">
-                  <Link
-                    href={
-                      event?.website_link
-                        ? event?.website_link.includes("http")
-                          ? event?.website_link
-                          : `http://${event?.website_link}`
-                        : ""
-                    }
-                    target="_blank"
-                    rel="noopener noreffer"
+              <div className="flex justify-end items-stretch gap-2">
+                <div>
+                  <RWebShare
+                    data={{
+                      text: `Check out this event on Campus Web: ${event?.title} by ${club?.name} on ${convertDateRangeToDDMMYY(event?.dates)} from ${event?.timing}`,
+                      url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`,
+                      title: event?.title,
+                    }}
                   >
-                    <button className="bg-gradient-to-br from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
-                      Register
+                    <button className="z-10 bg-gradient-to-br from-theme_green/70 via-theme_primary/70 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold">
+                      <img
+                        src="/icons/share/white.svg"
+                        alt="Share"
+                        className="w-6 h-auto"
+                      />
                     </button>
-                  </Link>
+                  </RWebShare>
                 </div>
-              )}
+
+                {event?.website_link && (
+                  <div className="text-base">
+                    <Link
+                      href={
+                        event?.website_link
+                          ? event?.website_link.includes("http")
+                            ? event?.website_link
+                            : `http://${event?.website_link}`
+                          : ""
+                      }
+                      target="_blank"
+                      rel="noopener noreffer"
+                    >
+                      <button className="bg-gradient-to-br from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal font-medium tracking-wide shadow-lg">
+                        Register
+                      </button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
