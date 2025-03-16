@@ -243,7 +243,7 @@ const EventCard = ({
                       title: event?.title,
                     }}
                   >
-                    <button className="z-10 bg-gradient-to-br from-theme_green/70 via-theme_primary/70 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold">
+                    <button className="z-10 bg-gradient-to-br from-theme_primary/80 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold">
                       <img
                         src="/icons/share/white.svg"
                         alt="Share"
