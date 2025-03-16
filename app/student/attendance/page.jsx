@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import AttendanceCard from "@/components/student/attendance";
 import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
@@ -12,6 +13,9 @@ import { getPlannerData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import "react-day-picker/style.css";
+import { se } from "date-fns/locale";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -41,9 +45,19 @@ const Attendance = () => {
   });
 
   const getMinDate = (currentDate) => {
-    const options = { timeZone: 'Asia/Kolkata' };
-    return new Date(new Intl.DateTimeFormat('en-US', { ...options, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(currentDate));
-
+    const options = { timeZone: "Asia/Kolkata" };
+    return new Date(
+      new Intl.DateTimeFormat("en-US", {
+        ...options,
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+      }).format(currentDate)
+    );
   };
 
   const getMaxDate = (currentDate) => {
@@ -120,17 +134,74 @@ const Attendance = () => {
       formatDate(predictionDate.endDate)
     );
 
-    result.then((data) => {
-      if (data) {
-        setCourseData(data);
-        toast.success("Attendance predicted successfully");
-        setPredictState(false);
-      } else {
-        toast.error("Something went wrong. Please try again");
-        setPredictState(false);
-      }
-    });
+    if (result) {
+      setCourseData(result);
+      setPredictState(false);
+      toast.success("Attendance prediction successful");
+    } else {
+      toast.error("Failed to predict attendance. Please try again");
+    }
   };
+
+  const [selectedDay, setSelectedDay] = useState([]);
+
+  function processAttendancePredictions(
+    calendar,
+    userTimetable,
+    courseData,
+    dates
+  ) {
+    let result = courseData; // Initial courseData
+    let currentDate = formatDate(
+      new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata",
+      })
+    ); // Today's date
+    for (let i = 0; i < dates.length; i++) {
+      let startDate = dates[i];
+      let endDate = dates[i];
+
+      if (i > 0) {
+        // Set currentDate as the next day of previous startDate
+        let rawPrevStartDate = dates[i - 1].split("/");
+        let prevStartDate = new Date(
+          `${Number(rawPrevStartDate[2]) + 2000}-${rawPrevStartDate[1]}-${
+            rawPrevStartDate[0]
+          }`
+        );
+        prevStartDate.setDate(prevStartDate.getDate() + 1);
+        currentDate = formatDate(prevStartDate);
+      }
+
+      // Call predictAttendance with updated values
+      result = predictAttendance(
+        calendar,
+        userTimetable,
+        result,
+        currentDate,
+        startDate,
+        endDate
+      );
+    }
+
+    return result;
+  }
+
+  useEffect(() => {
+    if (selectedDay.length > 0) {
+      const sortedDates = selectedDay.sort((a, b) => a - b);
+      const dates = sortedDates.map((date) => formatDate(date));
+      const result = processAttendancePredictions(
+        JSON.parse(localStorage.getItem("studentCalendar")),
+        JSON.parse(localStorage.getItem("studentTimetable")),
+        JSON.parse(localStorage.getItem("studentData"))?.courses,
+        dates
+      );
+      setCourseData(result);
+    } else {
+      setCourseData(JSON.parse(localStorage.getItem("studentData"))?.courses);
+    }
+  }, [selectedDay]);
 
   return (
     <>
@@ -167,6 +238,80 @@ const Attendance = () => {
             </button>
           </div>
           {predictBox && (
+            <div className="flex flex-col gap-3 justify-center items-center mb-3 theme_box_bg p-3 rounded-md">
+              <div className="flex items-center justify-between gap-2 w-full mb-4">
+                <span className="text-theme_text_primary font-semibold tracking-wide pl-4">
+                  {" "}
+                  Add your Leaves{" "}
+                </span>
+                <button
+                  className="theme_box_bg p-1 rounded-full w-fit"
+                  name="close"
+                  onClick={() => {
+                    setPredictBox(false);
+                    setPredictState(false);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="18px"
+                    viewBox="0 -960 960 960"
+                    width="18px"
+                    fill="#FFFFFF"
+                  >
+                    <path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z" />
+                  </svg>
+                </button>
+              </div>
+              <DayPicker
+                mode="multiple"
+                selected={selectedDay}
+                onSelect={(day) => {
+                  setSelectedDay(day);
+                }}
+                timeZone="Asia/Kolkata"
+                disabled={{
+                  before: new Date(),
+                  after: getMaxDate(new Date()),
+                }}
+                classNames={{
+                  today: `bg-theme_primary/50 text-theme_text_normal rounded-full`,
+                  selected:
+                    "bg-theme_secondary/70 text-theme_text_normal rounded-full",
+
+                  day: `${getDefaultClassNames.day} text-theme_text_normal text-center font-medium rounded-full`,
+                  disabled: "text-theme_text_normal/50",
+                  weekdays: "text-theme_text_primary font-semibold",
+                  caption_label: "text-theme_primary text-lg",
+                  chevron: "fill-theme_primary p-1",
+                }}
+                footer={
+                  <>
+                    <div className="flex justify-between items-center gap-2 mt-2">
+                      <button
+                        className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                        onClick={() => {
+                          setSelectedDay([]);
+                          setPredictBox(false);
+                        }}
+                      >
+                        <span>Close</span>
+                      </button>
+                      <button
+                        className="z-10 bg-gradient-to-br bg-theme_primary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                        onClick={() => {
+                          setSelectedDay([]);
+                        }}
+                      >
+                        <span>Reset</span>
+                      </button>
+                    </div>
+                  </>
+                }
+              />
+            </div>
+          )}
+          {/*predictBox && (
             <div className="theme_box_bg pt-3 pb-6 flex flex-col justify-center mb-5 px-3">
               <div className="flex items-center justify-end gap-2 w-full">
                 <button
@@ -287,8 +432,7 @@ const Attendance = () => {
                 </button>
               </div>
             </div>
-          )}
-
+          )*/}
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />

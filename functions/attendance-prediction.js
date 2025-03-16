@@ -1,6 +1,6 @@
 import { tr } from "date-fns/locale";
 
-export const predictAttendance = async (
+export const predictAttendance = (
   calendar,
   userTimetable,
   courseData,
