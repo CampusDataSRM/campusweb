@@ -101,7 +101,7 @@ const Attendance = () => {
         });
       }
       const planner = JSON.parse(localStorage.getItem("studentCalendar"));
-      if (!planner) {
+      if (!planner && predictBox) {
         const plannerResult = getPlannerData(Cookies.get("X-CSRF-Token"));
         plannerResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
@@ -189,6 +189,14 @@ const Attendance = () => {
 
   useEffect(() => {
     if (selectedDay.length > 0) {
+      if (!localStorage.getItem("studentTimetable")) {
+        toast.error("Timetable not found. Please try again");
+        router.push("/student");
+      }
+      if (!localStorage.getItem("studentCalendar")) {
+        toast.error("Calendar not found. Please try again");
+        return;
+      }
       const sortedDates = selectedDay.sort((a, b) => a - b);
       const dates = sortedDates.map((date) => formatDate(date));
       const result = processAttendancePredictions(

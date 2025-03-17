@@ -41,6 +41,9 @@ const Student = () => {
         setTestPerformance(studentData?.testPerformances);
         setLoading(false);
       }
+      if (localStorage.getItem("studentCalendar")){
+        localStorage.removeItem("studentCalendar");
+      }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
       myHeaders.append("Content-Type", "application/json");
@@ -81,6 +84,8 @@ const Student = () => {
           setLoading(false);
         })
         .catch((error) => console.error(error));
+
+
     }
 
     // const cookieDate = localStorage.getItem("cookieDate");
