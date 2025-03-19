@@ -5,6 +5,7 @@ import { deleteEvent } from "@/functions/api/club";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { RWebShare } from "react-web-share";
+import { toast } from "react-toastify";
 
 const EventCard = ({
   event,
@@ -90,6 +91,37 @@ const EventCard = ({
 
     return `${formattedStartDate} to ${formattedEndDate}`;
   }
+
+  const shareEvent = async () => {
+    try {
+      const imageUrl = event?.banner_url; // Replace with the actual image path
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `${event?.title}`, { type: blob.type });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: event?.title,
+          text: `Check out this event on Campus Web: ${event?.title} by ${
+            club?.name
+          } on ${convertDateRangeToDDMMYY(event?.dates)} from ${event?.timing}`,
+          url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`,
+          files: [file],
+        });
+      } else {
+        await navigator.share({
+          title: event?.title,
+          text: `Check out this event on Campus Web: ${event?.title} by ${
+            club?.name
+          } on ${convertDateRangeToDDMMYY(event?.dates)} from ${event?.timing}`,
+          url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing the event: ", error);
+      toast.error("Error sharing the event");
+    }
+  };
 
   return (
     <>
@@ -236,21 +268,16 @@ const EventCard = ({
             <>
               <div className="flex justify-end items-stretch gap-2">
                 <div>
-                  <RWebShare
-                    data={{
-                      text: `Check out this event on Campus Web: ${event?.title} by ${club?.name} on ${convertDateRangeToDDMMYY(event?.dates)} from ${event?.timing}`,
-                      url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`,
-                      title: event?.title,
-                    }}
+                  <button
+                    className="z-10 bg-gradient-to-br from-theme_primary/80 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold"
+                    onClick={shareEvent}
                   >
-                    <button className="z-10 bg-gradient-to-br from-theme_primary/80 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold">
-                      <img
-                        src="/icons/share/white.svg"
-                        alt="Share"
-                        className="w-6 h-auto"
-                      />
-                    </button>
-                  </RWebShare>
+                    <img
+                      src="/icons/share/white.svg"
+                      alt="Share"
+                      className="w-6 h-auto"
+                    />
+                  </button>
                 </div>
 
                 {event?.website_link && (
