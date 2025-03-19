@@ -16,6 +16,7 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/style.css";
 import AddOptionalHour from "@/components/student/attendance/AddOptionalHour";
+import { se } from "date-fns/locale";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -119,6 +120,7 @@ const Attendance = () => {
 
   const [selectedDay, setSelectedDay] = useState([]);
   const [updateCall, setUpdateCall] = useState(0);
+  const [optionalHoursSubjects, setOptionalHoursSubjects] = useState({});
 
   function processAttendancePredictions(
     calendar,
@@ -176,6 +178,20 @@ const Attendance = () => {
     return updatedTimetable;
   };
 
+  const getOptionalHoursSubjects = (timetable, optionalHours) => {
+    Object.entries(optionalHours).forEach(([day, times]) => {
+      if (timetable.timetable[day]) {
+        setOptionalHoursSubjects((prev) => ({
+          ...prev,
+          [day]: times.map((time) => ({
+            time: time,
+            subject: timetable.timetable[day][time]?.subject_name,
+          })),
+        }));
+      }
+    });
+  };
+
   useEffect(() => {
     if (!localStorage.getItem("studentTimetable")) {
       toast.error("Timetable not found. Please try again");
@@ -186,6 +202,8 @@ const Attendance = () => {
     if (localStorage.getItem("optionalHour")) {
       const optionalHours = JSON.parse(localStorage.getItem("optionalHour"));
       const updatedTimetable = updateTimetable(timetable, optionalHours);
+      console.log(optionalHours);
+      getOptionalHoursSubjects(timetable, optionalHours);
       setTimeTable(updatedTimetable);
     } else {
       setTimeTable(timetable);
@@ -210,6 +228,8 @@ const Attendance = () => {
   }, [selectedDay, predictBox, updateCall]);
 
   const [expandOptionalHour, setExpandOptionalHour] = useState(false);
+
+  console.log(optionalHoursSubjects);
 
   return (
     <>
@@ -295,82 +315,147 @@ const Attendance = () => {
                   caption_label: "text-theme_primary text-lg",
                   chevron: "fill-theme_primary p-1",
                 }}
-                footer={
-                  <>
-                    <div className="flex justify-between items-center gap-2 mt-2">
-                      <div className="flex gap-2">
-                        <button
-                          className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-                          onClick={() => {
-                            setSelectedDay([]);
-                          }}
-                        >
-                          <span>Reset</span>
-                        </button>
-                      </div>
-
-                      <button
-                        className="z-10 bg-gradient-to-br from-theme_primary/75 to-theme_secondary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-                        onClick={() => {
-                          setUpdateCall(updateCall + 1);
-                        }}
-                      >
-                        <span>Update</span>
-                      </button>
-                    </div>
-                  </>
-                }
               />
-            </div>
-          )}
-          {predictBox && (
-            <div className="flex flex-col gap-3 theme_box_bg p-3 mt-2 mb-3">
-              <div className="flex items-center justify-between gap-2 w-full mt-2">
-                <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
-                  {" "}
-                  Add Optional Hours{" "}
-                </div>
-                <button
-                  className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
-                  name="minimize"
-                  onClick={() => setExpandOptionalHour(!expandOptionalHour)}
-                >
-                  {expandOptionalHour ? (
-                    <>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 -960 960 960"
-                        width="24px"
-                        fill="#ffffff"
-                      >
-                        <path d="m280-400 200-200 200 200H280Z" />
-                      </svg>
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 -960 960 960"
-                        width="24px"
-                        fill="#ffffff"
-                      >
-                        <path d="M480-360 280-560h400L480-360Z" />
-                      </svg>
-                    </>
+              <>
+                <div className="flex flex-col gap-3 mt-2 w-full">
+                  <div className="flex items-center justify-between gap-2 w-full mt-2 theme_box_bg p-2 pt-4 mb-2">
+                    <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
+                      {" "}
+                      Add Optional Hours{" "}
+                    </div>
+                    <button
+                      className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
+                      name="minimize"
+                      onClick={() => setExpandOptionalHour(!expandOptionalHour)}
+                    >
+                      {expandOptionalHour ? (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="24px"
+                            viewBox="0 -960 960 960"
+                            width="24px"
+                            fill="#ffffff"
+                          >
+                            <path d="m280-400 200-200 200 200H280Z" />
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="24px"
+                            viewBox="0 -960 960 960"
+                            width="24px"
+                            fill="#ffffff"
+                          >
+                            <path d="M480-360 280-560h400L480-360Z" />
+                          </svg>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  {expandOptionalHour && (
+                    <div>
+                      {" "}
+                      <AddOptionalHour />{" "}
+                    </div>
                   )}
-                </button>
-              </div>
-              {expandOptionalHour && (
-                <div>
-                  {" "}
-                  <AddOptionalHour />{" "}
                 </div>
-              )}
+
+                <div className="flex justify-between items-center gap-2 py-2 w-full">
+                  <div className="flex gap-2">
+                    <button
+                      className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                      onClick={() => {
+                        setSelectedDay([]);
+                        localStorage.removeItem("optionalHour");
+                        toast.success("Leaves and optional hours cleared");
+                      }}
+                    >
+                      <span>Reset</span>
+                    </button>
+                  </div>
+
+                  <button
+                    className="z-10 bg-gradient-to-br from-theme_primary/75 to-theme_secondary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                    onClick={() => {
+                      setUpdateCall(updateCall + 1);
+                    }}
+                  >
+                    <span>Update</span>
+                  </button>
+                </div>
+              </>
             </div>
           )}
-
+          {/*optionalHoursSubjects &&
+            Object.keys(optionalHoursSubjects).length > 0 && (
+              <div className="flex flex-col gap-3 mt-2 w-full">
+                <div className="flex items-center justify-between gap-2 w-full mt-2 theme_box_bg p-2 pt-4 mb-2">
+                  <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
+                    {" "}
+                    Optional Hours{" "}
+                  </div>
+                  <button
+                    className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
+                    name="minimize"
+                    onClick={() => setExpandOptionalHour(!expandOptionalHour)}
+                  >
+                    {expandOptionalHour ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="#ffffff"
+                        >
+                          <path d="m280-400 200-200 200 200H280Z" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="#ffffff"
+                        >
+                          <path d="M480-360 280-560h400L480-360Z" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {expandOptionalHour && (
+                  <div>
+                    <div className="flex flex-col gap-2">
+                      {Object.entries(optionalHoursSubjects).map(
+                        ([day, times], index) => (
+                          <div key={index} className="flex flex-col gap-2">
+                            <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
+                              {day}
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              {times.map((time, index) => (
+                                <span
+                                  key={index}
+                                  className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
+                                >
+                                  {time.time} - {time.subject}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )*/}
           {selectedDay.length > 0 && (
             <div className="flex flex-col theme_box_bg p-3 gap-3 mb-4">
               <span className="text-theme_text_primary font-semibold tracking-wide text-sm">

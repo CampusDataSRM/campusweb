@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { se } from "date-fns/locale";
 
 const AddOptionalHour = () => {
   const router = useRouter();
@@ -28,6 +29,7 @@ const AddOptionalHour = () => {
     }
   }, []);
   const [optionalHour, setOptionalHour] = useState({});
+  const [updateOptionalHour, setUpdateOptionalHour] = useState(0);
 
   const addOptionalHour = (dayOrder, time) => {
     setOptionalHour((prev) => ({
@@ -44,6 +46,17 @@ const AddOptionalHour = () => {
         : [],
     }));
   };
+
+  useEffect(() => {
+    if (updateOptionalHour > 0) {
+      if (Object.keys(optionalHour).length === 0) {
+        toast.error("Select at least one optional hour");
+      } else {
+        localStorage.setItem("optionalHour", JSON.stringify(optionalHour));
+        toast.success("Optional hours Updated");
+      }
+    }
+  }, [optionalHour]);
 
   return (
     <>
@@ -93,55 +106,120 @@ const AddOptionalHour = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {Object.keys(
-                  timetable.timetable
-                    ? timetable.timetable[selectedDay]
+                <div className="flex flex-col gap-2">
+                  {Object.keys(
+                    timetable.timetable
                       ? timetable.timetable[selectedDay]
+                        ? timetable.timetable[selectedDay]
+                        : {}
                       : {}
-                    : {}
-                ).map((item, index) => (
-                  <button
-                    onClick={() => {
-                      if (
-                        timetable.timetable[selectedDay][
-                          item
-                        ].subject_name.includes("No class")
-                      ) {
-                        toast.error("No class scheduled");
-                      } else {
-                        if (
-                          optionalHour[selectedDay] &&
-                          optionalHour[selectedDay].includes(item)
-                        ) {
-                          removeOptionalHour(selectedDay, item);
-                        } else {
-                          addOptionalHour(selectedDay, item);
-                        }
-                      }
-                    }}
-                    key={index}
-                    className={`${
-                      timetable.timetable[selectedDay][
-                        item
-                      ].subject_name.includes("No class") && "hidden"
-                    } px-2 py-[10px] rounded-lg text-sm tracking-wider
+                  )
+                    .slice(0, 5)
+                    .map((item, index) => (
+                      <button
+                        onClick={() => {
+                          if (
+                            timetable.timetable[selectedDay][
+                              item
+                            ].subject_name.includes("No class")
+                          ) {
+                            toast.error("No class scheduled for this hour");
+                          } else {
+                            if (
+                              optionalHour[selectedDay] &&
+                              optionalHour[selectedDay].includes(item)
+                            ) {
+                              removeOptionalHour(selectedDay, item);
+                            } else {
+                              addOptionalHour(selectedDay, item);
+                            }
+                          }
+                          setUpdateOptionalHour((prev) => prev + 1);
+                        }}
+                        key={index}
+                        className={` px-2 py-[10px] rounded-lg text-sm tracking-wider
                     ${
                       optionalHour[selectedDay] &&
                       optionalHour[selectedDay].includes(item)
                         ? "bg-[#0C4DA2]/20"
+                        : timetable.timetable[selectedDay][
+                            item
+                          ].subject_name.includes("No class")
+                        ? "bg-[#0C4DA2]/20"
                         : "bg-theme_primary/95"
                     }`}
-                  >
-                    <div className="w-full flex justify-start gap-3 items-center">
-                      <span className="text-theme_text_normal">
-                        {item && item.split(" ")[0]}
-                      </span>
-                      <span className="text-theme_text_normal text-nowrap truncate">
-                        {timetable.timetable[selectedDay][item].subject_name}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                      >
+                        <div className="w-full flex justify-start gap-3 items-center">
+                          <span className="text-theme_text_normal">
+                            {item && item.split(" ")[0]}
+                          </span>
+                          <span className="text-theme_text_normal text-nowrap truncate">
+                            {
+                              timetable.timetable[selectedDay][item]
+                                .subject_name
+                            }
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {Object.keys(
+                    timetable.timetable
+                      ? timetable.timetable[selectedDay]
+                        ? timetable.timetable[selectedDay]
+                        : {}
+                      : {}
+                  )
+                    .slice(5, 10)
+                    .map((item, index) => (
+                      <button
+                        onClick={() => {
+                          if (
+                            timetable.timetable[selectedDay][
+                              item
+                            ].subject_name.includes("No class")
+                          ) {
+                            toast.error("No class scheduled for this hour");
+                          } else {
+                            if (
+                              optionalHour[selectedDay] &&
+                              optionalHour[selectedDay].includes(item)
+                            ) {
+                              removeOptionalHour(selectedDay, item);
+                            } else {
+                              addOptionalHour(selectedDay, item);
+                            }
+                          }
+                          setUpdateOptionalHour((prev) => prev + 1);
+                        }}
+                        key={index}
+                        className={` px-2 py-[10px] rounded-lg text-sm tracking-wider
+                    ${
+                      optionalHour[selectedDay] &&
+                      optionalHour[selectedDay].includes(item)
+                        ? "bg-[#0C4DA2]/20"
+                        : timetable.timetable[selectedDay][
+                            item
+                          ].subject_name.includes("No class")
+                        ? "bg-[#0C4DA2]/20"
+                        : "bg-theme_primary/95"
+                    }`}
+                      >
+                        <div className="w-full flex justify-start gap-3 items-center">
+                          <span className="text-theme_text_normal">
+                            {item && item.split(" ")[0]}
+                          </span>
+                          <span className="text-theme_text_normal text-nowrap truncate">
+                            {
+                              timetable.timetable[selectedDay][item]
+                                .subject_name
+                            }
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                </div>
               </div>
               {Object.keys(
                 timetable.timetable
@@ -158,34 +236,6 @@ const AddOptionalHour = () => {
               )}
             </>
           )}
-        </div>
-        <div className="flex justify-between items-center gap-2 mt-4">
-          <button
-            className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-            onClick={() => {
-              setOptionalHour({});
-              localStorage.removeItem("optionalHour");
-              toast.success("Optional hours reset");
-            }}
-          >
-            <span>Reset</span>
-          </button>
-          <button
-            className="z-10 bg-gradient-to-br from-theme_primary/75 to-theme_secondary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-            onClick={() => {
-              if (Object.keys(optionalHour).length === 0) {
-                toast.error("Select at least one optional hour");
-              } else {
-                localStorage.setItem(
-                  "optionalHour",
-                  JSON.stringify(optionalHour)
-                );
-                toast.success("Optional hours Updated");
-              }
-            }}
-          >
-            <span>Apply</span>
-          </button>
         </div>
       </main>
     </>
