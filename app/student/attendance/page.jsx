@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/style.css";
-import { se } from "date-fns/locale";
+import AddOptionalHour from "@/components/student/attendance/AddOptionalHour";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -24,6 +24,7 @@ const Attendance = () => {
   const router = useRouter();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [timeTable, setTimeTable] = useState({});
 
   // format date as dd/mm/yy
   const formatDate = (date) => {
@@ -116,31 +117,8 @@ const Attendance = () => {
     }
   }, [predictBox]);
 
-  const predictAttendanceHandler = () => {
-    if (!localStorage.getItem("studentTimetable")) {
-      toast.error("Timetable not found. Please try again");
-      router.push("/student");
-    }
-    setPredictState(true);
-    const result = predictAttendance(
-      JSON.parse(localStorage.getItem("studentCalendar")),
-      JSON.parse(localStorage.getItem("studentTimetable")),
-      JSON.parse(localStorage.getItem("studentData"))?.courses,
-      formatDate(predictionDate.currentDate),
-      formatDate(predictionDate.startDate),
-      formatDate(predictionDate.endDate)
-    );
-
-    if (result) {
-      setCourseData(result);
-      setPredictState(false);
-      toast.success("Attendance prediction successful");
-    } else {
-      toast.error("Failed to predict attendance. Please try again");
-    }
-  };
-
   const [selectedDay, setSelectedDay] = useState([]);
+  const [updateCall, setUpdateCall] = useState(0);
 
   function processAttendancePredictions(
     calendar,
@@ -184,12 +162,35 @@ const Attendance = () => {
     return result;
   }
 
-  useEffect(() => {
-    if (selectedDay.length > 0) {
-      if (!localStorage.getItem("studentTimetable")) {
-        toast.error("Timetable not found. Please try again");
-        router.push("/student");
+  const updateTimetable = (timetableObject, optionalHours) => {
+    let updatedTimetable = { ...timetableObject };
+
+    Object.entries(optionalHours).forEach(([day, times]) => {
+      if (updatedTimetable.timetable[day]) {
+        times.forEach((time) => {
+          delete updatedTimetable.timetable[day][time];
+        });
       }
+    });
+
+    return updatedTimetable;
+  };
+
+  useEffect(() => {
+    if (!localStorage.getItem("studentTimetable")) {
+      toast.error("Timetable not found. Please try again");
+      router.push("/student");
+      return;
+    }
+    const timetable = JSON.parse(localStorage.getItem("studentTimetable"));
+    if (localStorage.getItem("optionalHour")) {
+      const optionalHours = JSON.parse(localStorage.getItem("optionalHour"));
+      const updatedTimetable = updateTimetable(timetable, optionalHours);
+      setTimeTable(updatedTimetable);
+    } else {
+      setTimeTable(timetable);
+    }
+    if (selectedDay.length > 0) {
       if (!localStorage.getItem("studentCalendar")) {
         toast.error("Calendar not found. Please try again");
         return;
@@ -198,7 +199,7 @@ const Attendance = () => {
       const dates = sortedDates.map((date) => formatDate(date));
       const result = processAttendancePredictions(
         JSON.parse(localStorage.getItem("studentCalendar")),
-        JSON.parse(localStorage.getItem("studentTimetable")),
+        timeTable,
         JSON.parse(localStorage.getItem("studentData"))?.courses,
         dates
       );
@@ -206,7 +207,9 @@ const Attendance = () => {
     } else {
       setCourseData(JSON.parse(localStorage.getItem("studentData"))?.courses);
     }
-  }, [selectedDay]);
+  }, [selectedDay, predictBox, updateCall]);
+
+  const [expandOptionalHour, setExpandOptionalHour] = useState(false);
 
   return (
     <>
@@ -242,8 +245,9 @@ const Attendance = () => {
               </svg>
             </button>
           </div>
+
           {predictBox && (
-            <div className="flex flex-col gap-3 justify-center items-center mb-3 theme_box_bg p-3 rounded-md">
+            <div className="flex flex-col gap-3 justify-center items-center mb-2 theme_box_bg p-3 rounded-md">
               <div className="flex items-center justify-between gap-2 w-full mb-4">
                 <span className="text-theme_text_primary font-semibold tracking-wide pl-4">
                   {" "}
@@ -275,7 +279,11 @@ const Attendance = () => {
                   setSelectedDay(day);
                 }}
                 timeZone="Asia/Kolkata"
-                disabled={(date) => date > getMaxDate(new Date()) || date.getDay() === 0 || date < getMinDate(new Date())}
+                disabled={(date) =>
+                  date > getMaxDate(new Date()) ||
+                  date.getDay() === 0 ||
+                  date < getMinDate(new Date())
+                }
                 classNames={{
                   today: `bg-theme_primary/50 text-theme_text_normal rounded-full`,
                   selected:
@@ -287,26 +295,27 @@ const Attendance = () => {
                   caption_label: "text-theme_primary text-lg",
                   chevron: "fill-theme_primary p-1",
                 }}
-                
                 footer={
                   <>
                     <div className="flex justify-between items-center gap-2 mt-2">
+                      <div className="flex gap-2">
+                        <button
+                          className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                          onClick={() => {
+                            setSelectedDay([]);
+                          }}
+                        >
+                          <span>Reset</span>
+                        </button>
+                      </div>
+
                       <button
-                        className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
+                        className="z-10 bg-gradient-to-br from-theme_primary/75 to-theme_secondary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
                         onClick={() => {
-                          setSelectedDay([]);
-                          setPredictBox(false);
+                          setUpdateCall(updateCall + 1);
                         }}
                       >
-                        <span>Close</span>
-                      </button>
-                      <button
-                        className="z-10 bg-gradient-to-br bg-theme_primary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-                        onClick={() => {
-                          setSelectedDay([]);
-                        }}
-                      >
-                        <span>Reset</span>
+                        <span>Update</span>
                       </button>
                     </div>
                   </>
@@ -314,7 +323,101 @@ const Attendance = () => {
               />
             </div>
           )}
-          {/*predictBox && (
+          {predictBox && (
+            <div className="flex flex-col gap-3 theme_box_bg p-3 mt-2 mb-3">
+              <div className="flex items-center justify-between gap-2 w-full mt-2">
+                <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
+                  {" "}
+                  Add Optional Hours{" "}
+                </div>
+                <button
+                  className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
+                  name="minimize"
+                  onClick={() => setExpandOptionalHour(!expandOptionalHour)}
+                >
+                  {expandOptionalHour ? (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="#ffffff"
+                      >
+                        <path d="m280-400 200-200 200 200H280Z" />
+                      </svg>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="#ffffff"
+                      >
+                        <path d="M480-360 280-560h400L480-360Z" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </div>
+              {expandOptionalHour && (
+                <div>
+                  {" "}
+                  <AddOptionalHour />{" "}
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedDay.length > 0 && (
+            <div className="flex flex-col theme_box_bg p-3 gap-3 mb-4">
+              <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
+                Selected Dates
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {selectedDay.map((day, index) => (
+                  <span
+                    key={index}
+                    className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
+                  >
+                    {formatDate(day)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {loading ? (
+            <div className="flex justify-center mt-60 content-center">
+              <Loader />
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-center gap-5">
+              {courseData ? (
+                courseData.map((course, index) => (
+                  <AttendanceCard key={index} attendance={course} />
+                ))
+              ) : (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    No data found for Attendance
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+          <br />
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Attendance;
+
+{
+  /*predictBox && (
             <div className="theme_box_bg pt-3 pb-6 flex flex-col justify-center mb-5 px-3">
               <div className="flex items-center justify-end gap-2 w-full">
                 <button
@@ -435,48 +538,5 @@ const Attendance = () => {
                 </button>
               </div>
             </div>
-          )*/}
-          {selectedDay.length > 0 && (
-            <div className="flex flex-col theme_box_bg p-3 gap-3 mb-4">
-              <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
-                Selected Dates
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {selectedDay.map((day, index) => (
-                  <span
-                    key={index}
-                    className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
-                  >
-                    {formatDate(day)}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          {loading ? (
-            <div className="flex justify-center mt-60 content-center">
-              <Loader />
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-5">
-              {courseData ? (
-                courseData.map((course, index) => (
-                  <AttendanceCard key={index} attendance={course} />
-                ))
-              ) : (
-                <div className="theme_box_bg py-6 w-full">
-                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
-                    No data found for Attendance
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-          <br />
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Attendance;
+          )*/
+}

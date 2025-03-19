@@ -95,8 +95,11 @@ const EventCard = ({
   const shareEvent = async () => {
     try {
       const imageUrl = event?.banner_url; // Replace with the actual image path
+      console.log("Image URL: ", imageUrl);
       const response = await fetch(imageUrl);
+      console.log("Response: ", response);
       const blob = await response.blob();
+      console.log("Blob: ", blob);
       const file = new File([blob], `${event?.title}`, { type: blob.type });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -108,14 +111,16 @@ const EventCard = ({
           url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`,
           files: [file],
         });
+        console.log("Shared successfully");
       } else {
-        await navigator.share({
+        const shareData = {
           title: event?.title,
           text: `Check out this event on Campus Web: ${event?.title} by ${
             club?.name
           } on ${convertDateRangeToDDMMYY(event?.dates)} from ${event?.timing}`,
-          url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`
-        });
+          url: `https://campusweb.vercel.app/student/events/#${event?.title}_${eventID}`,
+        };
+        return <RWebShare data={shareData} />;
       }
     } catch (error) {
       console.error("Error sharing the event: ", error);
@@ -267,10 +272,10 @@ const EventCard = ({
           ) : (
             <>
               <div className="flex justify-end items-stretch gap-2">
-                <div>
+                <div className="hidden">
                   <button
                     className="z-10 bg-gradient-to-br from-theme_primary/80 to-theme_secondary p-3 rounded-md text-theme_text_normal w-full text-center tracking-wider font-semibold"
-                    onClick={shareEvent}
+                    onClick={() => {}}
                   >
                     <img
                       src="/icons/share/white.svg"
