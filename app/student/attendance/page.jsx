@@ -52,9 +52,6 @@ const Attendance = () => {
         year: "numeric",
         month: "numeric",
         day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
         hour12: false,
       }).format(currentDate)
     );
@@ -278,10 +275,7 @@ const Attendance = () => {
                   setSelectedDay(day);
                 }}
                 timeZone="Asia/Kolkata"
-                disabled={{
-                  before: new Date(),
-                  after: getMaxDate(new Date()),
-                }}
+                disabled={(date) => date > getMaxDate(new Date()) || date.getDay() === 0 || date < getMinDate(new Date())}
                 classNames={{
                   today: `bg-theme_primary/50 text-theme_text_normal rounded-full`,
                   selected:
@@ -293,6 +287,7 @@ const Attendance = () => {
                   caption_label: "text-theme_primary text-lg",
                   chevron: "fill-theme_primary p-1",
                 }}
+                
                 footer={
                   <>
                     <div className="flex justify-between items-center gap-2 mt-2">
@@ -441,6 +436,23 @@ const Attendance = () => {
               </div>
             </div>
           )*/}
+          {selectedDay.length > 0 && (
+            <div className="flex flex-col theme_box_bg p-3 gap-3 mb-4">
+              <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
+                Selected Dates
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {selectedDay.map((day, index) => (
+                  <span
+                    key={index}
+                    className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
+                  >
+                    {formatDate(day)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />
