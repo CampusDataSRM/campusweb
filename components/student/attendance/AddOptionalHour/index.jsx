@@ -103,6 +103,17 @@ const AddOptionalHour = () => {
                     </button>
                   ))}
                 </div>
+                <button
+                  className="text-theme_primary tracking-wide text-sm"
+                  onClick={() => {
+                    localStorage.removeItem("optionalHour");
+                    toast.success("Cleared Optional hours");
+                    setOptionalHour({});
+                  }}
+                >
+                  {" "}
+                  Reset{" "}
+                </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2 mt-2">
