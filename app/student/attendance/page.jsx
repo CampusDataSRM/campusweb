@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import AttendanceCard from "@/components/student/attendance";
 import { useEffect, useState } from "react";
 import Loader from "@/components/global/loader";
@@ -13,10 +12,6 @@ import { getPlannerData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
-import "react-day-picker/style.css";
-import AddOptionalHour from "@/components/student/attendance/AddOptionalHour";
-import { se } from "date-fns/locale";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -25,7 +20,6 @@ const Attendance = () => {
   const router = useRouter();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [timeTable, setTimeTable] = useState({});
 
   // format date as dd/mm/yy
   const formatDate = (date) => {
@@ -47,21 +41,10 @@ const Attendance = () => {
   });
 
   const getMinDate = (currentDate) => {
-    const options = { timeZone: "Asia/Kolkata" };
-    return new Date(
-      new Intl.DateTimeFormat("en-US", {
-        ...options,
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour12: false,
-      }).format(currentDate)
-    );
-  };
+    const options = { timeZone: 'Asia/Kolkata' };
+    return new Date(new Intl.DateTimeFormat('en-US', { ...options, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(currentDate));
 
-  const todayDate = new Date().toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-  });
+  };
 
   const getMaxDate = (currentDate) => {
     const options = { timeZone: "Asia/Kolkata" };
@@ -104,7 +87,7 @@ const Attendance = () => {
         });
       }
       const planner = JSON.parse(localStorage.getItem("studentCalendar"));
-      if (!planner && predictBox) {
+      if (!planner) {
         const plannerResult = getPlannerData(Cookies.get("X-CSRF-Token"));
         plannerResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
@@ -122,121 +105,32 @@ const Attendance = () => {
     }
   }, [predictBox]);
 
-  const [selectedDay, setSelectedDay] = useState([]);
-  const [updateCall, setUpdateCall] = useState(0);
-  const [optionalHoursSubjects, setOptionalHoursSubjects] = useState({});
-
-  function processAttendancePredictions(
-    calendar,
-    userTimetable,
-    courseData,
-    dates
-  ) {
-    let result = courseData; // Initial courseData
-    let indiaTime = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
-    );
-    if (
-      indiaTime.getHours() > 19 ||
-      (indiaTime.getHours() === 19 && indiaTime.getMinutes() >= 30)
-    )
-      indiaTime.setDate(indiaTime.getDate() + 1);
-    let currentDate = formatDate(indiaTime);
-    // Today's date
-    for (let i = 0; i < dates.length; i++) {
-      let startDate = dates[i];
-      let endDate = dates[i];
-
-      if (i > 0) {
-        // Set currentDate as the next day of previous startDate
-        let rawPrevStartDate = dates[i - 1].split("/");
-        let prevStartDate = new Date(
-          `${Number(rawPrevStartDate[2]) + 2000}-${rawPrevStartDate[1]}-${
-            rawPrevStartDate[0]
-          }`
-        );
-        prevStartDate.setDate(prevStartDate.getDate() + 1);
-        currentDate = formatDate(prevStartDate);
-      }
-
-      // Call predictAttendance with updated values
-      result = predictAttendance(
-        calendar,
-        userTimetable,
-        result,
-        currentDate,
-        startDate,
-        endDate
-      );
-    }
-
-    return result;
-  }
-
-  const updateTimetable = (timetableObject, optionalHours) => {
-    let updatedTimetable = { ...timetableObject };
-
-    Object.entries(optionalHours).forEach(([day, times]) => {
-      if (updatedTimetable.timetable[day]) {
-        times.forEach((time) => {
-          delete updatedTimetable.timetable[day][time];
-        });
-      }
-    });
-
-    return updatedTimetable;
-  };
-
-  const getOptionalHoursSubjects = (timetable, optionalHours) => {
-    Object.entries(optionalHours).forEach(([day, times]) => {
-      if (timetable.timetable[day]) {
-        setOptionalHoursSubjects((prev) => ({
-          ...prev,
-          [day]: times.map((time) => ({
-            time: time,
-            subject: timetable.timetable[day][time]?.subject_name,
-          })),
-        }));
-      }
-    });
-  };
-
-  useEffect(() => {
+  const predictAttendanceHandler = () => {
     if (!localStorage.getItem("studentTimetable")) {
       toast.error("Timetable not found. Please try again");
       router.push("/student");
-      return;
     }
-    const timetable = JSON.parse(localStorage.getItem("studentTimetable"));
-    if (localStorage.getItem("optionalHour")) {
-      const optionalHours = JSON.parse(localStorage.getItem("optionalHour"));
-      const updatedTimetable = updateTimetable(timetable, optionalHours);
-      console.log(optionalHours);
-      getOptionalHoursSubjects(timetable, optionalHours);
-      setTimeTable(updatedTimetable);
-    } else {
-      setTimeTable(timetable);
-    }
-    if (selectedDay.length > 0) {
-      if (!localStorage.getItem("studentCalendar")) {
-        toast.error("Calendar not found. Please try again");
-        return;
-      }
-      const sortedDates = selectedDay.sort((a, b) => a - b);
-      const dates = sortedDates.map((date) => formatDate(date));
-      const result = processAttendancePredictions(
-        JSON.parse(localStorage.getItem("studentCalendar")),
-        timeTable,
-        JSON.parse(localStorage.getItem("studentData"))?.courses,
-        dates
-      );
-      setCourseData(result);
-    } else {
-      setCourseData(JSON.parse(localStorage.getItem("studentData"))?.courses);
-    }
-  }, [selectedDay, predictBox, updateCall]);
+    setPredictState(true);
+    const result = predictAttendance(
+      JSON.parse(localStorage.getItem("studentCalendar")),
+      JSON.parse(localStorage.getItem("studentTimetable")),
+      JSON.parse(localStorage.getItem("studentData"))?.courses,
+      formatDate(predictionDate.currentDate),
+      formatDate(predictionDate.startDate),
+      formatDate(predictionDate.endDate)
+    );
 
-  const [expandOptionalHour, setExpandOptionalHour] = useState(false);
+    result.then((data) => {
+      if (data) {
+        setCourseData(data);
+        toast.success("Attendance predicted successfully");
+        setPredictState(false);
+      } else {
+        toast.error("Something went wrong. Please try again");
+        setPredictState(false);
+      }
+    });
+  };
 
   return (
     <>
@@ -272,255 +166,7 @@ const Attendance = () => {
               </svg>
             </button>
           </div>
-
           {predictBox && (
-            <>
-              {selectedDay.includes(todayDate) && (
-                <div className="flex flex-col gap-3 justify-center items-center mb-2 theme_box_bg p-3 rounded-md"></div>
-              )}
-              <div className="flex flex-col gap-3 justify-center items-center mb-2 theme_box_bg p-3 rounded-md">
-                <div className="flex items-center justify-between gap-2 w-full mb-4">
-                  <span className="text-theme_text_primary font-semibold tracking-wide pl-4">
-                    {" "}
-                    Add your Leaves{" "}
-                  </span>
-                  <button
-                    className="theme_box_bg p-1 rounded-full w-fit"
-                    name="close"
-                    onClick={() => {
-                      setPredictBox(false);
-                      setPredictState(false);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="18px"
-                      viewBox="0 -960 960 960"
-                      width="18px"
-                      fill="#FFFFFF"
-                    >
-                      <path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z" />
-                    </svg>
-                  </button>
-                </div>
-                <DayPicker
-                  mode="multiple"
-                  selected={selectedDay}
-                  onSelect={(day) => {
-                    setSelectedDay(day);
-                  }}
-                  timeZone="Asia/Kolkata"
-                  disabled={(date) =>
-                    date > getMaxDate(new Date()) ||
-                    date.getDay() === 0 ||
-                    date < getMinDate(new Date()) ||
-                    (date == getMinDate(new Date()) &&
-                      new Date().toLocaleTimeString("en-US", {
-                        timeZone: "Asia/Kolkata",
-                        hour12: false,
-                      }) > "19:30:00")
-                  }
-                  classNames={{
-                    today: `bg-theme_primary/50 text-theme_text_normal rounded-full`,
-                    selected:
-                      "bg-theme_secondary/70 text-theme_text_normal rounded-full",
-
-                    day: `${getDefaultClassNames.day} text-theme_text_normal text-center font-medium rounded-full`,
-                    disabled: "text-theme_text_normal/50",
-                    weekdays: "text-theme_text_primary font-semibold",
-                    caption_label: "text-theme_primary text-lg",
-                    chevron: "fill-theme_primary p-1",
-                  }}
-                />
-                <>
-                  <div className="flex flex-col gap-3 mt-2 w-full">
-                    <div className="flex items-center justify-between gap-2 w-full mt-2 theme_box_bg p-2 pt-4 mb-2">
-                      <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
-                        {" "}
-                        Add Optional Hours{" "}
-                      </div>
-                      <button
-                        className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
-                        name="minimize"
-                        onClick={() =>
-                          setExpandOptionalHour(!expandOptionalHour)
-                        }
-                      >
-                        {expandOptionalHour ? (
-                          <>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              height="24px"
-                              viewBox="0 -960 960 960"
-                              width="24px"
-                              fill="#ffffff"
-                            >
-                              <path d="m280-400 200-200 200 200H280Z" />
-                            </svg>
-                          </>
-                        ) : (
-                          <>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              height="24px"
-                              viewBox="0 -960 960 960"
-                              width="24px"
-                              fill="#ffffff"
-                            >
-                              <path d="M480-360 280-560h400L480-360Z" />
-                            </svg>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    {expandOptionalHour && (
-                      <div>
-                        {" "}
-                        <AddOptionalHour />{" "}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex justify-between items-center gap-2 py-2 w-full">
-                    <div className="flex gap-2">
-                      <button
-                        className="z-10 bg-gradient-to-br bg-theme_red/50 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-                        onClick={() => {
-                          setSelectedDay([]);
-                          toast.success("Leave Dates Cleared.");
-                        }}
-                      >
-                        <span>Reset Dates</span>
-                      </button>
-                    </div>
-
-                    <button
-                      className="z-10 bg-gradient-to-br from-theme_primary/75 to-theme_secondary/75 py-2 px-4 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
-                      onClick={() => {
-                        setUpdateCall(updateCall + 1);
-                      }}
-                    >
-                      <span>Update</span>
-                    </button>
-                  </div>
-                </>
-              </div>
-            </>
-          )}
-          {/*optionalHoursSubjects &&
-            Object.keys(optionalHoursSubjects).length > 0 && (
-              <div className="flex flex-col gap-3 mt-2 w-full">
-                <div className="flex items-center justify-between gap-2 w-full mt-2 theme_box_bg p-2 pt-4 mb-2">
-                  <div className="text-theme_text_primary font-semibold tracking-wide mb-3 pl-1 mt-1">
-                    {" "}
-                    Optional Hours{" "}
-                  </div>
-                  <button
-                    className="-mt-2 bg-theme_primary/20 p-[1px] rounded-full w-fit"
-                    name="minimize"
-                    onClick={() => setExpandOptionalHour(!expandOptionalHour)}
-                  >
-                    {expandOptionalHour ? (
-                      <>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="24px"
-                          viewBox="0 -960 960 960"
-                          width="24px"
-                          fill="#ffffff"
-                        >
-                          <path d="m280-400 200-200 200 200H280Z" />
-                        </svg>
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="24px"
-                          viewBox="0 -960 960 960"
-                          width="24px"
-                          fill="#ffffff"
-                        >
-                          <path d="M480-360 280-560h400L480-360Z" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                </div>
-                {expandOptionalHour && (
-                  <div>
-                    <div className="flex flex-col gap-2">
-                      {Object.entries(optionalHoursSubjects).map(
-                        ([day, times], index) => (
-                          <div key={index} className="flex flex-col gap-2">
-                            <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
-                              {day}
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                              {times.map((time, index) => (
-                                <span
-                                  key={index}
-                                  className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
-                                >
-                                  {time.time} - {time.subject}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )*/}
-          {selectedDay.length > 0 && (
-            <div className="flex flex-col theme_box_bg p-3 gap-3 mb-4">
-              <span className="text-theme_text_primary font-semibold tracking-wide text-sm">
-                Selected Dates
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {selectedDay.map((day, index) => (
-                  <span
-                    key={index}
-                    className="bg-theme_secondary/75 text-theme_text_normal text-xs tracking-widest rounded-full p-1 px-2"
-                  >
-                    {formatDate(day)}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          {loading ? (
-            <div className="flex justify-center mt-60 content-center">
-              <Loader />
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-5">
-              {courseData ? (
-                courseData.map((course, index) => (
-                  <AttendanceCard key={index} attendance={course} />
-                ))
-              ) : (
-                <div className="theme_box_bg py-6 w-full">
-                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
-                    No data found for Attendance
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-          <br />
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Attendance;
-
-{
-  /*predictBox && (
             <div className="theme_box_bg pt-3 pb-6 flex flex-col justify-center mb-5 px-3">
               <div className="flex items-center justify-end gap-2 w-full">
                 <button
@@ -641,5 +287,32 @@ export default Attendance;
                 </button>
               </div>
             </div>
-          )*/
-}
+          )}
+
+          {loading ? (
+            <div className="flex justify-center mt-60 content-center">
+              <Loader />
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-center gap-5">
+              {courseData ? (
+                courseData.map((course, index) => (
+                  <AttendanceCard key={index} attendance={course} />
+                ))
+              ) : (
+                <div className="theme_box_bg py-6 w-full">
+                  <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                    No data found for Attendance
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+          <br />
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Attendance;
