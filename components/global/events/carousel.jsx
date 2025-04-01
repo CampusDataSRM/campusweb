@@ -278,7 +278,7 @@ const EventCarousel = () => {
               <button
                 className="bg-gradient-to-br rounded-xl from-theme_primary to-theme_secondary  text-white px-2 py-2 w-1/2 hover:bg-blue-600"
                 onClick={() =>
-                  window.open(selectedEvent.website_link, "_blank")
+                  window.open(sponsoredSelectedEvent.website_link, "_blank")
                 }
               >
                 Register
