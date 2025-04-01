@@ -15,6 +15,18 @@ const EventCarousel = () => {
 
   const router = useRouter();
 
+  const [sponsoredSelectedEvent, setSponsoredSelectedEvent] = useState(null);
+  const [sponsoredIsModalOpen, setSponsoredIsModalOpen] = useState(false);
+
+  const handleSponsoredEventClick = (event) => {
+    setSponsoredSelectedEvent(event);
+    setSponsoredIsModalOpen(true);
+  };
+
+  const closeSponsoredModal = () => {
+    setSponsoredIsModalOpen(false);
+  };
+
   useEffect(() => {
     setLoading(true);
     const requestOptions = {
@@ -26,7 +38,20 @@ const EventCarousel = () => {
       .then((response) => response.json())
       .then((result) => {
         setEvents(result.data);
+        console.log(result.data);
         setLoading(false);
+        if (!localStorage.getItem("codenexdayzero")) {
+          const sponsoredEvent = result?.data?.events.find(
+            (event) =>
+              event.club_name.includes("CODENEX") &&
+              event.title.includes("Dayzero")
+          );
+          if (sponsoredEvent) {
+            setSponsoredSelectedEvent(sponsoredEvent);
+            setSponsoredIsModalOpen(true);
+          }
+          localStorage.setItem("codenexdayzero", true);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -70,6 +95,40 @@ const EventCarousel = () => {
   return (
     <>
       <main>
+        {sortedEvents && sortedEvents.length > 0 && (
+          <>
+            {sortedEvents &&
+              sortedEvents
+                .filter((event) => event.club_name.includes("CODENEX"))
+                .filter((event) => event.title.includes("Dayzero"))
+                .map((event, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="mt-3 rounded-lg">
+                      <img
+                        src={event.banner_url}
+                        alt={`slide-${index}`}
+                        className="rounded-lg h-[125px] w-full sm:h-[200px]"
+                        onClick={() => handleSponsoredEventClick(event)}
+                      />
+                      <div className="flex justify-center items-center gap-1 rounded-full text-xs bottom-2 right-2 bg-gradient-to-r from-theme_primary/75 to-theme_secondary/75 text-white px-3 py-[2px] w-fit absolute">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="16px"
+                          fill="#ffffff"
+                        >
+                          <path d="M852-212 732-332l56-56 120 120-56 56ZM708-692l-56-56 120-120 56 56-120 120Zm-456 0L132-812l56-56 120 120-56 56ZM108-212l-56-56 120-120 56 56-120 120Zm125 92 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z" />
+                        </svg>
+                        <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                          Sponsored
+                        </span>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                ))}
+          </>
+        )}
         <SectionTitle
           title="Events"
           icon="/icons/event/white.svg"
@@ -120,7 +179,8 @@ const EventCarousel = () => {
                       )
                       .filter(
                         (event) =>
-                          new Date(extractEndDate(event.dates)) >= new Date() || event.club_name == "The Campus Web"
+                          new Date(extractEndDate(event.dates)) >= new Date() ||
+                          event.club_name == "The Campus Web"
                       )
                       .map((event, index) => (
                         <SwiperSlide key={index}>
@@ -189,6 +249,39 @@ const EventCarousel = () => {
                 }}
               >
                 More Events &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*Sponsor Modal */}
+      {sponsoredIsModalOpen && sponsoredSelectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className=" backdrop-blur-xl bg-theme_primary/10 p-5 rounded-lg shadow-lg w-11/12 md:w-1/2">
+            <button
+              className="absolute top-3 right-3 text-white text-xl font-bold"
+              onClick={closeSponsoredModal}
+            >
+              &times;
+            </button>
+            <img
+              src={`assets/event/${sponsoredSelectedEvent.title
+                ?.toLowerCase()
+                .trim()}_${sponsoredSelectedEvent.club_name
+                ?.toLowerCase()
+                .trim()}.jpg`}
+              alt="Event Banner"
+              className="w-full h-[70%] mt-10 rounded-md"
+            />
+            <div className="mt-5 flex flex-col justify-center items-center gap-5">
+              <button
+                className="bg-gradient-to-br rounded-xl from-theme_primary to-theme_secondary  text-white px-2 py-2 w-1/2 hover:bg-blue-600"
+                onClick={() =>
+                  window.open(selectedEvent.website_link, "_blank")
+                }
+              >
+                Register
               </button>
             </div>
           </div>
