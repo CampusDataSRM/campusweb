@@ -272,7 +272,7 @@ const EventCarousel = () => {
                 ?.toLowerCase()
                 .trim()}.jpg`}
               alt="Event Banner"
-              className="w-full h-[70%] mt-10 rounded-md"
+              className="w-auto h-[70%] mt-10 rounded-md max-h-[600px] mx-auto"
             />
             <div className="mt-5 flex flex-col justify-center items-center gap-5">
               <button
