@@ -27,6 +27,14 @@ const EventCarousel = () => {
     setSponsoredIsModalOpen(false);
   };
 
+  const extractStartDate = (dateRange) => {
+    return dateRange.split(" to ")[0];
+  };
+  
+  const extractEndDate = (dateRange) => {
+    return dateRange.split(" to ")[1];
+  };
+
   useEffect(() => {
     setLoading(true);
     const requestOptions = {
@@ -44,7 +52,8 @@ const EventCarousel = () => {
           const sponsoredEvent = result?.data?.events.find(
             (event) =>
               event.club_name.includes("CODENEX") &&
-              event.title.includes("Dayzero")
+              event.title.includes("Dayzero") &&
+              new Date(extractEndDate(event.dates)) >= new Date()
           );
           if (sponsoredEvent) {
             setSponsoredSelectedEvent(sponsoredEvent);
@@ -67,10 +76,6 @@ const EventCarousel = () => {
     setIsModalOpen(false);
   };
 
-  const extractStartDate = (dateRange) => {
-    return dateRange.split(" to ")[0];
-  };
-
   const sortEventsByDate = (events) => {
     const currentDate = new Date();
 
@@ -88,9 +93,7 @@ const EventCarousel = () => {
 
   const sortedEvents = sortEventsByDate(events?.events);
 
-  const extractEndDate = (dateRange) => {
-    return dateRange.split(" to ")[1];
-  };
+  
 
   return (
     <>
@@ -101,6 +104,9 @@ const EventCarousel = () => {
               sortedEvents
                 .filter((event) => event.club_name.includes("CODENEX"))
                 .filter((event) => event.title.includes("Dayzero"))
+                .filter(
+                  (event) => new Date(extractEndDate(event.dates)) >= new Date()
+                )
                 .map((event, index) => (
                   <SwiperSlide key={index}>
                     <div className="mt-3 rounded-lg">
