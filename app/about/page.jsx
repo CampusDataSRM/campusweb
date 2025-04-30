@@ -7,9 +7,17 @@ import { pageNames } from "@/components/global/navbar/page-link";
 import TeamCard from "@/components/global/team/card";
 import { teamData, contactData } from "@/components/global/team/data";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import NotFound from "../not-found";
 
 
 const AboutTeam = () => {
+  if (true) {
+    return (
+      <>
+        <NotFound />
+      </>
+    );
+  }
   return (
     <>
       <div className="max-h-screen overflow-auto pb-24">
