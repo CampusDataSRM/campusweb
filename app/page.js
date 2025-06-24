@@ -52,7 +52,7 @@ export default function Home() {
         <img
           src="/logo2.svg"
           alt="campus web"
-          className="mx-auto w-[120px] md:w-[190px] h-auto mb-5"
+          className="mx-auto w-[120px] md:w-[190px] h-auto mb-5 mt-1"
         />
         <div className="theme_box_bg p-5 md:p-7 max-w-4xl mx-auto rounded-lg shadow-xl">
           <div className="text-center space-y-4">
