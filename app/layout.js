@@ -13,6 +13,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { CampusWebPostHogProvider } from "@/functions/providers/posthog-analytics";
 import Clarity from "@microsoft/clarity";
+import ServiceResting from "@/components/offline/serviceResting";
 
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_KEY;
 Clarity.init(CLARITY_ID);
@@ -146,7 +147,8 @@ export default function RootLayout({ children }) {
                   scrollbarWidth: "thin",
                 }}
               >
-                {children}
+                <ServiceResting />
+                {/*children*/}
                 <Analytics />
                 <SpeedInsights />
               </div>
