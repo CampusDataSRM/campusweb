@@ -48,13 +48,13 @@ export default function Home() {
         </div>
       </div>*/}
       {/*<StudentLogin />*/}
-      <div className="flex flex-col justify-center items-center h-screen p-3 ">
+      <div className="flex flex-col justify-center items-center h-screen p-3">
         <img
           src="/logo2.svg"
           alt="campus web"
-          className="mx-auto w-[120px] md:w-[190px] h-auto mb-6"
+          className="mx-auto w-[120px] md:w-[190px] h-auto mb-5"
         />
-        <div className="theme_box_bg p-6 md:p-8 max-w-4xl mx-auto rounded-lg shadow-xl">
+        <div className="theme_box_bg p-5 md:p-7 max-w-4xl mx-auto rounded-lg shadow-xl">
           <div className="text-center space-y-4">
             <div className="text-lg md:text-xl font-bold text-theme_text_primary">
               🚨 TOP SECRET TRANSMISSION 🚨
