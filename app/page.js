@@ -5,13 +5,6 @@ import { useEffect } from "react";
 import Cookies from "js-cookie";
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    Cookies.remove("X-CSRF-Token");
-    localStorage.clear();
-  }, [router]);
-
   return (
     <>
       {/*<div className="flex flex-wrap justify-center page-center items-center gap-4 lg:gap-12">
