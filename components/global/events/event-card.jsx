@@ -154,7 +154,7 @@ const EventCard = ({
           <div className="grid grid-cols-1 text-theme_text_normal my-auto">
             <div>{event?.title}</div>
             <div className="text-theme_text_normal_60">
-              by {(String(event?.title).includes("HackRx")) ? "Bajaj Finserv Health" : String(club?.name).toUpperCase()}
+              by {(String(event?.title).includes("HackRx")) ? ("BAJAJ FINSERV HEALTH") : String(club?.name).toUpperCase()}
             </div>
           </div>
           <div className="shrink-0">
