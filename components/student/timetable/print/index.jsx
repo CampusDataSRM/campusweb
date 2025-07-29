@@ -285,30 +285,19 @@ const PrintTimetable = () => {
                   </>
                 )}
               </tbody>
-              {/*<tfoot>
+              <tfoot>
                 <tr style={{ paddingBottom: "20px" }}>
                   <td
                     colSpan="6"
                     style={{ textAlign: "center", color: "#fff" }}
                   >
                     <div className="flex flex-row justify-center items-end w-full gap-2">
-                      <span className="text-base">Made with</span>
-                      <span className="">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          height="16px"
-                          viewBox="0 -960 960 960"
-                          width="16px"
-                          fill="#BB271A"
-                        >
-                          <path d="M480-147q-14 0-28.5-5T426-168l-69-63q-106-97-191.5-192.5T80-634q0-94 63-157t157-63q53 0 100 22.5t80 61.5q33-39 80-61.5T660-854q94 0 157 63t63 157q0 115-85 211T602-230l-68 62q-11 11-25.5 16t-28.5 5Z" />
-                        </svg>
-                      </span>
-                      <span className="text-base">by The Campus Web</span>
+                      <span className="text-base">Powered By | </span>
+                      <span className="text-base">The Campus Web</span>
                     </div>
                   </td>
                 </tr>
-              </tfoot>*/}
+              </tfoot>
             </table>
           </>
         )}
