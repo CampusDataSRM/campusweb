@@ -32,16 +32,16 @@ const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
             <div
                 style={{
                     position: 'absolute',
-                    top: '10px',
-                    left: '10px',
+                    top: '6px',
+                    left: '6px',
                     backgroundColor: 'rgba(0, 0, 0, 0.6)',
                     color: 'white',
                     padding: '4px 8px',
-                    borderRadius: '4px',
+                    borderRadius: '8px',
                     fontSize: '12px',
                     fontWeight: '500',
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     pointerEvents: 'none'
                 }}
