@@ -7,7 +7,14 @@ const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
     };
 
     return (
-        <div style={{ width: '100%', position: 'relative', paddingBottom: '33.33%', backgroundColor: 'black' }}>
+        <div style={{ 
+            width: '100%', 
+            position: 'relative', 
+            paddingBottom: '33.33%', 
+            backgroundColor: 'black',
+            borderRadius: '12px',
+            overflow: 'hidden'
+        }}>
             <img
                 src={imageUrl}
                 alt={altText}
@@ -22,6 +29,25 @@ const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
                 }}
                 onClick={handleClick}
             />
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    pointerEvents: 'none'
+                }}
+            >
+               Our Sponsor
+            </div>
         </div>
     );
 };
