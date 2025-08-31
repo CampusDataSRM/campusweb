@@ -13,6 +13,7 @@ import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import Banner3to1 from "@/components/sponsorship/Banner3to1";
 
 const Student = () => {
   const router = useRouter();
@@ -254,6 +255,13 @@ const Student = () => {
               </svg>
             </button>
           )}
+          <div className="mt-4">
+            <Banner3to1
+              imageUrl="/assets/sponsorship/printellect3to1_1.jpg"
+              linkUrl="https://play.google.com/store/apps/details?id=com.printellect.printellect"
+              altText="Banner 3:1"
+            />
+          </div>
           <EventCarousel />
 
           {!loading && (

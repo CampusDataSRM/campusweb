@@ -1,0 +1,39 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
+    const handleClick = () => {
+        window.open(linkUrl, '_blank', 'noopener,noreferrer');
+    };
+
+    return (
+        <div style={{ width: '100%', position: 'relative', paddingBottom: '33.33%', backgroundColor: 'black' }}>
+            <img
+                src={imageUrl}
+                alt={altText}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    cursor: 'pointer',
+                }}
+                onClick={handleClick}
+            />
+        </div>
+    );
+};
+
+Banner3to1.propTypes = {
+    imageUrl: PropTypes.string.isRequired,
+    linkUrl: PropTypes.string.isRequired,
+    altText: PropTypes.string,
+};
+
+Banner3to1.defaultProps = {
+    altText: 'Banner Image',
+};
+
+export default Banner3to1;
