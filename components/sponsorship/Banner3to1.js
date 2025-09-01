@@ -36,12 +36,12 @@ const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
                     left: '3px',
                     backgroundColor: 'rgba(0, 0, 0, 0.6)',
                     color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
+                     padding: '2px 6px', 
+                    borderRadius: '8px', 
+                    fontSize: '10px', 
                     fontWeight: '500',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
+                    backdropFilter: 'blur(1px)',
+                    WebkitBackdropFilter: 'blur(2px)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     pointerEvents: 'none'
                 }}
