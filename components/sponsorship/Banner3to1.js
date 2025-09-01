@@ -32,8 +32,8 @@ const Banner3to1 = ({ imageUrl, linkUrl, altText }) => {
             <div
                 style={{
                     position: 'absolute',
-                    top: '5px',
-                    left: '5px',
+                    top: '3px',
+                    left: '3px',
                     backgroundColor: 'rgba(0, 0, 0, 0.6)',
                     color: 'white',
                     padding: '4px 8px',
