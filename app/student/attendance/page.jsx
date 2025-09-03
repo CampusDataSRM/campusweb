@@ -290,12 +290,14 @@ const Attendance = () => {
             </div>
           )}
           {/* Sponsor Advertisement */}
-          <div className="theme_box_bg py-4 px-4 mb-5 rounded-md text-start">
+          <Link href="https://play.google.com/store/apps/details?id=com.printellect.printellect">
+          <div className="font-black py-4 px-4 mb-5 rounded-lg text-start md:text-center bg-[#044aaa]">
             <p className="text-theme_text_normal font-medium tracking-wide">
               Lift line? Unavoidable. Print line? Optional. <br />
-              <Link href="https://play.google.com/store/apps/details?id=com.printellect.printellect" className="text-theme_primary hover:underline">Tap here</Link> to skip the one you can. #PRINTELLECT
+              <span className="text-theme_primary hover:underline">Tap here</span> to skip the one you can. #PRINTELLECT
             </p>
           </div>
+          </Link>
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />
