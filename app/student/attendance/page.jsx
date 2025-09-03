@@ -7,6 +7,7 @@ import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
 import { pageNames } from "@/components/global/navbar/page-link";
 import { getStudentData } from "@/functions/api/student";
+import Link from "next/link";
 import { predictAttendance } from "@/functions/attendance-prediction";
 import { getPlannerData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
@@ -288,7 +289,13 @@ const Attendance = () => {
               </div>
             </div>
           )}
-
+          {/* Sponsor Advertisement */}
+          <div className="theme_box_bg py-4 px-4 mb-5 rounded-md text-start">
+            <p className="text-theme_text_normal font-medium tracking-wide">
+              Lift line? Unavoidable. Print line? Optional. <br />
+              <Link href="https://play.google.com/store/apps/details?id=com.printellect.printellect" className="text-theme_primary hover:underline">Tap here</Link> to skip the one you can. #PRINTELLECT
+            </p>
+          </div>
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />
