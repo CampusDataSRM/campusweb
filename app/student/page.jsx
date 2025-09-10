@@ -255,13 +255,13 @@ const Student = () => {
               </svg>
             </button>
           )}
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <Banner3to1
               imageUrl="/assets/sponsorship/printellect3to1_1.jpg"
               linkUrl="https://play.google.com/store/apps/details?id=com.printellect.printellect"
               altText="Banner 3:1"
             />
-          </div>
+          </div> */}
           <EventCarousel />
 
           {!loading && (
