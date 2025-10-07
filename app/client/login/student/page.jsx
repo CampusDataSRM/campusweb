@@ -58,7 +58,7 @@ const StudentLogin = () => {
       mode: "cors",
     };
 
-    fetch(`https://campusapinew.fly.dev/api/auth/login/`, requestOptions)
+    fetch(`${baseURL}/api/auth/login/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (
