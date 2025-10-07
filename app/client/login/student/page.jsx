@@ -67,7 +67,22 @@ const StudentLogin = () => {
           result.Status === "success"
         ) {
           // Cookies.remove("X-CSRF-Token");
-          Cookies.set("X-CSRF-Token", result.Cookies, { expires: 365 });
+         // Handle both Cookies / cookies / COOKIE etc.
+const csrfToken =
+  result.Cookies ||
+  result.cookies ||
+  result.COOKIE ||
+  result.cookie ||
+  result["X-CSRF-Token"];
+
+if (csrfToken) {
+  Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
+  router.push("/student");
+} else {
+  toast.error("Login failed — CSRF token missing");
+  setLoading(false);
+}
+
 
             // const cookieDate = new Date().toLocaleDateString();
             // localStorage.setItem("cookieDate", cookieDate);
