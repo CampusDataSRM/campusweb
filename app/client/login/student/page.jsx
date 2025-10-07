@@ -5,21 +5,21 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
-import {baseURL} from "@/constants/baseURL";
+import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 
 const StudentLogin = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [userid, setUserid] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   useEffect(() => {
     if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
-  }, []);
-
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
-  const [userid, setUserid] = useState("");
-  const [password, setPassword] = useState("");
+  }, [router]);
 
   const studentLoginFields = [
     {
@@ -40,8 +40,9 @@ const StudentLogin = () => {
   ];
 
   const handleStudentLogin = (e) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
+
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -61,61 +62,53 @@ const StudentLogin = () => {
     fetch(`${baseURL}/api/auth/login/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
+        // ✅ Handle both lowercase and uppercase keys safely
         if (
-          result.passResponse?.status_code === 201 &&
-          result.Status &&
-          result.Status === "success"
+          (result.passResponse?.status_code === 201 ||
+            result.status === "success" ||
+            result.Status === "success") &&
+          (result.cookies || result.Cookies)
         ) {
-          // Cookies.remove("X-CSRF-Token");
-         // Handle both Cookies / cookies / COOKIE etc.
-const csrfToken =
-  result.Cookies ||
-  result.cookies ||
-  result.COOKIE ||
-  result.cookie ||
-  result["X-CSRF-Token"];
+          const csrfToken =
+            result.Cookies ||
+            result.cookies ||
+            result.COOKIE ||
+            result.cookie ||
+            result["X-CSRF-Token"];
 
-if (csrfToken) {
-  Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
-  router.push("/student");
-} else {
-  toast.error("Login failed — CSRF token missing");
-  setLoading(false);
-}
-
-
-            // const cookieDate = new Date().toLocaleDateString();
-            // localStorage.setItem("cookieDate", cookieDate);
-            
-          // Cookies.set("X-CSRF-Token", result.Cookies);
-          router.push("/student");
+          if (csrfToken) {
+            Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
+            router.push("/student");
+          } else {
+            toast.error("Login failed — CSRF token missing");
+            setLoading(false);
+          }
         } else {
           toast.error("Invalid credentials");
           setLoading(false);
         }
       })
       .catch((error) => {
-        if(error == "Too many requests, slow down!"){
+        if (error == "Too many requests, slow down!") {
           toast.error("Too many requests, slow down! Try again after 60 seconds.");
         } else {
           toast.error(JSON.stringify(error));
         }
+        setLoading(false);
       });
   };
-
-  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleStudentLogin(e);
     }
-  }
+  };
 
   return (
     <>
       <LoginLayout>
         <form
-          className={"grid grid-cols-1 gap-4 mt-3"}
+          className="grid grid-cols-1 gap-4 mt-3"
           name="Student Login Form"
           onKeyDown={handleKeyDown}
         >
@@ -123,7 +116,7 @@ if (csrfToken) {
             <div key={index} className="flex gap-1">
               <input
                 type={
-                  field.type == "password" && passwordVisible
+                  field.type === "password" && passwordVisible
                     ? "text"
                     : field.type
                 }
@@ -136,7 +129,9 @@ if (csrfToken) {
                   e.preventDefault();
                   setPasswordVisible(!passwordVisible);
                 }}
-                className={field.type == "password" ? "theme_box_bg px-4" : "hidden"}
+                className={
+                  field.type === "password" ? "theme_box_bg px-4" : "hidden"
+                }
                 type="button"
               >
                 {passwordVisible ? (
@@ -153,6 +148,7 @@ if (csrfToken) {
               </button>
             </div>
           ))}
+
           <div>
             <button
               type="submit"
@@ -187,6 +183,7 @@ if (csrfToken) {
             </button>
           </div>
         </form>
+
         <div className="text-center mt-7">
           <Link
             className="text-theme_text_primary font-medium hover:cursor-pointer"
