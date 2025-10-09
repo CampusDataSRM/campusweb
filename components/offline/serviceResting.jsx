@@ -7,53 +7,29 @@ const ServiceResting = () => {
           alt="campus web"
           className="mx-auto w-[120px] md:w-[190px] h-auto mb-5 mt-1"
         />
-        <div className="theme_box_bg p-5 md:p-7 max-w-4xl mx-auto rounded-lg shadow-xl">
-          <div className="text-center space-y-4">
-            <div className="text-lg md:text-xl font-bold text-theme_text_primary">
-              🚨 TOP SECRET TRANSMISSION 🚨
+        <div className="theme_box_bg p-6 md:p-8 max-w-2xl mx-auto rounded-xl shadow-2xl">
+          <div className="text-center space-y-6">
+            <div className="text-2xl md:text-3xl font-bold text-theme_text_primary">
+              🚨 OPERATION BUG HUNT �
             </div>
 
-            <div className="text-red-500 font-mono text-sm md:text-base animate-pulse">
-              🔒 CLASSIFIED: OPERATION TOUCH GRASS 🔒
+            <div className="text-theme_text_primary text-base md:text-lg leading-relaxed">
+              <p className="mb-4">
+                🕵️ <strong>Status:</strong> Our dev squad has been pulled from 'Real Life' to squash a few unexpected bugs. They're on it! 🌳
+              </p>
             </div>
 
-            <div className="text-theme_text_primary text-sm md:text-base leading-relaxed space-y-3">
-              <p>
-                🕵️ <strong>Agent Portal Status:</strong> TEMPORARILY OFFLINE 🕵️
+            <div className="p-5 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-xl border border-green-200 dark:border-green-700">
+              <p className="text-green-800 dark:text-green-200 font-semibold text-lg">
+                🎯 <strong>BACK ONLINE:</strong> October 10th, 2025 at 8:00 AM ⏰
               </p>
-
-              <p>
-                📋 <strong>Mission Brief:</strong> Our elite dev squad has been
-                infiltrated by a mysterious organization called{" "}
-                <em>"Real Life"</em>
-                🌳 They're currently undergoing intensive training in something
-                called "work-life balance" (intelligence suggests it involves
-                sunlight ☀️)
+              <p className="text-green-700 dark:text-green-300 text-sm mt-2">
+                🚀 All systems will be fully operational by morning!
               </p>
+            </div>
 
-              <p>
-                🖥️ <strong>Server Status:</strong> Our databases are in witness
-                protection after reporting exhaustion from processing too many
-                student queries 😴
-              </p>
-
-              <p>
-                📍 <strong>Current Location:</strong> Somewhere without WiFi
-                signals... our agents are reportedly experiencing withdrawal
-                symptoms 📶❌
-              </p>
-
-              <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg border-l-4 border-yellow-500">
-                <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-                  ⚠️ <strong>URGENT:</strong> This transmission will
-                  self-destruct when we remember our GitHub passwords 💥
-                </p>
-              </div>
-
-              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-4">
-                🤖 Automated message from:{" "}
-                <em>Definitely-Not-Panicking-Dev-Team-Bot-3000</em>
-              </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              🤖 <em>Definitely-Not-Panicking-Dev-Team-Bot-3000</em>
             </div>
           </div>
         </div>
