@@ -147,8 +147,8 @@ export default function RootLayout({ children }) {
                   scrollbarWidth: "thin",
                 }}
               >
-                <ServiceResting />
-                {/* {children} */}
+                {/*<ServiceResting />*/}
+                {children}
                 <Analytics />
                 <SpeedInsights />
               </div>
