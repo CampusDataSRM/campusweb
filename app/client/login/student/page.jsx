@@ -84,7 +84,11 @@ const StudentLogin = () => {
             setLoading(false);
           }
         } else {
-          toast.error("Invalid credentials");
+          if (result.message == "Invalid password") {
+            toast.error(result.message);
+          } else {
+            toast.error("Something went wrong! Please try again.");
+          }
           setLoading(false);
         }
       })
