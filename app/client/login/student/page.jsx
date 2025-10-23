@@ -59,7 +59,7 @@ const StudentLogin = () => {
       mode: "cors",
     };
 
-    fetch(`${baseURL}/api/auth/login/`, requestOptions)
+    fetch(`https://ac48f4df503e.ngrok-free.app/api/auth/login/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         // ✅ Handle both lowercase and uppercase keys safely
