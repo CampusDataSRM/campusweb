@@ -61,6 +61,7 @@ const StudentLogin = () => {
   };
 
   const baseURLS = [
+    baseURL,
     baseURL_1,
     baseURL_2,
     baseURL_3,
