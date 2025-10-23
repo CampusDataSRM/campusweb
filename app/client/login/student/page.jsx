@@ -5,7 +5,18 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
-import { baseURL } from "@/constants/baseURL";
+import {
+  baseURL,
+  baseURL_1,
+  baseURL_2,
+  baseURL_3,
+  baseURL_4,
+  baseURL_5,
+  baseURL_6,
+  baseURL_7,
+  baseURL_8,
+  baseURL_9,
+} from "@/constants/baseURL";
 import { toast } from "react-toastify";
 
 const StudentLogin = () => {
@@ -39,7 +50,29 @@ const StudentLogin = () => {
     },
   ];
 
-  const handleStudentLogin = (e) => {
+  // Fisher-Yates shuffle algorithm for randomizing array
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const baseURLS = [
+    baseURL_1,
+    baseURL_2,
+    baseURL_3,
+    baseURL_4,
+    baseURL_5,
+    baseURL_6,
+    baseURL_7,
+    baseURL_8,
+    baseURL_9,
+  ];
+
+  const handleStudentLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -58,11 +91,23 @@ const StudentLogin = () => {
       redirect: "follow",
       mode: "cors",
     };
+    let remainingURLs = [...baseURLS];
 
-    fetch(`https://ac48f4df503e.ngrok-free.app/api/auth/login/`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        // ✅ Handle both lowercase and uppercase keys safely
+    // Try each baseURL with randomization
+    while (remainingURLs.length > 0) {
+      // Randomize the remaining URLs
+      remainingURLs = shuffleArray(remainingURLs);
+
+      // Take the first URL from the randomized array
+      const currentURL = remainingURLs[0];
+
+      try {
+        const response = await fetch(
+          `${currentURL}/api/auth/login/`,
+          requestOptions
+        );
+        const result = await response.json();
+
         if (
           (result.passResponse?.status_code === 201 ||
             result.status === "success" ||
@@ -79,27 +124,37 @@ const StudentLogin = () => {
           if (csrfToken) {
             Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
             router.push("/student");
+            return;
           } else {
-            toast.error("Login failed — CSRF token missing");
+            toast.error("Something went wrong! Trying another server...");
             setLoading(false);
           }
         } else {
           if (result.message == "Invalid password") {
             toast.error(result.message);
+            setLoading(false);
+            return;
           } else {
-            toast.error("Something went wrong! Please try again.");
+            toast.error("Something went wrong! Trying another server...");
           }
           setLoading(false);
         }
-      })
-      .catch((error) => {
-        if (error == "Too many requests, slow down!") {
-          toast.error("Too many requests, slow down! Try again after 60 seconds.");
-        } else {
-          toast.error(JSON.stringify(error));
-        }
-        setLoading(false);
-      });
+      } catch (error) {
+        // Log the failed connection
+        console.log(`Failed to connect to ${currentURL}:`, error);
+      }
+
+      // Remove the failed URL from the remaining URLs array
+      remainingURLs = remainingURLs.filter((url) => url !== currentURL);
+    }
+
+    // If we reach here, all URLs have failed
+    toast.error(
+      "Login failed - Unable to connect to any server. Please try again later."
+    );
+    setLoading(false);
+
+    return;
   };
 
   const handleKeyDown = (e) => {
