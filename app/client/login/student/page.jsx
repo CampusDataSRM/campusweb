@@ -127,8 +127,7 @@ const StudentLogin = () => {
             router.push("/student");
             return;
           } else {
-            toast.error("Something went wrong! Trying another server...");
-            setLoading(false);
+            setLoading(true);
           }
         } else {
           if (result.message == "Invalid password") {
