@@ -51,7 +51,7 @@ const Timetable = () => {
         const studentBatch =
           dataStudent?.name == "John Doe"
             ? 1
-            : dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+            : 1 //dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         setStudentBatchForTimetable(studentBatch);
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
