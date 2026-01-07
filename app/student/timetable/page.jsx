@@ -50,7 +50,7 @@ const Timetable = () => {
         const dataStudent = JSON.parse(rawData);
         const studentBatch =
           dataStudent?.name == "John Doe"
-            ? studentBatchForTimetable
+            ? 1
             : dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         setStudentBatchForTimetable(studentBatch);
         const myHeaders = new Headers();
