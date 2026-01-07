@@ -15,6 +15,7 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 import PrintTimetable from "@/components/student/timetable/print";
 import { generatePDF } from "@/functions/generatePDF";
 import { downloadImage } from "@/functions/generateImage";
+import { se } from "date-fns/locale";
 
 const Timetable = () => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const Timetable = () => {
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState("");
   const [currentDayOrder, setCurrentDayOrder] = useState(null);
+  const [studentBatchForTimetable, setStudentBatchForTimetable] = useState(1);
   useEffect(() => {
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
@@ -47,7 +49,10 @@ const Timetable = () => {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
         const studentBatch =
-          dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+          dataStudent?.name == "John Doe"
+            ? studentBatchForTimetable
+            : dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        setStudentBatchForTimetable(studentBatch);
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -58,7 +63,10 @@ const Timetable = () => {
           cache: "no-store",
         };
 
-        fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
+        fetch(
+          `${baseURL}/api/auth/timetable/${studentBatchForTimetable}`,
+          requestOptions
+        )
           .then((response) => {
             console.log(" : ", response);
 
@@ -81,8 +89,8 @@ const Timetable = () => {
               setTimetable(result);
               localStorage.setItem("studentTimetable", JSON.stringify(result));
               setDayOrders(Object.keys(result.timetable && result.timetable));
-              setSelectedDay("Day" + (query.get("do") || res?.day_order));
-              setCurrentDayOrder(query.get("do") || res?.day_order);
+              setSelectedDay("Day" + (query.get("do") || result?.day_order));
+              setCurrentDayOrder(query.get("do") || result?.day_order);
             }
             setLoading(false);
           })
@@ -113,9 +121,53 @@ const Timetable = () => {
       .catch((error) => console.error(error));
   };
 
+  useEffect(() => {
+    const myHeaders = new Headers();
+    myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+      cache: "no-store",
+    };
+
+    fetch(
+      `${baseURL}/api/auth/timetable/${studentBatchForTimetable}`,
+      requestOptions
+    )
+      .then((response) => {
+        console.log(" : ", response);
+
+        if (typeof response === "string") {
+          return null;
+        } else if (response.status === 500) {
+          sessionLogout();
+        } else if (response.status === 429) {
+          return "Too many requests";
+        } else if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to fetch data");
+        }
+      })
+      .then((result) => {
+        if (result === "Too many requests") {
+          toast.error("Too many requests. Try again in a min.");
+        } else {
+          setTimetable(result);
+          localStorage.setItem("studentTimetable", JSON.stringify(result));
+          setDayOrders(Object.keys(result.timetable && result.timetable));
+          setSelectedDay("Day" + (query.get("do") || result?.day_order));
+          setCurrentDayOrder(query.get("do") || result?.day_order);
+        }
+        setLoading(false);
+      })
+      .catch((error) => console.error(error));
+  }, [studentBatchForTimetable]);
+
   return (
     <>
-      
       <div className="max-h-screen overflow-auto">
         <Navbar items={pageNames.filter((item) => item !== "Timetable")} />
         <FloatingNavbar />
@@ -136,6 +188,38 @@ const Timetable = () => {
               >
                 <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
               </svg>
+            </button>
+          </div>
+          <div className="theme_box_bg backdrop-blur-lg p-3 flex items-start h-full text-sm gap-2 text-theme_text_primary mb-3">
+            This is a temporary fix for viewing timetable. There is an issue
+            with with the Academia where some data is yet to be loaded.<br /> Until
+            then you can view your timetable by choosing the appropriate batch
+            from below. We apologize for the inconvenience caused.
+          </div>
+          <div className="theme_box_bg backdrop-blur-lg px-6 py-3 grid grid-cols-2 gap-6 items-center justify-center mb-5">
+            <button
+              className={`z-10 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2
+                ${
+                  studentBatchForTimetable === 1
+                    ? "bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90"
+                    : "bg-theme_primary/40"
+                }
+              `}
+              onClick={() => setStudentBatchForTimetable(1)}
+            >
+              <span>Batch 1</span>
+            </button>
+            <button
+              className={`z-10 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-xs font-semibold flex items-center justify-center gap-2
+                ${
+                  studentBatchForTimetable === 2
+                    ? "bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90"
+                    : "bg-theme_primary/40"
+                }
+              `}
+              onClick={() => setStudentBatchForTimetable(2)}
+            >
+              <span>Batch 2</span>
             </button>
           </div>
           {loading ? (

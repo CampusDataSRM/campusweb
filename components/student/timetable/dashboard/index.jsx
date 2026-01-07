@@ -42,7 +42,7 @@ const DashboardTimetable = () => {
       cache: "no-store",
     };
 
-    fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
+    fetch(`${baseURL}/api/auth/timetable/${1}`, requestOptions)
       .then((response) => {
         if (typeof response === "string") {
           return null;

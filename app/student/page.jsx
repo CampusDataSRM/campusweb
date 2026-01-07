@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
+import { ro } from "date-fns/locale";
+import SectionTitle from "@/components/global/section-title";
 
 const Student = () => {
   const router = useRouter();
@@ -59,9 +61,9 @@ const Student = () => {
       fetch(`${baseURL}/api/auth/user/`, requestOptions)
         .then((response) => {
           if (typeof response === "string") {
-            return null;
+            return { name: "John Doe" }; // Temporary fix for string response
           } else if (response.status === 500) {
-            return null;
+            return { name: "John Doe" }; // Temporary fix for server error
           } else if (response.status === 429) {
             return "Too many requests";
           } else if (response.ok) {
@@ -73,6 +75,8 @@ const Student = () => {
         .then((result) => {
           if (result === "Too many requests") {
             toast.error("Too many requests. Try again in a min.");
+          } else if (result === null) {
+            router.push("/student/timetable");
           } else {
             setStudentName(result?.name);
             localStorage.setItem(
@@ -264,7 +268,29 @@ const Student = () => {
 
           {!loading && (
             <div className="mt-4">
-              <DashboardTimetable />
+              {/* <DashboardTimetable /> */}
+              <SectionTitle
+                title="Timetable"
+                icon="/icons/sun/white.svg"
+                textColor="theme_text_normal"
+              />
+              <div className="theme_box_bg backdrop-blur-lg p-3 flex flex-col gap-4 items-start h-full text-sm text-theme_text_primary mb-3">
+                <span>
+                  This is a temporary fix for viewing timetable. There is an
+                  issue with with the Academia where some data is yet to be
+                  loaded.
+                  <br /> <br /> Until then you can view your timetable in the timetable
+                  section. We apologize for the inconvenience caused.
+                </span>
+                <button
+                  className={`z-10 p-2 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2
+                
+              `}
+                  onClick={() => router.push("/student/timetable")}
+                >
+                  <span>Go to Timetable</span>
+                </button>
+              </div>
             </div>
           )}
           <div>
