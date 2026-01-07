@@ -42,7 +42,7 @@ const Student = () => {
         setTestPerformance(studentData?.testPerformances);
         setLoading(false);
       }
-      if (localStorage.getItem("studentCalendar")){
+      if (localStorage.getItem("studentCalendar")) {
         localStorage.removeItem("studentCalendar");
       }
       const myHeaders = new Headers();
@@ -61,7 +61,7 @@ const Student = () => {
           if (typeof response === "string") {
             return null;
           } else if (response.status === 500) {
-            sessionLogout();
+            return null;
           } else if (response.status === 429) {
             return "Too many requests";
           } else if (response.ok) {
@@ -85,8 +85,6 @@ const Student = () => {
           setLoading(false);
         })
         .catch((error) => console.error(error));
-
-
     }
 
     // const cookieDate = localStorage.getItem("cookieDate");
