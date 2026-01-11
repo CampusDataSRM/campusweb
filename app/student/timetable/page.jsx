@@ -294,7 +294,7 @@ const Timetable = () => {
           )}
         </main>
       </div>
-      <PrintTimetable />
+      <PrintTimetable studentBatchForTimetable={studentBatchForTimetable} />
     </>
   );
 };
