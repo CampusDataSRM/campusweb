@@ -48,10 +48,8 @@ const Timetable = () => {
       } else {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
-        const studentBatch =
-          dataStudent?.name == "John Doe"
-            ? 1
-            : 1 //dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        const studentBatch = dataStudent?.name == "John Doe" ? 1 : 1;
+        //dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         setStudentBatchForTimetable(studentBatch);
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
@@ -192,9 +190,10 @@ const Timetable = () => {
           </div>
           <div className="theme_box_bg backdrop-blur-lg p-3 flex items-start h-full text-sm gap-2 text-theme_text_primary mb-3">
             This is a temporary fix for viewing timetable. There is an issue
-            with with the Academia where some data is yet to be loaded.<br /> Until
-            then you can view your timetable by choosing the appropriate batch
-            from below. We apologize for the inconvenience caused.
+            with with the Academia where some data is yet to be loaded.
+            <br /> Until then you can view your timetable by choosing the
+            appropriate batch from below. We apologize for the inconvenience
+            caused.
           </div>
           <div className="theme_box_bg backdrop-blur-lg px-6 py-3 grid grid-cols-2 gap-6 items-center justify-center mb-5">
             <button
