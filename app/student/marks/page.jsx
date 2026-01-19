@@ -69,8 +69,8 @@ const Marks = () => {
                             {test.courseName
                               ? test.courseName
                               : test.courseCode
-                              ? test.courseCode
-                              : "Not Available"}
+                                ? test.courseCode
+                                : "Not Available"}
                           </span>
                           <span className="text-sm font-semibold text-theme_text_normal_60">
                             {test.courseCode
@@ -124,7 +124,7 @@ const Marks = () => {
                                 {test.tests[testName].total}
                               </span>
                             </div>
-                          )
+                          ),
                         )}
                         {test.tests && Object.keys(test.tests).length === 0 && (
                           <div className="theme_box_bg flex flex-col gap-2 justify-center items-center py-4 w-full">
@@ -142,7 +142,11 @@ const Marks = () => {
               )}
             </>
           ) : (
-            <Loader />
+            <div className="theme_box_bg py-6 w-full">
+              <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
+                No data found for Test Performances.
+              </span>
+            </div>
           )}
         </main>
       </div>

@@ -1,9 +1,7 @@
 import { baseURL } from "@/constants/baseURL";
 
-
 // Student Data API
 const getStudentData = async (authToken) => {
-
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
 
@@ -15,7 +13,10 @@ const getStudentData = async (authToken) => {
   };
 
   try {
-    const response = await fetch(`${baseURL}/api/auth/user/`, requestOptions);
+    const response = await fetch(
+      `${baseURL}/api/auth/usernew/`,
+      requestOptions,
+    );
     if (response.status === 429) {
       return { message: "too_many_requests" };
     }
@@ -29,10 +30,7 @@ const getStudentData = async (authToken) => {
 // Batch Data API
 const getStudentBatch = async (authToken) => {
   const myHeaders = new Headers();
-  myHeaders.append(
-    "X-CSRF-Token",
-    authToken
-  );
+  myHeaders.append("X-CSRF-Token", authToken);
 
   const requestOptions = {
     method: "GET",
@@ -41,10 +39,7 @@ const getStudentBatch = async (authToken) => {
   };
 
   try {
-    const response = await fetch(
-      `${baseURL}/api/auth/batch`,
-      requestOptions
-    );
+    const response = await fetch(`${baseURL}/api/auth/batch`, requestOptions);
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {
@@ -91,7 +86,7 @@ const getTimetableData = async (authToken) => {
   try {
     const response = await fetch(
       `${baseUrl}/api/auth/timetable/${batch}`,
-      requestOptions
+      requestOptions,
     );
     const result = await response.json();
 
