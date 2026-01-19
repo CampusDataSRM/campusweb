@@ -58,7 +58,7 @@ const Student = () => {
         cache: "no-store",
       };
 
-      fetch(`${baseURL}/api/auth/user/`, requestOptions)
+      fetch(`${baseURL}/api/auth/usernew`, requestOptions)
         .then((response) => {
           if (typeof response === "string") {
             return { name: "John Doe" }; // Temporary fix for string response
@@ -269,7 +269,7 @@ const Student = () => {
           {!loading && (
             <div className="mt-4">
               {/* <DashboardTimetable /> */}
-              <SectionTitle
+              {/*<SectionTitle
                 title="Timetable"
                 icon="/icons/sun/white.svg"
                 textColor="theme_text_normal"
@@ -290,7 +290,8 @@ const Student = () => {
                 >
                   <span>Go to Timetable</span>
                 </button>
-              </div>
+              </div>*/}
+              <DashboardTimetable />
             </div>
           )}
           <div>

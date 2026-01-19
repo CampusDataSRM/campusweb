@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import { useRouter } from "next/navigation";
 
-const PrintTimetable = ({ studentBatchForTimetable }) => {
+const PrintTimetable = () => {
   const router = useRouter();
   const [timetable, setTimetable] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const PrintTimetable = ({ studentBatchForTimetable }) => {
       } else {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
-        const studentBatch = studentBatchForTimetable;
+        const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         // dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
