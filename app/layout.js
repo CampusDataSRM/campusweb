@@ -128,8 +128,9 @@ export default function RootLayout({ children }) {
 
             <div className="sm:flex sm:justify-center">
               <ToastContainer
+                stacked
                 position="top-right"
-                autoClose={5000}
+                autoClose={3000}
                 hideProgressBar={false}
                 newestOnTop={true}
                 closeOnClick
