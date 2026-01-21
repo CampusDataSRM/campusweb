@@ -105,7 +105,7 @@ const StudentLogin = () => {
       try {
         const response = await fetch(
           `${currentURL}/api/auth/login/`,
-          requestOptions
+          requestOptions,
         );
         const result = await response.json();
 
@@ -129,6 +129,15 @@ const StudentLogin = () => {
           } else {
             setLoading(true);
           }
+        } else if (
+          result.passResponse?.status_code === 500 &&
+          result.passResponse?.message == "Matched with old password"
+        ) {
+          toast.error(
+            "You've entered an old password. Please enter your current password.",
+          );
+          setLoading(false);
+          return;
         } else {
           if (result.message == "Invalid password") {
             toast.error(result.message);
@@ -150,7 +159,7 @@ const StudentLogin = () => {
 
     // If we reach here, all URLs have failed
     toast.error(
-      "Login failed - Unable to connect to any server. Please try again later."
+      "Login failed - Unable to connect to any server. Please try again later.",
     );
     setLoading(false);
 
