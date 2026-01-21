@@ -108,9 +108,17 @@ const StudentLogin = () => {
           requestOptions,
         );
         const result = await response.json();
-
         if (
-          (result.passResponse?.status_code === 201 ||
+          result.passResponse?.status_code === 500 &&
+          result.passResponse?.message == "Matched with old password"
+        ) {
+          toast.error(
+            "You've entered an old password. Please enter your current password.",
+          );
+          setLoading(false);
+          return;
+        } else if (
+          (result.passResponse?.status_code === 201 &&
             result.status === "success" ||
             result.Status === "success") &&
           (result.cookies || result.Cookies)
@@ -129,15 +137,6 @@ const StudentLogin = () => {
           } else {
             setLoading(true);
           }
-        } else if (
-          result.passResponse?.status_code === 500 &&
-          result.passResponse?.message == "Matched with old password"
-        ) {
-          toast.error(
-            "You've entered an old password. Please enter your current password.",
-          );
-          setLoading(false);
-          return;
         } else {
           if (result.message == "Invalid password") {
             toast.error(result.message);
