@@ -118,7 +118,7 @@ const StudentLogin = () => {
           setLoading(false);
           return;
         } else if (
-          (result.passResponse?.status_code === 201 &&
+          (result.passResponse?.status_code === 201 ||
             result.status === "success" ||
             result.Status === "success") &&
           (result.cookies || result.Cookies)
