@@ -58,7 +58,7 @@ const Student = () => {
         cache: "no-store",
       };
 
-      fetch(`${baseURL}/api/auth/usernew`, requestOptions)
+      fetch(`${baseURL}/api/auth/user`, requestOptions)
         .then((response) => {
           if (typeof response === "string") {
             return { name: "John Doe" }; // Temporary fix for string response

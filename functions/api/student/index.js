@@ -13,10 +13,7 @@ const getStudentData = async (authToken) => {
   };
 
   try {
-    const response = await fetch(
-      `${baseURL}/api/auth/usernew/`,
-      requestOptions,
-    );
+    const response = await fetch(`${baseURL}/api/auth/user/`, requestOptions);
     if (response.status === 429) {
       return { message: "too_many_requests" };
     }
