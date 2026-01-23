@@ -11,13 +11,6 @@ import NotFound from "../not-found";
 
 
 const AboutTeam = () => {
-  if (true) {
-    return (
-      <>
-        <NotFound />
-      </>
-    );
-  }
   return (
     <>
       <div className="max-h-screen overflow-auto pb-24">
