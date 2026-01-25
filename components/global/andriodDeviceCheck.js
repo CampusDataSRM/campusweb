@@ -11,15 +11,6 @@ const AndroidDeviceCheck = () => {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   useEffect(() => {
     setIsAndroidDevice(isAndroid());
-    const timer = setTimeout(() => {
-      if (isAndroid()) {
-        router.push(
-          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp",
-        );
-      }
-    }, 4000); // 4 seconds
-
-    return () => clearTimeout(timer);
   }, []);
 
   return (
