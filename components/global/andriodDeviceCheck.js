@@ -12,9 +12,10 @@ const AndroidDeviceCheck = () => {
   useEffect(() => {
     setIsAndroidDevice(isAndroid());
     const timer = setTimeout(() => {
-      isAndroidDevice &&
-        (window.location.href =
-          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp");
+      if (isAndroid()) {
+        window.location.href =
+          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp";
+      }
     }, 4000); // 4 seconds
 
     return () => clearTimeout(timer);
