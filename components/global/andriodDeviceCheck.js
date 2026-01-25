@@ -2,19 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { isAndroid } from "@/functions/device-check";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const AndroidDeviceCheck = () => {
+  const router = useRouter();
   const [isAndroidDevice, setIsAndroidDevice] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   useEffect(() => {
     setIsAndroidDevice(isAndroid());
+    const timer = setTimeout(() => {
+      isAndroidDevice &&
+        (window.location.href =
+          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp");
+    }, 4000); // 4 seconds
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
       {" "}
-      {isAndroidDevice && !bannerDismissed && !sessionStorage.getItem("androidAppBannerDismissed") && (
+      {isAndroidDevice &&
+        !bannerDismissed &&
+        !sessionStorage.getItem("androidAppBannerDismissed") && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className=" backdrop-blur-xl bg-theme_primary/10 rounded-lg shadow-lg w-11/12 md:w-1/2">
               <button
