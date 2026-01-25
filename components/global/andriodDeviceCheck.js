@@ -13,8 +13,9 @@ const AndroidDeviceCheck = () => {
     setIsAndroidDevice(isAndroid());
     const timer = setTimeout(() => {
       if (isAndroid()) {
-        window.location.href =
-          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp";
+        router.push(
+          "https://play.google.com/store/apps/details?id=com.campusweb.campusapp",
+        );
       }
     }, 4000); // 4 seconds
 
