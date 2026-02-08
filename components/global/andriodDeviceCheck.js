@@ -27,7 +27,7 @@ const AndroidDeviceCheck = () => {
         // Construct the Intent URL
         const intentUrl = `intent://${host}/#Intent;scheme=${manifestScheme};package=${packageId};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
 
-        window.location.href = intentUrl;
+        // window.location.href = intentUrl; Suspended for now - Auto redirect is stopped
       }
     }, 2000);
     return () => clearTimeout(timer);
