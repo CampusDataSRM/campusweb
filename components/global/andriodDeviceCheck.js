@@ -9,28 +9,27 @@ const AndroidDeviceCheck = () => {
   const router = useRouter();
   const [isAndroidDevice, setIsAndroidDevice] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [intentUrl, setIntentUrl] = useState("");
   useEffect(() => {
     setIsAndroidDevice(isAndroid());
+    const manifestScheme = "https";
+    const host = "campusweb.vercel.app";
+    const packageId = "com.campusweb.campusapp";
+    const fallbackUrl = `https://play.google.com/store/apps/details?id=${packageId}`;
+
+    // Construct the Intent URL
+    const intentUrl = `intent://${host}/#Intent;scheme=${manifestScheme};package=${packageId};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
     const timer = setTimeout(() => {
       if (isAndroid()) {
         // INTENT URL STRUCTURE:
         // intent://<URL_PATH>#Intent;scheme=<YOUR_SCHEME>;package=<YOUR_PACKAGE_ID>;S.browser_fallback_url=<PLAY_STORE_URL>;end;
-
         // For your HTTPS scheme (since we use https://campusweb.vercel.app as the scheme in manifest):
         // The "scheme" is https, and the path is / (root).
-
-        const manifestScheme = "https";
-        const host = "campusweb.vercel.app";
-        const packageId = "com.campusweb.campusapp";
-        const fallbackUrl = `https://play.google.com/store/apps/details?id=${packageId}`;
-
-        // Construct the Intent URL
-        const intentUrl = `intent://${host}/#Intent;scheme=${manifestScheme};package=${packageId};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
-
         // window.location.href = intentUrl; Suspended for now - Auto redirect is stopped
       }
     }, 2000);
     return () => clearTimeout(timer);
+    setIntentUrl(intentUrl);
   }, []);
 
   return (
@@ -50,7 +49,7 @@ const AndroidDeviceCheck = () => {
               >
                 &times;
               </button>
-              <Link href="https://play.google.com/store/apps/details?id=com.campusweb.campusapp">
+              <Link href={intentUrl}>
                 <img
                   src={`/assets/event/app_launch_banner.jpeg`}
                   alt="App Launch Banner"
