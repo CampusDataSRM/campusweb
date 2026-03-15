@@ -4,7 +4,7 @@ const LoginLayout = ({ children, topBanner }) => {
       <div className="flex flex-wrap justify-center page-center items-center gap-4 lg:gap-12">
         <div className="">
           {topBanner && (
-            <div className="mb-4 w-[300px]">
+            <div className="mb-6 w-[350px]">
               {topBanner}
             </div>
           )}
@@ -22,4 +22,4 @@ const LoginLayout = ({ children, topBanner }) => {
   );
 }
 
-export default LoginLayout;
+export default LoginLayout;
