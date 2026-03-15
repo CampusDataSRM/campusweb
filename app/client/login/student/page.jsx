@@ -18,6 +18,7 @@ import {
   baseURL_9,
 } from "@/constants/baseURL";
 import { toast } from "react-toastify";
+import { isAndroid } from "@/functions/device-check";
 
 const StudentLogin = () => {
   const router = useRouter();
@@ -25,11 +26,13 @@ const StudentLogin = () => {
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [showPlayStoreBadge, setShowPlayStoreBadge] = useState(false);
 
   useEffect(() => {
     if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
+    setShowPlayStoreBadge(isAndroid());
   }, [router]);
 
   const studentLoginFields = [
@@ -171,9 +174,118 @@ const StudentLogin = () => {
     }
   };
 
+  const PLAY_STORE_URL =
+    "https://play.google.com/store/apps/details?id=com.campusweb.campusapp";
+
+  const playStoreBadge = !showPlayStoreBadge ? null : (
+    <a
+      href={PLAY_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      id="playstore-badge"
+      className="group block relative overflow-hidden rounded-2xl"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(0, 148, 255, 0.15), rgba(151, 71, 255, 0.15))",
+        border: "1px solid rgba(0, 148, 255, 0.3)",
+      }}
+    >
+      {/* Shimmer sweep animation */}
+      <div
+        className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)",
+        }}
+      />
+
+      <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4">
+        <div className="relative flex-shrink-0">
+          {/* Google Play Icon */}
+          <svg
+            viewBox="0 0 512 512"
+            className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-lg"
+            fill="none"
+          >
+            <defs>
+              <linearGradient id="playGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00C3FF" />
+                <stop offset="100%" stopColor="#0094FF" />
+              </linearGradient>
+              <linearGradient id="playGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#FFCE00" />
+                <stop offset="100%" stopColor="#FF9100" />
+              </linearGradient>
+              <linearGradient id="playGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF3A44" />
+                <stop offset="100%" stopColor="#C31162" />
+              </linearGradient>
+              <linearGradient id="playGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#32A071" />
+                <stop offset="100%" stopColor="#2DA94F" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M93.72 22.4c-10.8 0-20.72 8.64-20.72 22.4v422.4c0 13.76 9.92 22.4 20.72 22.4 4.16 0 8.64-1.28 13.12-4.16l196.48-113.44-68.8-68.8L93.72 22.4z"
+              fill="url(#playGrad3)"
+            />
+            <path
+              d="M404.88 218.24l-101.76-58.72-76.8 76.8 76.8 76.8 101.76-58.72c17.6-10.24 17.6-26.88 0-36.16z"
+              fill="url(#playGrad1)"
+            />
+            <path
+              d="M106.84 467.84c-4.48 2.88-8.96 4.16-13.12 4.16L303.12 236.32l-76.8-76.8L106.84 467.84z"
+              fill="url(#playGrad4)"
+            />
+            <path
+              d="M303.12 236.32L93.72 22.4c4.16 0 8.64 1.28 13.12 4.16L303.12 159.52l-76.8 76.8h76.8z"
+              fill="url(#playGrad2)"
+            />
+          </svg>
+        </div>
+
+        {/* Text content */}
+        <div className="flex flex-col min-w-0">
+          <span className="text-[10px] sm:text-xs uppercase tracking-widest text-theme_text_primary font-semibold">
+            Also available on
+          </span>
+          <span className="text-base sm:text-lg font-bold text-white tracking-wide leading-tight">
+            Google Playstore
+          </span>
+        </div>
+
+        {/* Arrow icon */}
+        <div className="ml-auto flex-shrink-0 group-hover:translate-x-1 transition-transform duration-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5 sm:w-6 sm:h-6 text-theme_text_primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Bottom gradient accent line */}
+      <div
+        className="h-0.5 w-full"
+        style={{
+          background: "linear-gradient(90deg, #0094FF, #9747FF, #0094FF)",
+        }}
+      />
+    </a>
+  );
+
   return (
     <>
-      <LoginLayout>
+      <LoginLayout topBanner={playStoreBadge}>
         <form
           className="grid grid-cols-1 gap-4 mt-3"
           name="Student Login Form"
@@ -259,9 +371,11 @@ const StudentLogin = () => {
             Are you a Club Organiser ?
           </Link>
         </div>
+
       </LoginLayout>
     </>
   );
 };
 
 export default StudentLogin;
+
