@@ -2,9 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@tailwind base;
+
 @tailwind components;
 @tailwind utilities;
+@tailwind base;
 
 :root {
   background: #000;
@@ -205,6 +206,7 @@ body{
   padding: 12px;
 }
 
+
 @layer base {
   :root {
     --background: oklch(1 0 0);
@@ -275,14 +277,5 @@ body{
   }
   .theme {
     --font-sans: var(--font-sans);
-  }
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
   }
 }

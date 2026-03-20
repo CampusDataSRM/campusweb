@@ -138,7 +138,9 @@ const StudentLogin = () => {
             router.push("/student");
             return;
           } else {
-            setLoading(true);
+            toast.error("Login succeeded but session token was missing. Please try again.");
+            setLoading(false);
+            return;
           }
         } else {
           if (result.message == "Invalid password") {
@@ -153,6 +155,7 @@ const StudentLogin = () => {
       } catch (error) {
         // Log the failed connection
         console.log(`Failed to connect to ${currentURL}:`, error);
+        setLoading(false);
       }
 
       // Remove the failed URL from the remaining URLs array
