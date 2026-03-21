@@ -7,8 +7,6 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
 import Script from "next/script";
 import { CampusWebPostHogProvider } from "@/functions/providers/posthog-analytics";
@@ -153,9 +151,7 @@ export default function RootLayout({ children }) {
                 >
                   {/*<ServiceResting />*/}
                   {children}
-                  {<AndroidDeviceCheck />}
-                  <Analytics />
-                  <SpeedInsights />
+                  <AndroidDeviceCheck />
                 </div>
               </div>
             </Suspense>
