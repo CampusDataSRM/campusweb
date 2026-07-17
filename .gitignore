@@ -29,7 +29,6 @@ yarn-error.log*
 .env*.local
 .env
 .env*.production
-.env*
 
 # vercel
 .vercel
@@ -37,3 +36,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Firebase
+.firebase/
+.firebaserc

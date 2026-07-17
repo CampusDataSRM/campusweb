@@ -40,7 +40,7 @@ const getStudentBatch = async (authToken) => {
     const result = await response.json();
     return { message: "success", content: result };
   } catch (error) {
-    console.error(error);
+    return { message: "error", content: error };
   }
 };
 
@@ -69,7 +69,6 @@ const getTimetableData = async (authToken) => {
   const rawData = localStorage.getItem("studentData");
   const dataStudent = JSON.parse(rawData);
   const batch = dataStudent?.comboBatch;
-  console.log(batch);
 
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
@@ -87,11 +86,11 @@ const getTimetableData = async (authToken) => {
     );
     const result = await response.json();
 
-    console.log("timetable result", result);
+
 
     return { message: "success", content: result };
   } catch (error) {
-    console.log("ADGAERNIAERNO");
+
 
     return { message: "error", content: error };
   }

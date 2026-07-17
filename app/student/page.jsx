@@ -14,7 +14,8 @@ import { toast } from "react-toastify";
 import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
-import { ro } from "date-fns/locale";
+import RecruitmentBanner3to1 from "@/components/global/recruitmentBanner";
+
 import SectionTitle from "@/components/global/section-title";
 
 const Student = () => {
@@ -88,17 +89,8 @@ const Student = () => {
           }
           setLoading(false);
         })
-        .catch((error) => console.error(error));
+        .catch(() => {});
     }
-
-    // const cookieDate = localStorage.getItem("cookieDate");
-    // let dateDifference = 0;
-    // if (cookieDate) {
-    //   dateDifference = (new Date() - new Date(cookieDate)) / (1000 * 60 * 60 * 24);
-    // }
-    // if (dateDifference > 25 || !cookieDate) {
-    // sessionLogout();
-    // }
   }, []);
 
   const sessionLogout = (e) => {
@@ -118,9 +110,8 @@ const Student = () => {
         localStorage.clear();
         Cookies.remove("X-CSRF-Token");
         router.push("/");
-        console.log(result);
       })
-      .catch((error) => console.error(error));
+      .catch(() => {});
   };
   return (
     <>
@@ -257,40 +248,17 @@ const Student = () => {
               </svg>
             </button>
           )}
-          {/* <div className="mt-4">
-            <Banner3to1
-              imageUrl="/assets/sponsorship/printellect3to1_1.jpg"
-              linkUrl="https://play.google.com/store/apps/details?id=com.printellect.printellect"
+          <div className="mt-4">
+            <RecruitmentBanner3to1
+              imageUrl="/assets/event/recruitment_banner.jpg"
+              linkUrl="https://campusweb.in/contribute"
               altText="Banner 3:1"
             />
-          </div> */}
+          </div>
           <EventCarousel />
 
           {!loading && (
             <div className="mt-4">
-              {/* <DashboardTimetable /> */}
-              {/*<SectionTitle
-                title="Timetable"
-                icon="/icons/sun/white.svg"
-                textColor="theme_text_normal"
-              />
-              <div className="theme_box_bg backdrop-blur-lg p-3 flex flex-col gap-4 items-start h-full text-sm text-theme_text_primary mb-3">
-                <span>
-                  This is a temporary fix for viewing timetable. There is an
-                  issue with with the Academia where some data is yet to be
-                  loaded.
-                  <br /> <br /> Until then you can view your timetable in the timetable
-                  section. We apologize for the inconvenience caused.
-                </span>
-                <button
-                  className={`z-10 p-2 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2
-                
-              `}
-                  onClick={() => router.push("/student/timetable")}
-                >
-                  <span>Go to Timetable</span>
-                </button>
-              </div>*/}
               <DashboardTimetable />
             </div>
           )}

@@ -13,9 +13,11 @@ import { CampusWebPostHogProvider } from "@/functions/providers/posthog-analytic
 import Clarity from "@microsoft/clarity";
 import ServiceResting from "@/components/offline/serviceResting";
 import AndroidDeviceCheck from "@/components/global/andriodDeviceCheck";
+import IOSDeviceCheck from "@/components/global/iosDeviceCheck";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_KEY;
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 Clarity.init(CLARITY_ID);
 
 const inter = Inter({ subsets: ["latin"] });
@@ -77,7 +79,7 @@ export default function RootLayout({ children }) {
         />
         <meta
           property="og:image"
-          content="https://i.ibb.co/6rBVRnk/unknown-1.jpg"
+          content="/logo_png.png"
         />
         <meta property="og:url" content="https://campusweb.vercel.app/" />
         <meta property="og:site_name" content="The Campus Web" />
@@ -90,27 +92,32 @@ export default function RootLayout({ children }) {
         />
         <meta
           name="twitter:image"
-          content="https://mvfejxbltzmknypuuain.supabase.co/storage/v1/object/public/Event/469f11c9-7472-11ef-9282-92877155d7f2.png"
+          content="/logo_png.png"
         />
-        <script type="text/javascript">
-          {`(function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "qdypyyr4iv");`}
-        </script>
+        {CLARITY_ID && (
+          <script type="text/javascript">
+            {`(function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "${CLARITY_ID}");`}
+          </script>
+        )}
       </Head>
       <CampusWebPostHogProvider>
         <body className={inter.className}>
           <TooltipProvider>
-            <Script src="https://www.googletagmanager.com/gtag/js?id=G-C3JDRSD2G9" />
-            <Script>
-              {`window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments)}
-          gtag('js', new Date());
-
-          gtag('config', 'G-C3JDRSD2G9');`}
-            </Script>
+            {GA_ID && (
+              <>
+                <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+                <Script id="google-analytics">
+                  {`window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments)}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}');`}
+                </Script>
+              </>
+            )}
             <Suspense fallback={<Loader />}>
               {/* <Image
               src="/bg_vector.png"
@@ -152,6 +159,7 @@ export default function RootLayout({ children }) {
                   {/*<ServiceResting />*/}
                   {children}
                   <AndroidDeviceCheck />
+                  <IOSDeviceCheck />
                 </div>
               </div>
             </Suspense>
