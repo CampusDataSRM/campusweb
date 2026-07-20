@@ -15,6 +15,7 @@ import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
 import RecruitmentBanner3to1 from "@/components/global/recruitmentBanner";
+import FeedbackWidget from "@/components/student/feedback/FeedbackWidget";
 
 import SectionTitle from "@/components/global/section-title";
 
@@ -248,13 +249,16 @@ const Student = () => {
               </svg>
             </button>
           )}
-          <div className="mt-4">
+          {/*<div className="mt-4">
             <RecruitmentBanner3to1
               imageUrl="/assets/event/recruitment_banner.jpg"
               linkUrl="https://campusweb.in/contribute"
               altText="Banner 3:1"
             />
-          </div>
+          </div>*/}
+
+          <FeedbackWidget />
+
           <EventCarousel />
 
           {!loading && (
