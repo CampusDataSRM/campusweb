@@ -10,7 +10,7 @@ The CampusWeb team takes security vulnerabilities seriously. We appreciate your 
 
 Instead, please report them via one of the following methods:
 
-1. **Email**: Send a detailed report to **[campusdatasrm@gmail.com](mailto:campusdatasrm@gmail.com)** with the subject line: `[SECURITY] CampusWeb Vulnerability Report`
+1. **Email**: Send a detailed report to **[yourcampusweb@gmail.com](mailto:yourcampusweb@gmail.com)** with the subject line: `[SECURITY] CampusWeb Vulnerability Report`
 
 2. **GitHub Security Advisories**: Use [GitHub's private vulnerability reporting](https://github.com/CampusDataSRM/campusweb/security/advisories/new) feature.
 
@@ -26,11 +26,11 @@ Please include the following information in your report:
 
 ### Response Timeline
 
-| Action | Timeframe |
-|--------|-----------|
-| Acknowledgment of report | Within 48 hours |
-| Initial assessment | Within 1 week |
-| Resolution target | Within 30 days (for critical issues) |
+| Action                   | Timeframe                            |
+| ------------------------ | ------------------------------------ |
+| Acknowledgment of report | Within 48 hours                      |
+| Initial assessment       | Within 1 week                        |
+| Resolution target        | Within 30 days (for critical issues) |
 
 ### Scope
 
@@ -51,10 +51,10 @@ The following are out of scope:
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
-| Latest (`main` branch) | ✅ Yes |
-| Older releases | ❌ No |
+| Version                | Supported |
+| ---------------------- | --------- |
+| Latest (`main` branch) | ✅ Yes    |
+| Older releases         | ❌ No     |
 
 ## Disclosure Policy
 

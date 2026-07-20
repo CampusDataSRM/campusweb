@@ -5,10 +5,11 @@
   
   <p>A comprehensive web platform for students and clubs at SRM, featuring attendance tracking, timetable management, event discovery, and more.</p>
 
-  [![CI](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml/badge.svg)](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-  [![GitHub issues](https://img.shields.io/github/issues/CampusDataSRM/campusweb)](https://github.com/CampusDataSRM/campusweb/issues)
+[![CI](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml/badge.svg)](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![GitHub issues](https://img.shields.io/github/issues/CampusDataSRM/campusweb)](https://github.com/CampusDataSRM/campusweb/issues)
+
 </div>
 
 ---
@@ -16,6 +17,7 @@
 ## ✨ Features
 
 ### Student Portal
+
 - 📊 **Dashboard** — Personalized overview with stats and quick navigation
 - 📅 **Attendance Tracking** — View and monitor attendance records with predictions
 - 🕐 **Timetable** — Class schedule viewer with PDF export
@@ -28,19 +30,20 @@
 - 📆 **Calendar** — Academic and event calendar
 
 ### Club Portal
+
 - 👤 **Profile Management** — Update club information and branding
 - 📊 **Admin Dashboard** — Analytics and club management
 - 📋 **Event Management** — Create, edit, and manage club events
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | [Next.js 14](https://nextjs.org/) (App Router) |
-| **UI** | [React 18](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/) |
-| **Charts** | [Chart.js](https://www.chartjs.org/) + [react-chartjs-2](https://react-chartjs-2.js.org/) |
-| **Analytics** | PostHog, Google Analytics, Microsoft Clarity |
-| **Deployment** | Firebase Hosting, Fly.io (Docker) |
+| Layer          | Technology                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Framework**  | [Next.js 14](https://nextjs.org/) (App Router)                                                                |
+| **UI**         | [React 18](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/) |
+| **Charts**     | [Chart.js](https://www.chartjs.org/) + [react-chartjs-2](https://react-chartjs-2.js.org/)                     |
+| **Analytics**  | PostHog, Google Analytics, Microsoft Clarity                                                                  |
+| **Deployment** | Firebase Hosting, Fly.io (Docker)                                                                             |
 
 ## 🚀 Getting Started
 
@@ -53,20 +56,24 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/CampusDataSRM/campusweb.git
    cd campusweb
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
+
    Fill in the required values in `.env.local`. See [`.env.example`](.env.example) for all available variables.
 
 4. **Start the development server**
@@ -77,12 +84,12 @@
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server on port 2560 |
-| `npm run build` | Build for production (static export) |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
+| Command         | Description                           |
+| --------------- | ------------------------------------- |
+| `npm run dev`   | Start development server on port 2560 |
+| `npm run build` | Build for production (static export)  |
+| `npm run start` | Start production server               |
+| `npm run lint`  | Run ESLint                            |
 
 ## 📁 Project Structure
 
@@ -135,4 +142,4 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 ## 🙏 Acknowledgments
 
-Built with ❤️ by [CampusDataSRM](https://github.com/CampusDataSRM)
+Built with ❤️ by [Campus Web](https://github.com/CampusDataSRM)
