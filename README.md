@@ -40,7 +40,7 @@
 | Layer          | Technology                                                                                                    |
 | -------------- | ------------------------------------------------------------------------------------------------------------- |
 | **Framework**  | [Next.js 14](https://nextjs.org/) (App Router)                                                                |
-| **UI**         | [React 18](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/) |
+| **UI**         | [React 18](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/) |
 | **Charts**     | [Chart.js](https://www.chartjs.org/) + [react-chartjs-2](https://react-chartjs-2.js.org/)                     |
 | **Analytics**  | PostHog, Google Analytics, Microsoft Clarity                                                                  |
 | **Deployment** | Firebase Hosting, Fly.io (Docker)                                                                             |
