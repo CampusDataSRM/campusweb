@@ -16,6 +16,7 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
 import RecruitmentBanner3to1 from "@/components/global/recruitmentBanner";
 import FeedbackWidget from "@/components/student/feedback/FeedbackWidget";
+import ErrorBoundary from "@/components/global/error-boundary";
 
 import SectionTitle from "@/components/global/section-title";
 
@@ -259,18 +260,24 @@ const Student = () => {
 
           <FeedbackWidget />
 
-          <EventCarousel />
+          <ErrorBoundary sectionName="Event Carousel">
+            <EventCarousel />
+          </ErrorBoundary>
 
           {!loading && (
             <div className="mt-4">
-              <DashboardTimetable />
+              <ErrorBoundary sectionName="Timetable">
+                <DashboardTimetable />
+              </ErrorBoundary>
             </div>
           )}
           <div>
-            <YourStats
-              courseData={courseData}
-              testPerformance={testPerformance}
-            />
+            <ErrorBoundary sectionName="Stats" resetKeys={[courseData, testPerformance]}>
+              <YourStats
+                courseData={courseData}
+                testPerformance={testPerformance}
+              />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
