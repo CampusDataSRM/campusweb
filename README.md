@@ -1,145 +1,36 @@
-<div align="center">
-  <img src="public/logo2.svg" alt="CampusWeb Logo" width="300" />
-  
-  <h3>Your One-Stop Campus Solution</h3>
-  
-  <p>A comprehensive web platform for students and clubs at SRM, featuring attendance tracking, timetable management, event discovery, and more.</p>
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-[![CI](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml/badge.svg)](https://github.com/CampusDataSRM/campusweb/actions/workflows/build.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![GitHub issues](https://img.shields.io/github/issues/CampusDataSRM/campusweb)](https://github.com/CampusDataSRM/campusweb/issues)
+## Getting Started
 
-</div>
+First, run the development server:
 
----
-
-## ✨ Features
-
-### Student Portal
-
-- 📊 **Dashboard** — Personalized overview with stats and quick navigation
-- 📅 **Attendance Tracking** — View and monitor attendance records with predictions
-- 🕐 **Timetable** — Class schedule viewer with PDF export
-- 📈 **CGPA Calculator** — Calculate and track academic performance
-- 📝 **Marks Overview** — View test performance and grades
-- 🗓️ **Planner** — Daily/monthly task and event planner
-- 🎉 **Events** — Browse and RSVP to campus events
-- 🏛️ **Clubs** — Discover, follow, and join campus clubs
-- 🍽️ **What's in Mess** — Real-time mess menu checker
-- 📆 **Calendar** — Academic and event calendar
-
-### Club Portal
-
-- 👤 **Profile Management** — Update club information and branding
-- 📊 **Admin Dashboard** — Analytics and club management
-- 📋 **Event Management** — Create, edit, and manage club events
-
-## 🛠️ Tech Stack
-
-| Layer          | Technology                                                                                                    |
-| -------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Framework**  | [Next.js 14](https://nextjs.org/) (App Router)                                                                |
-| **UI**         | [React 18](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/) |
-| **Charts**     | [Chart.js](https://www.chartjs.org/) + [react-chartjs-2](https://react-chartjs-2.js.org/)                     |
-| **Analytics**  | PostHog, Google Analytics, Microsoft Clarity                                                                  |
-| **Deployment** | Firebase Hosting, Fly.io (Docker)                                                                             |
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) ≥ 20.x
-- [npm](https://www.npmjs.com/) (comes with Node.js)
-- [Git](https://git-scm.com/)
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/CampusDataSRM/campusweb.git
-   cd campusweb
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Fill in the required values in `.env.local`. See [`.env.example`](.env.example) for all available variables.
-
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:2560](http://localhost:2560) in your browser.
-
-### Available Scripts
-
-| Command         | Description                           |
-| --------------- | ------------------------------------- |
-| `npm run dev`   | Start development server on port 2560 |
-| `npm run build` | Build for production (static export)  |
-| `npm run start` | Start production server               |
-| `npm run lint`  | Run ESLint                            |
-
-## 📁 Project Structure
-
-```
-campusweb/
-├── app/                    # Next.js App Router pages
-│   ├── client/             # Authentication pages (login, signup)
-│   ├── club/               # Club portal (profile, admin dashboard)
-│   ├── student/            # Student portal (attendance, timetable, etc.)
-│   ├── layout.js           # Root layout with providers & analytics
-│   ├── globals.css         # Global styles & Shadcn theme tokens
-│   └── page.js             # Landing page
-├── components/             # Reusable React components
-│   ├── global/             # Shared (navbar, loader, event/club cards)
-│   ├── student/            # Student-specific (stats, timetable widgets)
-│   ├── club/               # Club-specific (profile/password update)
-│   └── ui/                 # Shadcn UI primitives
-├── constants/              # App constants (API base URLs)
-├── functions/              # Utility functions
-│   ├── api/                # API call helpers (student, club)
-│   └── providers/          # Context providers (PostHog analytics)
-├── hooks/                  # Custom React hooks
-├── lib/                    # Shared utilities
-└── public/                 # Static assets (images, icons, manifest)
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## 🔌 API
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-CampusWeb connects to an external backend API. The base URL is configured via the `NEXT_PUBLIC_SERVE` environment variable. See the [documentation](docs/campusweb_documentation.md) for the full API reference.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🤝 Contributing
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a Pull Request.
+## Learn More
 
-1. Fork the repository
-2. Create your branch (`git checkout -b username/feat/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin username/feat/amazing-feature`)
-5. Open a Pull Request
+To learn more about Next.js, take a look at the following resources:
 
-Please also read our [Code of Conduct](CODE_OF_CONDUCT.md).
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🔒 Security
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-To report security vulnerabilities, please see our [Security Policy](SECURITY.md).
+## Deploy on Vercel
 
-## 📄 License
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-Built with ❤️ by [Campus Web](https://github.com/CampusDataSRM)
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
