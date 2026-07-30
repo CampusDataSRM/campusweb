@@ -10,3 +10,4 @@ yarn.lock
 public
 .next
 package-lock.json
+.github

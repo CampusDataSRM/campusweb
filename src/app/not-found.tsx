@@ -19,7 +19,7 @@ const NotFound = () => {
             }, 200);
           }}
           disabled={loading}
-          className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary py-3 px-5 rounded-lg text-theme_text_normal w-48 text-center tracking-wider text-lg font-semibold"
+          className="z-10 campus-gradient py-3 px-5 rounded-lg text-foreground w-48 text-center tracking-wider text-lg font-semibold"
         >
           {loading ? (
             <svg

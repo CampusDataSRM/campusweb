@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AmbientBackground } from "@/components/ambient-background";
 import Script from "next/script";
 import { GA_ID } from "@/constants";
+import { plusJakartaSans, nunito } from "@/lib/fonts";
 import "./globals.css";
 
 const APP_NAME = "Campus Web";
@@ -55,7 +58,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} ${nunito.variable} dark h-full antialiased`}
+    >
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta charSet="utf-8" />
+        <meta name="description" content={APP_DESCRIPTION} />
+        <meta name="application-name" content={APP_NAME} />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content={APP_DEFAULT_TITLE} />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={APP_DEFAULT_TITLE} />
+        <meta name="twitter:description" content={APP_DESCRIPTION} />
+        <meta name="twitter:site" content={APP_URL} />
+        <meta name="twitter:creator" content="campusweb" />
+        <meta name="twitter:images" content="/logo_png.png" />
+      </Head>
       <body className="min-h-full flex flex-col">
         {GA_ID && (
           <>
@@ -71,6 +98,7 @@ export default function RootLayout({
           </>
         )}
 
+        <AmbientBackground />
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

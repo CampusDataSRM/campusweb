@@ -90,46 +90,49 @@ const PrivacyPolicy = () => {
 
         <div className="px-4">
           {/* Privacy Policy Header */}
-          <div className="theme_box_bg p-6 mb-4 text-center">
-            <h1 className="text-2xl font-bold text-theme_text_primary">
+          <div className="campus-card p-6 mb-4 text-center">
+            <h1 className="text-2xl font-bold text-campus-text-primary">
               PRIVACY NOTICE
             </h1>
           </div>
 
+          {/* Section Cards — responsive grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+
           {/* Introduction */}
-          <div className="theme_box_bg p-6 mb-4">
-            <p className="text-theme_text_normal text-sm leading-relaxed">
+          <div className="campus-card p-6 md:col-span-2 xl:col-span-1">
+            <p className="text-foreground text-sm leading-relaxed">
               This Privacy Notice for{" "}
-              <span className="text-theme_text_primary font-medium">
+              <span className="text-campus-text-primary font-medium">
                 Campus App
               </span>{" "}
               ("we", "us", or "our") explains how we collect, use, store, share,
               and protect your personal data when you use our services
               ("Services"), including when you:
             </p>
-            <ul className="mt-4 space-y-2 text-theme_text_normal text-sm">
+            <ul className="mt-4 space-y-2 text-foreground text-sm">
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                 <span>
                   Download and use our mobile application (Campus App)
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                 <span>
                   Use Campus App to access campus resources, events, and
                   community features
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                 <span>
                   Interact with us through support, marketing, or events
                 </span>
               </li>
             </ul>
-            <div className="mt-4 p-4 bg-theme_primary/10 rounded-lg border-l-4 border-theme_primary">
-              <p className="text-theme_text_normal text-sm">
+            <div className="mt-4 p-4 bg-campus-primary/10 rounded-lg border-l-4 border-campus-primary">
+              <p className="text-foreground text-sm">
                 By using our Services, you agree to the processing of your
                 personal data as described in this Privacy Notice. If you do not
                 agree, please do not use our Services.
@@ -138,24 +141,24 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Table of Contents */}
-          <div className="theme_box_bg p-6 mb-6">
+          <div className="campus-card p-6 md:col-span-2 xl:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="16px"
                   viewBox="0 -960 960 960"
                   width="16px"
-                  fill="#0094FF"
+                  fill="currentColor" className="text-campus-primary"
                 >
                   <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Table of Contents
               </h2>
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
               {sections.map((section, index) => (
                 <button
                   key={section.id}
@@ -164,12 +167,12 @@ const PrivacyPolicy = () => {
                       .getElementById(section.id)
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="flex items-center gap-3 p-3 rounded-lg bg-theme_primary/5 hover:bg-theme_primary/10 transition-colors text-left"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-campus-primary/5 hover:bg-campus-primary/10 transition-colors text-left"
                 >
-                  <span className="text-theme_text_primary font-medium text-sm">
+                  <span className="text-campus-text-primary font-medium text-sm">
                     {index + 1}.
                   </span>
-                  <span className="text-theme_text_normal text-sm">
+                  <span className="text-foreground text-sm">
                     {section.title}
                   </span>
                 </button>
@@ -178,59 +181,59 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Summary Section */}
-          <div id="summary" className="theme_box_bg p-6 mb-4">
+          <div id="summary" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   1
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Summary of Key Points
               </h2>
             </div>
             <div className="space-y-4">
               <div>
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   What data do we collect?
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Personal data you provide directly and certain data collected
                   automatically when you use the app.
                 </p>
               </div>
               <div>
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   Do we collect sensitive personal data?
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   No. We do not knowingly collect or process sensitive personal
                   data as defined under Indian law.
                 </p>
               </div>
               <div>
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   Why do we process your data?
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   To provide and improve our Services, manage user accounts,
                   ensure security, and comply with legal obligations.
                 </p>
               </div>
               <div>
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   Do we share your data?
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Only in limited situations such as with service providers,
                   affiliates, or when required by law.
                 </p>
               </div>
               <div>
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   What are your rights?
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   You have rights under the Digital Personal Data Protection
                   Act, 2023, including access, correction, deletion, and
                   grievance redressal.
@@ -240,46 +243,46 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* What Information Do We Collect */}
-          <div id="collection" className="theme_box_bg p-6 mb-4">
+          <div id="collection" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   2
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 What Information Do We Collect?
               </h2>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-theme_text_primary font-medium mb-3">
+              <h3 className="text-campus-text-primary font-medium mb-3">
                 Personal Data You Provide
               </h3>
-              <p className="text-theme_text_normal text-sm mb-3">
+              <p className="text-foreground text-sm mb-3">
                 We collect personal data that you voluntarily provide, including
                 when you:
               </p>
-              <ul className="space-y-2 text-theme_text_normal text-sm mb-4">
+              <ul className="space-y-2 text-foreground text-sm mb-4">
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                   <span>Register an account</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                   <span>Participate in campus activities or events</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
                   <span>Contact us for support</span>
                 </li>
               </ul>
 
-              <div className="bg-theme_secondary/10 p-4 rounded-lg">
-                <h4 className="text-theme_text_primary font-medium mb-2">
+              <div className="bg-campus-secondary/10 p-4 rounded-lg">
+                <h4 className="text-campus-text-primary font-medium mb-2">
                   This may include:
                 </h4>
-                <div className="grid grid-cols-1 gap-2 text-theme_text_normal text-sm">
+                <div className="grid grid-cols-1 gap-2 text-foreground text-sm">
                   <span>• Name</span>
                   <span>• Email address</span>
                   <span>• Phone number</span>
@@ -288,20 +291,20 @@ const PrivacyPolicy = () => {
                 </div>
               </div>
 
-              <p className="text-theme_text_normal text-sm mt-3 italic">
+              <p className="text-foreground text-sm mt-3 italic">
                 All information provided must be accurate and up to date.
               </p>
             </div>
 
             <div>
-              <h3 className="text-theme_text_primary font-medium mb-3">
+              <h3 className="text-campus-text-primary font-medium mb-3">
                 Information Automatically Collected
               </h3>
-              <p className="text-theme_text_normal text-sm mb-3">
+              <p className="text-foreground text-sm mb-3">
                 When you use our Services, we may automatically collect:
               </p>
-              <div className="bg-theme_primary/10 p-4 rounded-lg">
-                <div className="grid grid-cols-1 gap-2 text-theme_text_normal text-sm">
+              <div className="bg-campus-primary/10 p-4 rounded-lg">
+                <div className="grid grid-cols-1 gap-2 text-foreground text-sm">
                   <span>• IP address</span>
                   <span>• Device type, operating system, and app version</span>
                   <span>
@@ -310,7 +313,7 @@ const PrivacyPolicy = () => {
                   <span>• Approximate location (city/state level)</span>
                 </div>
               </div>
-              <p className="text-theme_text_normal text-sm mt-3">
+              <p className="text-foreground text-sm mt-3">
                 This data is used for security, analytics, and service
                 improvement.
               </p>
@@ -318,18 +321,18 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* How Do We Process */}
-          <div id="processing" className="theme_box_bg p-6 mb-4">
+          <div id="processing" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   3
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 How Do We Process Your Personal Data?
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               We process personal data only for lawful purposes, including:
             </p>
             <div className="space-y-3">
@@ -342,32 +345,32 @@ const PrivacyPolicy = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 p-3 bg-theme_primary/5 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-campus-primary/5 rounded-lg"
                 >
-                  <div className="w-6 h-6 rounded-full bg-theme_primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-theme_text_primary text-xs font-medium">
+                  <div className="w-6 h-6 rounded-full bg-campus-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-campus-text-primary text-xs font-medium">
                       {index + 1}
                     </span>
                   </div>
-                  <span className="text-theme_text_normal text-sm">{item}</span>
+                  <span className="text-foreground text-sm">{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Legal Basis */}
-          <div id="legal-basis" className="theme_box_bg p-6 mb-4">
+          <div id="legal-basis" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   4
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Legal Basis for Processing (India)
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               We process personal data in accordance with the Digital Personal
               Data Protection Act, 2023, based on:
             </p>
@@ -392,18 +395,18 @@ const PrivacyPolicy = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-gradient-to-r from-theme_primary/10 to-theme_secondary/10 rounded-lg border-l-4 border-theme_primary"
+                  className="p-4 bg-gradient-to-r from-campus-primary/10 to-campus-secondary/10 rounded-lg border-l-4 border-campus-primary"
                 >
-                  <h4 className="text-theme_text_primary font-medium mb-1">
+                  <h4 className="text-campus-text-primary font-medium mb-1">
                     {item.title}
                   </h4>
-                  <p className="text-theme_text_normal text-sm">{item.desc}</p>
+                  <p className="text-foreground text-sm">{item.desc}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-theme_secondary/10 rounded-lg">
-              <p className="text-theme_text_normal text-sm">
-                <span className="text-theme_text_primary font-medium">
+            <div className="mt-4 p-4 bg-campus-secondary/10 rounded-lg">
+              <p className="text-foreground text-sm">
+                <span className="text-campus-text-primary font-medium">
                   Note:
                 </span>{" "}
                 You may withdraw consent at any time.
@@ -412,67 +415,67 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Sharing Data */}
-          <div id="sharing" className="theme_box_bg p-6 mb-4">
+          <div id="sharing" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   5
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Sharing of Personal Data
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               We may share personal data only in the following situations:
             </p>
             <div className="space-y-4">
-              <div className="p-4 bg-theme_primary/10 rounded-lg">
-                <h4 className="text-theme_text_primary font-medium mb-2">
+              <div className="p-4 bg-campus-primary/10 rounded-lg">
+                <h4 className="text-campus-text-primary font-medium mb-2">
                   Service Providers
                 </h4>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Hosting, analytics, notifications (under confidentiality
                   obligations)
                 </p>
               </div>
-              <div className="p-4 bg-theme_secondary/10 rounded-lg">
-                <h4 className="text-theme_text_primary font-medium mb-2">
+              <div className="p-4 bg-campus-secondary/10 rounded-lg">
+                <h4 className="text-campus-text-primary font-medium mb-2">
                   Affiliates or Business Transfers
                 </h4>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Mergers or restructuring
                 </p>
               </div>
-              <div className="p-4 bg-theme_primary/10 rounded-lg">
-                <h4 className="text-theme_text_primary font-medium mb-2">
+              <div className="p-4 bg-campus-primary/10 rounded-lg">
+                <h4 className="text-campus-text-primary font-medium mb-2">
                   Legal Requirements
                 </h4>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Court orders or government authorities
                 </p>
               </div>
             </div>
-            <div className="mt-4 p-4 bg-theme_red/10 rounded-lg border-l-4 border-theme_red">
-              <p className="text-theme_text_normal text-sm font-medium">
+            <div className="mt-4 p-4 bg-destructive/10 rounded-lg border-l-4 border-destructive">
+              <p className="text-foreground text-sm font-medium">
                 We do not sell personal data.
               </p>
             </div>
           </div>
 
           {/* Cookies */}
-          <div id="cookies" className="theme_box_bg p-6 mb-4">
+          <div id="cookies" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   6
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Cookies and Tracking Technologies
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               We may use cookies or similar technologies to:
             </p>
             <div className="grid gap-3 mb-4">
@@ -483,41 +486,41 @@ const PrivacyPolicy = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-theme_primary/5 rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-campus-primary/5 rounded-lg"
                 >
-                  <div className="w-2 h-2 rounded-full bg-theme_text_primary"></div>
-                  <span className="text-theme_text_normal text-sm">{item}</span>
+                  <div className="w-2 h-2 rounded-full bg-campus-text-primary"></div>
+                  <span className="text-foreground text-sm">{item}</span>
                 </div>
               ))}
             </div>
-            <p className="text-theme_text_normal text-sm">
+            <p className="text-foreground text-sm">
               You can manage cookie preferences through your device or browser
               settings.
             </p>
           </div>
 
           {/* Social Logins */}
-          <div id="social-logins" className="theme_box_bg p-6 mb-4">
+          <div id="social-logins" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   7
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Social Logins
               </h2>
             </div>
             <div className="space-y-4">
-              <div className="p-4 bg-theme_primary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-primary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   If you log in using third-party services (e.g., Google), we
                   may receive limited profile information such as name and email
                   address.
                 </p>
               </div>
-              <div className="p-4 bg-theme_secondary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-secondary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   We use this information only for authentication and account
                   creation.
                 </p>
@@ -526,26 +529,26 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Data Storage */}
-          <div id="storage" className="theme_box_bg p-6 mb-4">
+          <div id="storage" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   8
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Data Storage and Transfers
               </h2>
             </div>
             <div className="space-y-3">
-              <div className="p-4 bg-theme_primary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-primary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   Your personal data may be stored on servers located in India
                   or outside India.
                 </p>
               </div>
-              <div className="p-4 bg-theme_secondary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-secondary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   Where data is transferred outside India, reasonable safeguards
                   are applied as required by law.
                 </p>
@@ -554,18 +557,18 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Data Retention */}
-          <div id="retention" className="theme_box_bg p-6 mb-4">
+          <div id="retention" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   9
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Data Retention
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               We retain personal data only for as long as necessary to:
             </p>
             <div className="space-y-2 mb-4">
@@ -575,31 +578,31 @@ const PrivacyPolicy = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 p-3 bg-theme_primary/5 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-campus-primary/5 rounded-lg"
                 >
-                  <div className="w-2 h-2 rounded-full bg-theme_text_primary mt-2 flex-shrink-0"></div>
-                  <span className="text-theme_text_normal text-sm">{item}</span>
+                  <div className="w-2 h-2 rounded-full bg-campus-text-primary mt-2 flex-shrink-0"></div>
+                  <span className="text-foreground text-sm">{item}</span>
                 </div>
               ))}
             </div>
-            <p className="text-theme_text_normal text-sm">
+            <p className="text-foreground text-sm">
               Data is securely deleted or anonymised when no longer required.
             </p>
           </div>
 
           {/* Your Rights */}
-          <div id="rights" className="theme_box_bg p-6 mb-4">
+          <div id="rights" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   10
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Your Rights Under Indian Law
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               Under the Digital Personal Data Protection Act, 2023, you have the
               right to:
             </p>
@@ -613,25 +616,25 @@ const PrivacyPolicy = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-theme_primary/10 to-theme_secondary/5 rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-campus-primary/10 to-campus-secondary/5 rounded-lg"
                 >
-                  <div className="w-6 h-6 rounded-full bg-theme_primary/20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-campus-primary/20 flex items-center justify-center flex-shrink-0">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="16px"
                       viewBox="0 -960 960 960"
                       width="16px"
-                      fill="#0094FF"
+                      fill="currentColor" className="text-campus-primary"
                     >
                       <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
                     </svg>
                   </div>
-                  <span className="text-theme_text_normal text-sm">{item}</span>
+                  <span className="text-foreground text-sm">{item}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-theme_primary/10 rounded-lg">
-              <p className="text-theme_text_normal text-sm">
+            <div className="mt-4 p-4 bg-campus-primary/10 rounded-lg">
+              <p className="text-foreground text-sm">
                 You may exercise these rights by contacting us using the details
                 below.
               </p>
@@ -639,25 +642,25 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Updates */}
-          <div id="updates" className="theme_box_bg p-6 mb-4">
+          <div id="updates" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   11
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Updates to This Notice
               </h2>
             </div>
             <div className="space-y-3">
-              <div className="p-4 bg-theme_primary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-primary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   We may update this Privacy Notice from time to time.
                 </p>
               </div>
-              <div className="p-4 bg-theme_secondary/10 rounded-lg">
-                <p className="text-theme_text_normal text-sm">
+              <div className="p-4 bg-campus-secondary/10 rounded-lg">
+                <p className="text-foreground text-sm">
                   Changes will be reflected by updating the "Last updated" date.
                 </p>
               </div>
@@ -665,42 +668,43 @@ const PrivacyPolicy = () => {
           </div>
 
           {/* Contact */}
-          <div id="contact" className="theme_box_bg p-6 mb-6">
+          <div id="contact" className="campus-card p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full bg-theme_primary/20 flex items-center justify-center">
-                <span className="text-theme_text_primary text-xs font-bold">
+              <div className="w-5 h-5 rounded-full bg-campus-primary/20 flex items-center justify-center">
+                <span className="text-campus-text-primary text-xs font-bold">
                   12
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-theme_text_primary">
+              <h2 className="text-lg font-semibold text-campus-text-primary">
                 Contact & Grievance Redressal
               </h2>
             </div>
-            <p className="text-theme_text_normal text-sm mb-4">
+            <p className="text-foreground text-sm mb-4">
               If you have questions, concerns, or requests regarding this
               Privacy Notice or your personal data, contact us at:
             </p>
-            <div className="p-4 bg-gradient-to-r from-theme_primary/10 to-theme_secondary/10 rounded-lg">
+            <div className="p-4 bg-gradient-to-r from-campus-primary/10 to-campus-secondary/10 rounded-lg">
               <div className="text-center">
-                <h3 className="text-theme_text_primary font-medium mb-2">
+                <h3 className="text-campus-text-primary font-medium mb-2">
                   Campus App Team
                 </h3>
-                <p className="text-theme_text_normal text-sm">
+                <p className="text-foreground text-sm">
                   Email:{" "}
-                  <span className="text-theme_text_primary">
+                  <span className="text-campus-text-primary">
                     yourcampusweb@gmail.com
                   </span>
                 </p>
               </div>
             </div>
           </div>
+          </div>{/* end grid */}
 
           {/* Footer */}
           <div className="text-center py-6">
             <div className="flex items-center justify-center gap-2 mb-3">
               <img src="/logo.svg" alt="Campus Web" className="h-6 w-auto" />
             </div>
-            <p className="text-theme_text_normal_60 text-xs">
+            <p className="text-muted-foreground text-xs">
               © {currentYear} Campus App. All rights reserved.
             </p>
           </div>
