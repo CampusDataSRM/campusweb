@@ -158,8 +158,8 @@ export default function RootLayout({ children }) {
                 >
                   {/*<ServiceResting />*/}
                   {children}
-                  <AndroidDeviceCheck />
-                  <IOSDeviceCheck />
+                  {/*<AndroidDeviceCheck />
+                  <IOSDeviceCheck />*/}
                 </div>
               </div>
             </Suspense>

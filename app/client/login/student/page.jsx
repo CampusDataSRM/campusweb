@@ -81,6 +81,7 @@ const StudentLogin = () => {
   const handleStudentLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    localStorage.setItem("net_id", userid);
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
