@@ -16,6 +16,7 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
 import RecruitmentBanner3to1 from "@/components/global/recruitmentBanner";
 import FeedbackWidget from "@/components/student/feedback/FeedbackWidget";
+import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
 
 import SectionTitle from "@/components/global/section-title";
 
@@ -30,6 +31,7 @@ const Student = () => {
   const [testPerformance, setTestPerformance] = useState([]);
 
   const [swapToClub, setSwapToClub] = useState(false);
+  const [portalSyncReady, setPortalSyncReady] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -87,6 +89,7 @@ const Student = () => {
             );
             setCourseData(result?.courses);
             setTestPerformance(result?.testPerformances);
+            setPortalSyncReady(true);
           }
           setLoading(false);
         })
@@ -256,6 +259,18 @@ const Student = () => {
               altText="Banner 3:1"
             />
           </div>*/}
+
+          {portalSyncReady && (
+            <StudentPortalSync
+              onSync={() => {
+                const updated = JSON.parse(localStorage.getItem("studentData"));
+                if (updated) {
+                  setCourseData(updated.courses);
+                  setTestPerformance(updated.testPerformances);
+                }
+              }}
+            />
+          )}
 
           <FeedbackWidget />
 

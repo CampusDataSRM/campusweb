@@ -86,14 +86,75 @@ const getTimetableData = async (authToken) => {
     );
     const result = await response.json();
 
-
-
     return { message: "success", content: result };
   } catch (error) {
-
-
     return { message: "error", content: error };
   }
 };
 
-export { getStudentData, getStudentBatch, getPlannerData, getTimetableData };
+const studentPortalLogin = async (net_id, password, registration_number) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    redirect: "follow",
+    body: JSON.stringify({ net_id, password, registration_number }),
+  };
+
+  try {
+    const response = await fetch(
+      `${baseURL}/api/student-portal/login`,
+      requestOptions,
+    );
+    const result = await response.json();
+    if (response.ok && result?.status === "success") {
+      return { message: "success", content: result };
+    }
+    return { message: "failed", status: response.status, content: result };
+  } catch (error) {
+    return { message: "error", content: error };
+  }
+};
+
+const getAttendanceFromStudentPortal = async (net_id) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    redirect: "follow",
+    body: JSON.stringify({ net_id }),
+  };
+
+  try {
+    const response = await fetch(
+      `${baseURL}/api/student-portal/attendance`,
+      requestOptions,
+    );
+    if (response.status === 401) {
+      return { message: "unauthorized", status: 401 };
+    }
+    if (!response.ok) {
+      return { message: "failed", status: response.status };
+    }
+    const result = await response.json();
+    if (result?.status === "success") {
+      return { message: "success", content: result };
+    }
+    return { message: "failed", status: response.status, content: result };
+  } catch (error) {
+    return { message: "error", content: error };
+  }
+};
+
+export {
+  getStudentData,
+  getStudentBatch,
+  getPlannerData,
+  getTimetableData,
+  getAttendanceFromStudentPortal,
+  studentPortalLogin,
+};

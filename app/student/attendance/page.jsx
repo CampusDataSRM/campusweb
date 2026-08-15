@@ -13,6 +13,7 @@ import { getPlannerData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -21,6 +22,7 @@ const Attendance = () => {
   const router = useRouter();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [portalSyncReady, setPortalSyncReady] = useState(false);
 
   // format date as dd/mm/yy
   const formatDate = (date) => {
@@ -84,6 +86,7 @@ const Attendance = () => {
           } else {
             setCourseData(data?.content.courses);
             localStorage.setItem("studentData", JSON.stringify(data?.content));
+            setPortalSyncReady(true);
           }
         });
       }
@@ -303,7 +306,20 @@ const Attendance = () => {
               <Loader />
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-5">
+            <>
+              {portalSyncReady && (
+                <div className="mb-4">
+                  <StudentPortalSync
+                    onSync={() => {
+                      const updated = JSON.parse(localStorage.getItem("studentData"));
+                      if (updated) {
+                        setCourseData(updated.courses);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+              <div className="flex flex-wrap justify-center gap-5">
               {courseData ? (
                 courseData.map((course, index) => (
                   <AttendanceCard key={index} attendance={course} />
@@ -316,6 +332,7 @@ const Attendance = () => {
                 </div>
               )}
             </div>
+            </>
           )}
           <br />
         </div>
