@@ -14,6 +14,15 @@ import { toast } from "react-toastify";
 import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
+import { forceRefreshStudentData } from "@/functions/api/student";
+
+const hasAttendanceData = (courses) =>
+  Array.isArray(courses) &&
+  courses.some(
+    (course) =>
+      Number(course?.hoursConducted || 0) > 0 ||
+      Number(course?.attendancePercent || 0) > 0
+  );
 
 const Student = () => {
   const router = useRouter();
@@ -70,17 +79,48 @@ const Student = () => {
             throw new Error("Failed to fetch data");
           }
         })
-        .then((result) => {
+        .then(async (result) => {
           if (result === "Too many requests") {
             toast.error("Too many requests. Try again in a min.");
-          } else {
-            setStudentName(result?.name);
+          } else if (result) {
+            const cachedStudentData = JSON.parse(
+              localStorage.getItem("studentData") || "null"
+            );
+            let resolvedStudentData = result;
+
+            // Do not replace valid cached Student Portal attendance with an
+            // empty Academia snapshot. Refresh the server snapshot using the
+            // saved NetID, then keep the cache as a fallback if refresh fails.
+            if (!hasAttendanceData(result?.courses)) {
+              const savedNetId = localStorage.getItem("studentNetId")?.trim();
+              if (savedNetId) {
+                try {
+                  const refreshed = await forceRefreshStudentData(
+                    Cookies.get("X-CSRF-Token"),
+                    savedNetId
+                  );
+                  if (hasAttendanceData(refreshed?.courses)) {
+                    resolvedStudentData = refreshed;
+                  } else if (hasAttendanceData(cachedStudentData?.courses)) {
+                    resolvedStudentData = cachedStudentData;
+                  }
+                } catch {
+                  if (hasAttendanceData(cachedStudentData?.courses)) {
+                    resolvedStudentData = cachedStudentData;
+                  }
+                }
+              } else if (hasAttendanceData(cachedStudentData?.courses)) {
+                resolvedStudentData = cachedStudentData;
+              }
+            }
+
+            setStudentName(resolvedStudentData?.name);
             localStorage.setItem(
               "studentData",
-              result && JSON.stringify(result)
+              JSON.stringify(resolvedStudentData)
             );
-            setCourseData(result?.courses);
-            setTestPerformance(result?.testPerformances);
+            setCourseData(resolvedStudentData?.courses || []);
+            setTestPerformance(resolvedStudentData?.testPerformances || []);
           }
           setLoading(false);
         })

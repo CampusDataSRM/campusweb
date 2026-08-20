@@ -14,6 +14,8 @@ const StudentLogin = () => {
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [captcha, setCaptcha] = useState(null);
+  const [captchaContent, setCaptchaContent] = useState("");
 
   useEffect(() => {
     if (Cookies.get("X-CSRF-Token")) {
@@ -39,8 +41,9 @@ const StudentLogin = () => {
     },
   ];
 
-  const handleStudentLogin = (e) => {
+  const handleStudentLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     const myHeaders = new Headers();
@@ -49,6 +52,10 @@ const StudentLogin = () => {
     const raw = JSON.stringify({
       username: userid,
       password: password,
+      ...(captcha && {
+        captcha_content: captchaContent.trim(),
+        captcha_digest: captcha.digest,
+      }),
     });
 
     const requestOptions = {
@@ -59,43 +66,64 @@ const StudentLogin = () => {
       mode: "cors",
     };
 
-    fetch(`${baseURL}/api/auth/login/`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        // ✅ Handle both lowercase and uppercase keys safely
-        if (
-          (result.passResponse?.status_code === 201 ||
-            result.status === "success" ||
-            result.Status === "success") &&
-          (result.cookies || result.Cookies)
-        ) {
-          const csrfToken =
-            result.Cookies ||
-            result.cookies ||
-            result.COOKIE ||
-            result.cookie ||
-            result["X-CSRF-Token"];
+    try {
+      const response = await fetch(`${baseURL}/api/auth/login/`, requestOptions);
+      const result = await response.json().catch(() => ({}));
+      if (result?.captcha_required) {
+        setCaptcha({
+          digest: result.captcha_digest,
+          imageUrl: result.image_url,
+        });
+        setCaptchaContent("");
+        toast.info("Complete the CAPTCHA to continue.");
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(
+          result?.message ||
+            result?.Message ||
+            result?.errors?.[0]?.message ||
+            "Student login failed"
+        );
+      }
 
-          if (csrfToken) {
-            Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
-            router.push("/student");
-          } else {
-            toast.error("Login failed — CSRF token missing");
-            setLoading(false);
-          }
+        // ✅ Handle both lowercase and uppercase keys safely
+      if (
+        (result.passResponse?.status_code === 201 ||
+          result.status === "success" ||
+          result.Status === "success") &&
+        (result.cookies || result.Cookies)
+      ) {
+        const csrfToken =
+          result.Cookies ||
+          result.cookies ||
+          result.COOKIE ||
+          result.cookie ||
+          result["X-CSRF-Token"];
+
+        if (csrfToken) {
+          Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
+          localStorage.setItem(
+            "studentNetId",
+            userid.trim().split("@")[0].toLowerCase()
+          );
+          setCaptcha(null);
+          router.push("/student");
         } else {
-          toast.error("Invalid credentials");
-          setLoading(false);
+          throw new Error("Login succeeded but the session cookie was missing.");
         }
-      })
-      .catch((error) => {
-        if (error == "Too many requests, slow down!") {
-          toast.error("Too many requests, slow down! Try again after 60 seconds.");
-        } else {
-          toast.error(JSON.stringify(error));
-        }
-        setLoading(false);
-      });
+      } else {
+        throw new Error("Invalid credentials");
+      }
+    } catch (error) {
+      if (error?.message === "Too many requests, slow down!") {
+        toast.error("Too many requests, slow down! Try again after 60 seconds.");
+      } else {
+        toast.error(error?.message || "Could not reach the login service");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -149,11 +177,29 @@ const StudentLogin = () => {
             </div>
           ))}
 
+          {captcha && (
+            <div className="grid gap-3">
+              <img
+                src={captcha.imageUrl}
+                alt="Academia CAPTCHA"
+                className="theme_box_bg min-h-16 w-full rounded-md object-contain p-2"
+              />
+              <input
+                type="text"
+                value={captchaContent}
+                onChange={(event) => setCaptchaContent(event.target.value)}
+                placeholder="Enter CAPTCHA"
+                autoComplete="off"
+                className="theme_box_bg w-full px-4 py-4 tracking-wider text-theme_text_primary placeholder:text-sm placeholder:text-theme_text_primary"
+              />
+            </div>
+          )}
+
           <div>
             <button
               type="submit"
               onClick={handleStudentLogin}
-              disabled={loading}
+              disabled={loading || (captcha && !captchaContent.trim())}
               className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
             >
               {loading ? (

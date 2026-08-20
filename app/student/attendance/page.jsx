@@ -1,12 +1,17 @@
 "use client";
 import AttendanceCard from "@/components/student/attendance";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "@/components/global/loader";
 import Navbar from "@/components/global/navbar";
 import SectionTitle from "@/components/global/section-title";
 import Cookies from "js-cookie";
 import { pageNames } from "@/components/global/navbar/page-link";
-import { getStudentData } from "@/functions/api/student";
+import {
+  getStudentData,
+  getStudentPortalAttendance,
+  forceRefreshStudentData,
+  loginStudentPortal,
+} from "@/functions/api/student";
 import Link from "next/link";
 import { predictAttendance } from "@/functions/attendance-prediction";
 import { getPlannerData } from "@/functions/api/student";
@@ -21,6 +26,28 @@ const Attendance = () => {
   const router = useRouter();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showStudentPortalPrompt, setShowStudentPortalPrompt] = useState(false);
+  const [studentPortalNetId, setStudentPortalNetId] = useState("");
+  const [hasSavedStudentNetId, setHasSavedStudentNetId] = useState(false);
+  const [studentPortalPassword, setStudentPortalPassword] = useState("");
+  const [studentPortalLoading, setStudentPortalLoading] = useState(false);
+  const attemptedSavedSessionRefresh = useRef(false);
+
+  const attendanceIsEmpty = (courses) =>
+    Array.isArray(courses) &&
+    courses.length > 0 &&
+    courses.every((course) => {
+      const conducted = Number(course?.hoursConducted || 0);
+      const percentage = Number(course?.attendancePercent || 0);
+      return conducted <= 0 || percentage <= 0;
+    });
+
+  const applyStudentData = (content) => {
+    const courses = content?.courses || [];
+    setCourseData(courses);
+    localStorage.setItem("studentData", JSON.stringify(content));
+    setShowStudentPortalPrompt(attendanceIsEmpty(courses));
+  };
 
   // format date as dd/mm/yy
   const formatDate = (date) => {
@@ -65,6 +92,9 @@ const Attendance = () => {
 
   useEffect(() => {
     setLoading(true);
+    const savedNetId = localStorage.getItem("studentNetId")?.trim() || "";
+    setStudentPortalNetId(savedNetId);
+    setHasSavedStudentNetId(Boolean(savedNetId));
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
@@ -74,17 +104,34 @@ const Attendance = () => {
         router.push("/client/login/student");
       } else {
         setCourseData(result?.courses);
+        setShowStudentPortalPrompt(attendanceIsEmpty(result?.courses));
         setLoading(false);
-        const someResult = getStudentData(Cookies.get("X-CSRF-Token"));
+        const shouldTrySavedStudentPortalSession =
+          Boolean(savedNetId) &&
+          attendanceIsEmpty(result?.courses) &&
+          !attemptedSavedSessionRefresh.current;
+        if (shouldTrySavedStudentPortalSession) {
+          attemptedSavedSessionRefresh.current = true;
+        }
+        const someResult = shouldTrySavedStudentPortalSession
+          ? forceRefreshStudentData(
+              Cookies.get("X-CSRF-Token"),
+              savedNetId
+            ).then((content) => ({ message: "success", content }))
+          : getStudentData(Cookies.get("X-CSRF-Token"));
         someResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
             console.log("Failed to fetch data");
           } else if (data?.message === "too_many_requests") {
             toast.error("Too many requests. Try again in a min.");
           } else {
-            setCourseData(data?.content.courses);
-            localStorage.setItem("studentData", JSON.stringify(data?.content));
+            applyStudentData(data?.content);
           }
+        }).catch((error) => {
+          setShowStudentPortalPrompt(true);
+          toast.error(
+            error?.message || "Could not refresh Student Portal attendance."
+          );
         });
       }
       const planner = JSON.parse(localStorage.getItem("studentCalendar"));
@@ -105,6 +152,44 @@ const Attendance = () => {
       }
     }
   }, [predictBox]);
+
+  const loadStudentPortalAttendance = async (event) => {
+    event.preventDefault();
+    if (!studentPortalPassword || studentPortalLoading) return;
+
+    const authToken = Cookies.get("X-CSRF-Token");
+    const netId = (
+      localStorage.getItem("studentNetId") || studentPortalNetId
+    ).trim().split("@")[0].toLowerCase();
+    if (!authToken || !netId) {
+      toast.error("Enter your NetID to load attendance.");
+      return;
+    }
+
+    setStudentPortalLoading(true);
+    try {
+      await loginStudentPortal(netId, studentPortalPassword, authToken);
+      await getStudentPortalAttendance(netId, authToken);
+      const refreshed = await forceRefreshStudentData(authToken, netId);
+      if (!refreshed?.courses) {
+        throw new Error("Attendance was loaded, but the page could not refresh.");
+      }
+      applyStudentData(refreshed);
+      localStorage.setItem("studentNetId", netId);
+      setHasSavedStudentNetId(true);
+      setStudentPortalPassword("");
+      setShowStudentPortalPrompt(false);
+      toast.success("Attendance updated successfully.");
+    } catch (error) {
+      if (error?.code === "academia_session_required") {
+        toast.error("Your Academia session has expired. Please sign in again.");
+      } else {
+        toast.error(error?.message || "Could not load Student Portal attendance.");
+      }
+    } finally {
+      setStudentPortalLoading(false);
+    }
+  };
 
   const predictAttendanceHandler = () => {
     if (!localStorage.getItem("studentTimetable")) {
@@ -298,6 +383,51 @@ const Attendance = () => {
             </p>
           </div>
           </Link> */}
+          {showStudentPortalPrompt && (
+            <form
+              onSubmit={loadStudentPortalAttendance}
+              className="theme_box_bg mb-5 rounded-md p-4"
+            >
+              <label className="mb-2 block text-sm font-semibold tracking-wide text-theme_text_normal">
+                Enter Student Portal Password
+              </label>
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                {!hasSavedStudentNetId && (
+                  <input
+                    type="text"
+                    value={studentPortalNetId}
+                    onChange={(event) =>
+                      setStudentPortalNetId(event.target.value)
+                    }
+                    autoComplete="username"
+                    className={`${defaultStyle} w-full border border-theme_primary/10 sm:col-span-2`}
+                    placeholder="NetID"
+                  />
+                )}
+                <input
+                  type="password"
+                  value={studentPortalPassword}
+                  onChange={(event) =>
+                    setStudentPortalPassword(event.target.value)
+                  }
+                  autoComplete="current-password"
+                  className={`${defaultStyle} w-full border border-theme_primary/10`}
+                  placeholder="Student Portal Password"
+                />
+                <button
+                  type="submit"
+                  disabled={
+                    studentPortalLoading ||
+                    !studentPortalPassword ||
+                    (!hasSavedStudentNetId && !studentPortalNetId.trim())
+                  }
+                  className="rounded-md bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 px-4 py-2 text-sm font-semibold text-theme_text_normal disabled:opacity-50"
+                >
+                  {studentPortalLoading ? "Loading..." : "Continue"}
+                </button>
+              </div>
+            </form>
+          )}
           {loading ? (
             <div className="flex justify-center mt-60 content-center">
               <Loader />

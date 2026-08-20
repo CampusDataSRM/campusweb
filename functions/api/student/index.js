@@ -72,6 +72,54 @@ const getPlannerData = async (authToken) => {
   }
 };
 
+const studentPortalRequest = async (path, payload, authToken) => {
+  const response = await fetch(`${baseURL}/api/student-portal/${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": authToken,
+    },
+    body: JSON.stringify(payload),
+    redirect: "follow",
+    cache: "no-store",
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result?.status !== "success") {
+    const error = new Error(
+      result?.message || "Student Portal is temporarily unavailable."
+    );
+    error.status = response.status;
+    error.code = result?.code;
+    throw error;
+  }
+  return result;
+};
+
+const loginStudentPortal = (netId, password, authToken) =>
+  studentPortalRequest("login", { net_id: netId, password }, authToken);
+
+const getStudentPortalAttendance = (netId, authToken) =>
+  studentPortalRequest("attendance", { net_id: netId }, authToken);
+
+const forceRefreshStudentData = async (authToken, netId) => {
+  const response = await fetch(`${baseURL}/api/auth/force-refresh/user`, {
+    method: "POST",
+    headers: {
+      "X-CSRF-Token": authToken,
+      "X-Net-ID": netId,
+    },
+    redirect: "follow",
+    cache: "no-store",
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(
+      result?.error || result?.message || "Could not refresh attendance data."
+    );
+  }
+  return result;
+};
+
 // Timetable API
 const getTimetableData = async (authToken) => {
   const rawData = localStorage.getItem("studentData");
@@ -105,4 +153,12 @@ const getTimetableData = async (authToken) => {
   }
 };
 
-export { getStudentData, getStudentBatch, getPlannerData, getTimetableData };
+export {
+  getStudentData,
+  getStudentBatch,
+  getPlannerData,
+  getTimetableData,
+  loginStudentPortal,
+  getStudentPortalAttendance,
+  forceRefreshStudentData,
+};
