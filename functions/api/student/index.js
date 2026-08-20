@@ -2,10 +2,13 @@ import { baseURL } from "@/constants/baseURL";
 
 
 // Student Data API
-const getStudentData = async (authToken) => {
+const getStudentData = async (authToken, netId = "") => {
 
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
+  if (netId?.trim()) {
+    myHeaders.append("X-Net-ID", netId.trim());
+  }
 
   const requestOptions = {
     method: "GET",

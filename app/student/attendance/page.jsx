@@ -42,6 +42,10 @@ const Attendance = () => {
       return conducted <= 0 || percentage <= 0;
     });
 
+  const hasAttendanceData = (courses) =>
+    Array.isArray(courses) &&
+    courses.some((course) => Number(course?.hoursConducted || 0) > 0);
+
   const applyStudentData = (content) => {
     const courses = content?.courses || [];
     setCourseData(courses);
@@ -118,13 +122,16 @@ const Attendance = () => {
               Cookies.get("X-CSRF-Token"),
               savedNetId
             ).then((content) => ({ message: "success", content }))
-          : getStudentData(Cookies.get("X-CSRF-Token"));
+          : getStudentData(Cookies.get("X-CSRF-Token"), savedNetId);
         someResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
             console.log("Failed to fetch data");
           } else if (data?.message === "too_many_requests") {
             toast.error("Too many requests. Try again in a min.");
-          } else {
+          } else if (
+            hasAttendanceData(data?.content?.courses) ||
+            !hasAttendanceData(result?.courses)
+          ) {
             applyStudentData(data?.content);
           }
         }).catch((error) => {

@@ -71,7 +71,10 @@ const Planner = () => {
       setUserJsonData(JSON.parse(studentData));
       setLoading(false);
     }
-    getStudentData(Cookies.get("X-CSRF-Token")).then((data) => {
+    getStudentData(
+      Cookies.get("X-CSRF-Token"),
+      localStorage.getItem("studentNetId")?.trim() || ""
+    ).then((data) => {
       if ((data.message = "success")) {
         // console.log(data);
 

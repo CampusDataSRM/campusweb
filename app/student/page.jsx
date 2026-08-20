@@ -56,6 +56,10 @@ const Student = () => {
       }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+      const savedNetId = localStorage.getItem("studentNetId")?.trim();
+      if (savedNetId) {
+        myHeaders.append("X-Net-ID", savedNetId);
+      }
       myHeaders.append("Content-Type", "application/json");
 
       const requestOptions = {
@@ -92,7 +96,6 @@ const Student = () => {
             // empty Academia snapshot. Refresh the server snapshot using the
             // saved NetID, then keep the cache as a fallback if refresh fails.
             if (!hasAttendanceData(result?.courses)) {
-              const savedNetId = localStorage.getItem("studentNetId")?.trim();
               if (savedNetId) {
                 try {
                   const refreshed = await forceRefreshStudentData(
