@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.campusweb.campusapp",
+      "sha256_cert_fingerprints": [
+        "65:9B:BD:83:71:1A:1E:E8:94:1C:D6:A5:1E:F0:44:AC:DB:EF:63:98:74:91:C3:10:0D:F5:D8:4D:45:56:D7:7E",
+        "9E:11:4C:D3:2E:0D:DC:CA:47:B2:EC:C1:61:82:CB:E6:7C:2C:D3:C7:1E:FE:A6:5D:18:03:D4:D6:C7:A6:CB:89"
+      ]
+    }
+  }
+]

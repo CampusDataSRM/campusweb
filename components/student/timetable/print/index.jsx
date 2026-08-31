@@ -20,8 +20,8 @@ const PrintTimetable = () => {
       } else {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
-        const studentBatch =
-          dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        // dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
         const savedNetId = localStorage.getItem("studentNetId")?.trim();

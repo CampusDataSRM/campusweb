@@ -84,8 +84,8 @@ const Timetable = () => {
               setTimetable(result);
               localStorage.setItem("studentTimetable", JSON.stringify(result));
               setDayOrders(Object.keys(result.timetable && result.timetable));
-              setSelectedDay("Day" + (query.get("do") || res?.day_order));
-              setCurrentDayOrder(query.get("do") || res?.day_order);
+              setSelectedDay("Day" + (query.get("do") || result?.day_order));
+              setCurrentDayOrder(query.get("do") || result?.day_order);
             }
             setLoading(false);
           })

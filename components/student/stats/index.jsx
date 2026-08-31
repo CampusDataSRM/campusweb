@@ -7,21 +7,14 @@ import { useRouter } from "next/navigation";
 const YourStats = ({ courseData, testPerformance }) => {
   const Router = useRouter();
 
-  const applicableCoursesForAvgAttendance = courseData?.filter(
+  let attendance = 0;
+  for (let i = 0; i < courseData?.length; i++) {
+    attendance += Number(courseData[i]?.attendancePercent);
+  }
+
+  let applicableCoursesForAvgAttendance = courseData?.filter(
     (course) => Number(course?.hoursConducted) > 0
-  ) || [];
-  const totalHoursPresent = applicableCoursesForAvgAttendance.reduce(
-    (total, course) => total + Number(course?.hoursPresent || 0),
-    0
   );
-  const totalHoursConducted = applicableCoursesForAvgAttendance.reduce(
-    (total, course) => total + Number(course?.hoursConducted || 0),
-    0
-  );
-  const attendance =
-    totalHoursConducted > 0
-      ? `${((totalHoursPresent * 100) / totalHoursConducted).toFixed(2)} %`
-      : "NA";
 
   let marksObtained = 0;
   let totalMarksObtained = 0;
@@ -33,7 +26,7 @@ const YourStats = ({ courseData, testPerformance }) => {
   const stats = [
     {
       name: "Attendance",
-      value: attendance,
+      value: `${(attendance / applicableCoursesForAvgAttendance?.length).toFixed(2)} %`,
       goTo: "/student/attendance",
     },
     {
@@ -59,7 +52,7 @@ const YourStats = ({ courseData, testPerformance }) => {
             onClick={() => Router.push(stat.goTo)}
           >
             <span className="text-xl text-theme_text_normal font-semibold tracking-wide text-center text-nowrap">
-              {stat.value}
+              {stat.value.includes("NaN") ? "NA" : stat.value}
             </span>
             <span className="text-base text-theme_text_normal/80 font-medium tracking-wide">
               {stat.name}

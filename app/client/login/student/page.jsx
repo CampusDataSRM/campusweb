@@ -5,8 +5,20 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
-import { baseURL } from "@/constants/baseURL";
+import {
+  baseURL,
+  baseURL_1,
+  baseURL_2,
+  baseURL_3,
+  baseURL_4,
+  baseURL_5,
+  baseURL_6,
+  baseURL_7,
+  baseURL_8,
+  baseURL_9,
+} from "@/constants/baseURL";
 import { toast } from "react-toastify";
+import { isAndroid, isIOS } from "@/functions/device-check";
 import { getStudentData, loginStudentPortal } from "@/functions/api/student";
 import {
   DEMO_NET_ID,
@@ -16,10 +28,7 @@ import {
 } from "@/functions/demo/student-demo";
 
 const STUDENT_PORTAL_SESSION_MARKER = "sp_session=http_only";
-
-const normalizedNetId = (value) =>
-  value.trim().split("@")[0].toLowerCase();
-
+const normalizedNetId = (value) => value.trim().split("@")[0].toLowerCase();
 const usesStudentPortalPrimary = (semesterId) =>
   semesterId === 1 || semesterId === 2;
 
@@ -29,13 +38,15 @@ const StudentLogin = () => {
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [captcha, setCaptcha] = useState(null);
-  const [captchaContent, setCaptchaContent] = useState("");
+  const [showPlayStoreBadge, setShowPlayStoreBadge] = useState(false);
+  const [showAppStoreBadge, setShowAppStoreBadge] = useState(false);
 
   useEffect(() => {
     if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
+    setShowPlayStoreBadge(isAndroid());
+    setShowAppStoreBadge(isIOS());
   }, [router]);
 
   const studentLoginFields = [
@@ -56,10 +67,34 @@ const StudentLogin = () => {
     },
   ];
 
+  // Fisher-Yates shuffle algorithm for randomizing array
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const baseURLS = [
+    baseURL,
+    baseURL_1,
+    baseURL_2,
+    baseURL_3,
+    baseURL_4,
+    baseURL_5,
+    baseURL_6,
+    baseURL_7,
+    baseURL_8,
+    baseURL_9,
+  ];
+
   const handleStudentLogin = async (e) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
+    localStorage.setItem("net_id", userid);
 
     try {
       const netId = normalizedNetId(userid);
@@ -80,31 +115,35 @@ const StudentLogin = () => {
 
       localStorage.removeItem("campuswebDemo");
 
-      // Capture both outcomes so a rejected parallel request never becomes an
-      // unhandled promise. Whichever provider completes first is inspected;
-      // semester 1/2 still remains Student Portal-primary.
-      const academiaController = new AbortController();
-      const academiaAttempt = fetch(`${baseURL}/api/auth/login/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: userid,
-          password,
-          ...(captcha && {
-            captcha_content: captchaContent.trim(),
-            captcha_digest: captcha.digest,
-          }),
-        }),
-        redirect: "follow",
-        mode: "cors",
-        cache: "no-store",
-        signal: academiaController.signal,
-      })
-        .then(async (response) => ({
-          response,
-          result: await response.json().catch(() => ({})),
-        }))
-        .catch((error) => ({ error }));
+      const academiaAttempt = (async () => {
+        let remainingURLs = shuffleArray(baseURLS);
+        let lastError = new Error("Academia is temporarily unavailable.");
+        while (remainingURLs.length > 0) {
+          const currentURL = remainingURLs[0];
+          try {
+            const response = await fetch(`${currentURL}/api/auth/login/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: userid, password }),
+              redirect: "follow",
+              mode: "cors",
+              cache: "no-store",
+            });
+            const result = await response.json().catch(() => ({}));
+            const definitive =
+              response.ok ||
+              response.status === 401 ||
+              result?.code === "academia_credentials_rejected" ||
+              result?.passResponse?.message === "Matched with old password";
+            if (definitive) return { response, result };
+            lastError = new Error(result?.message || lastError.message);
+          } catch (error) {
+            lastError = error;
+          }
+          remainingURLs = shuffleArray(remainingURLs.slice(1));
+        }
+        return { error: lastError };
+      })();
 
       const studentPortalAttempt = loginStudentPortal(netId, password)
         .then((result) => ({ result }))
@@ -118,26 +157,38 @@ const StudentLogin = () => {
         })),
       ]);
 
-      // An Academia success must not wait behind the slower Student Portal
-      // request. The latter keeps running and refreshes the backend SID used by
-      // attendance and marks, but it is not part of the navigation critical
-      // path for an existing Academia user.
+      const finishAcademia = (attempt) => {
+        const response = attempt?.response;
+        const result = attempt?.result || {};
+        if (
+          result?.passResponse?.message === "Matched with old password" ||
+          result?.code === "P201"
+        ) {
+          throw new Error(
+            "You've entered an old password. Please enter your current password.",
+          );
+        }
+        const csrfToken =
+          result.Cookies ||
+          result.cookies ||
+          result.COOKIE ||
+          result.cookie ||
+          result["X-CSRF-Token"];
+        if (!response?.ok || !csrfToken) {
+          throw new Error(
+            result?.message || attempt?.error?.message || "Student login failed",
+          );
+        }
+        Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
+        localStorage.setItem("studentNetId", netId);
+        setPassword("");
+        router.push("/student");
+      };
+
       if (firstCompleted.source === "academia") {
-        const earlyResponse = firstCompleted.attempt?.response;
         const earlyResult = firstCompleted.attempt?.result || {};
-        const earlyCookie =
-          earlyResult.Cookies ||
-          earlyResult.cookies ||
-          earlyResult.COOKIE ||
-          earlyResult.cookie ||
-          earlyResult["X-CSRF-Token"];
-        const earlySuccess =
-          earlyResponse?.ok &&
-          (earlyResult.passResponse?.status_code === 201 ||
-            earlyResult.status === "success" ||
-            earlyResult.Status === "success") &&
-          earlyCookie;
-        if (earlySuccess) {
+        const earlyCookie = earlyResult.Cookies || earlyResult.cookies;
+        if (firstCompleted.attempt?.response?.ok && earlyCookie) {
           const quickStudentPortal = await Promise.race([
             studentPortalAttempt,
             new Promise((resolve) => setTimeout(() => resolve(null), 750)),
@@ -145,7 +196,7 @@ const StudentLogin = () => {
           if (
             quickStudentPortal?.result &&
             usesStudentPortalPrimary(
-              Number(quickStudentPortal.result.semester_id)
+              Number(quickStudentPortal.result.semester_id),
             )
           ) {
             firstCompleted = {
@@ -153,11 +204,7 @@ const StudentLogin = () => {
               attempt: quickStudentPortal,
             };
           } else {
-            Cookies.set("X-CSRF-Token", earlyCookie, { expires: 365 });
-            localStorage.setItem("studentNetId", netId);
-            setPassword("");
-            setCaptcha(null);
-            router.push("/student");
+            finishAcademia(firstCompleted.attempt);
             return;
           }
         }
@@ -167,11 +214,10 @@ const StudentLogin = () => {
         firstCompleted.source === "studentPortal"
           ? firstCompleted.attempt
           : await studentPortalAttempt;
-      const semesterId = Number(studentPortal?.result?.semester_id);
-      if (studentPortal?.result && usesStudentPortalPrimary(semesterId)) {
-        academiaController.abort();
-        // This marker is not a credential. CampusAPI resolves the actual
-        // session from its Secure, HttpOnly cookie sent by the browser.
+      if (
+        studentPortal?.result &&
+        usesStudentPortalPrimary(Number(studentPortal.result.semester_id))
+      ) {
         Cookies.set("X-CSRF-Token", STUDENT_PORTAL_SESSION_MARKER, {
           expires: 30,
           sameSite: "strict",
@@ -180,77 +226,22 @@ const StudentLogin = () => {
         localStorage.setItem("studentNetId", netId);
         const snapshot = await getStudentData(
           STUDENT_PORTAL_SESSION_MARKER,
-          netId
+          netId,
         );
         if (snapshot?.message !== "success" || !snapshot?.content) {
           throw new Error(
-            "Student Portal login succeeded, but student data could not be loaded."
+            "Student Portal login succeeded, but student data could not be loaded.",
           );
         }
         localStorage.setItem("studentData", JSON.stringify(snapshot.content));
         setPassword("");
-        setCaptcha(null);
         router.push("/student");
         return;
       }
 
-      const academia = await academiaAttempt;
-      const response = academia?.response;
-      const result = academia?.result || {};
-      if (result?.captcha_required) {
-        setCaptcha({
-          digest: result.captcha_digest,
-          imageUrl: result.image_url,
-        });
-        setCaptchaContent("");
-        toast.info("Complete the CAPTCHA to continue.");
-        return;
-      }
-      if (!response?.ok) {
-        throw new Error(
-          result?.message ||
-            result?.Message ||
-            result?.errors?.[0]?.message ||
-            studentPortal?.error?.message ||
-            "Student login failed"
-        );
-      }
-
-        // ✅ Handle both lowercase and uppercase keys safely
-      if (
-        (result.passResponse?.status_code === 201 ||
-          result.status === "success" ||
-          result.Status === "success") &&
-        (result.cookies || result.Cookies)
-      ) {
-        const csrfToken =
-          result.Cookies ||
-          result.cookies ||
-          result.COOKIE ||
-          result.cookie ||
-          result["X-CSRF-Token"];
-
-        if (csrfToken) {
-          Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
-          localStorage.setItem(
-            "studentNetId",
-            netId
-          );
-          setPassword("");
-          setCaptcha(null);
-          router.push("/student");
-        } else {
-          throw new Error("Login succeeded but the session cookie was missing.");
-        }
-      } else {
-        throw new Error("Invalid credentials");
-      }
+      finishAcademia(await academiaAttempt);
     } catch (error) {
-      if (error?.message === "Too many requests, slow down!") {
-        toast.error("Too many requests, slow down! Try again after 60 seconds.");
-      } else {
-        toast.error(error?.message || "Could not reach the login service");
-      }
+      toast.error(error?.message || "Could not reach the login service");
     } finally {
       setLoading(false);
     }
@@ -262,9 +253,193 @@ const StudentLogin = () => {
     }
   };
 
+  const PLAY_STORE_URL =
+    "https://play.google.com/store/apps/details?id=com.campusweb.campusapp";
+
+  
+  const APP_STORE_URL =
+    "https://apps.apple.com/in/app/campus-app-the-all-in-one/id6760725730";
+
+  const playStoreBadge = !showPlayStoreBadge ? null : (
+    <a
+      href={PLAY_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      id="playstore-badge"
+      className="group block relative overflow-hidden rounded-2xl"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(0, 148, 255, 0.15), rgba(151, 71, 255, 0.15))",
+        border: "1px solid rgba(0, 148, 255, 0.3)",
+      }}
+    >
+      {/* Shimmer sweep animation */}
+      <div
+        className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)",
+        }}
+      />
+
+      <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4">
+        <div className="relative flex-shrink-0">
+          {/* Google Play Icon */}
+          <svg
+            viewBox="0 0 512 512"
+            className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-lg"
+            fill="none"
+          >
+            <defs>
+              <linearGradient id="playGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00C3FF" />
+                <stop offset="100%" stopColor="#0094FF" />
+              </linearGradient>
+              <linearGradient id="playGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#FFCE00" />
+                <stop offset="100%" stopColor="#FF9100" />
+              </linearGradient>
+              <linearGradient id="playGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF3A44" />
+                <stop offset="100%" stopColor="#C31162" />
+              </linearGradient>
+              <linearGradient id="playGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#32A071" />
+                <stop offset="100%" stopColor="#2DA94F" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M93.72 22.4c-10.8 0-20.72 8.64-20.72 22.4v422.4c0 13.76 9.92 22.4 20.72 22.4 4.16 0 8.64-1.28 13.12-4.16l196.48-113.44-68.8-68.8L93.72 22.4z"
+              fill="url(#playGrad3)"
+            />
+            <path
+              d="M404.88 218.24l-101.76-58.72-76.8 76.8 76.8 76.8 101.76-58.72c17.6-10.24 17.6-26.88 0-36.16z"
+              fill="url(#playGrad1)"
+            />
+            <path
+              d="M106.84 467.84c-4.48 2.88-8.96 4.16-13.12 4.16L303.12 236.32l-76.8-76.8L106.84 467.84z"
+              fill="url(#playGrad4)"
+            />
+            <path
+              d="M303.12 236.32L93.72 22.4c4.16 0 8.64 1.28 13.12 4.16L303.12 159.52l-76.8 76.8h76.8z"
+              fill="url(#playGrad2)"
+            />
+          </svg>
+        </div>
+
+        {/* Text content */}
+        <div className="flex flex-col min-w-0">
+          <span className="text-[10px] sm:text-xs uppercase tracking-widest text-theme_text_primary font-semibold">
+            Also available on
+          </span>
+          <span className="text-base sm:text-lg font-bold text-white tracking-wide leading-tight">
+            Google Playstore
+          </span>
+        </div>
+
+        {/* Arrow icon */}
+        <div className="ml-auto flex-shrink-0 group-hover:translate-x-1 transition-transform duration-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5 sm:w-6 sm:h-6 text-theme_text_primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Bottom gradient accent line */}
+      <div
+        className="h-0.5 w-full"
+        style={{
+          background: "linear-gradient(90deg, #0094FF, #9747FF, #0094FF)",
+        }}
+      />
+    </a>
+  );
+
+  const appStoreBadge = !showAppStoreBadge ? null : (
+    <a
+      href={APP_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      id="appstore-badge"
+      className="group block relative overflow-hidden rounded-2xl"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(0, 148, 255, 0.15), rgba(151, 71, 255, 0.15))",
+        border: "1px solid rgba(0, 148, 255, 0.3)",
+      }}
+    >
+      {/* Shimmer sweep animation */}
+      <div
+        className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)",
+        }}
+      />
+
+      <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4">
+        <div className="relative flex-shrink-0">
+          {/* Apple App Store Icon */}
+          <img
+            src="/icons/apple_ios.png"
+            alt="Apple App Store"
+            className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+          />
+        </div>
+
+        {/* Text content */}
+        <div className="flex flex-col min-w-0">
+          <span className="text-[10px] sm:text-xs uppercase tracking-widest text-theme_text_primary font-semibold">
+            Also available on
+          </span>
+          <span className="text-base sm:text-lg font-bold text-white tracking-wide leading-tight">
+            Apple App Store
+          </span>
+        </div>
+
+        {/* Arrow icon */}
+        <div className="ml-auto flex-shrink-0 group-hover:translate-x-1 transition-transform duration-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5 sm:w-6 sm:h-6 text-theme_text_primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Bottom gradient accent line */}
+      <div
+        className="h-0.5 w-full"
+        style={{
+          background: "linear-gradient(90deg, #0094FF, #9747FF, #0094FF)",
+        }}
+      />
+    </a>
+  );
+
   return (
     <>
-      <LoginLayout>
+      <LoginLayout topBanner={isAndroid() ? playStoreBadge : isIOS() ? appStoreBadge : null}>
         <form
           className="grid grid-cols-1 gap-4 mt-3"
           name="Student Login Form"
@@ -307,29 +482,11 @@ const StudentLogin = () => {
             </div>
           ))}
 
-          {captcha && (
-            <div className="grid gap-3">
-              <img
-                src={captcha.imageUrl}
-                alt="Academia CAPTCHA"
-                className="theme_box_bg min-h-16 w-full rounded-md object-contain p-2"
-              />
-              <input
-                type="text"
-                value={captchaContent}
-                onChange={(event) => setCaptchaContent(event.target.value)}
-                placeholder="Enter CAPTCHA"
-                autoComplete="off"
-                className="theme_box_bg w-full px-4 py-4 tracking-wider text-theme_text_primary placeholder:text-sm placeholder:text-theme_text_primary"
-              />
-            </div>
-          )}
-
           <div>
             <button
               type="submit"
               onClick={handleStudentLogin}
-              disabled={loading || (captcha && !captchaContent.trim())}
+              disabled={loading}
               className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary p-3 rounded-lg text-theme_text_normal w-full text-center tracking-wider text-lg font-semibold"
             >
               {loading ? (
@@ -368,6 +525,7 @@ const StudentLogin = () => {
             Are you a Club Organiser ?
           </Link>
         </div>
+
       </LoginLayout>
     </>
   );

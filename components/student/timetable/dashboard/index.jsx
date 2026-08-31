@@ -30,8 +30,7 @@ const DashboardTimetable = () => {
     }
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
-    const studentBatch =
-      (dataStudent?.comboBatch)?dataStudent?.comboBatch[dataStudent?.comboBatch?.length - 1]:null; // Go to error page when data is not available instead of setting null
+    const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch?.length - 1]
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
     const savedNetId = localStorage.getItem("studentNetId")?.trim();
@@ -140,7 +139,7 @@ const DashboardTimetable = () => {
                       ? timetable.timetable[selectedDay]
                         ? timetable.timetable[selectedDay]
                         : {}
-                      : {}
+                      : {},
                   )
                     .slice(0, 5) // First 5 items
                     .map((item, index) => (
@@ -167,7 +166,7 @@ const DashboardTimetable = () => {
                       ? timetable.timetable[selectedDay]
                         ? timetable.timetable[selectedDay]
                         : {}
-                      : {}
+                      : {},
                   )
                     .slice(5, 10) // Next 5 items
                     .map((item, index) => (
@@ -194,7 +193,7 @@ const DashboardTimetable = () => {
                   ? timetable.timetable[selectedDay]
                     ? timetable.timetable[selectedDay]
                     : {}
-                  : {}
+                  : {},
               ).length === 0 && (
                 <div className="theme_box_bg px-4 py-6">
                   <span className="text-theme_text_normal flex justify-center">
