@@ -46,15 +46,21 @@ const Calendar = () => {
       }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+      const savedNetId = localStorage.getItem("studentNetId")?.trim();
+      if (savedNetId) myHeaders.append("X-Net-ID", savedNetId);
 
       const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
         cache: "no-store",
+        credentials: "include",
       };
 
-      fetch(`${baseURL}/api/auth/planner`, requestOptions)
+      const plannerRoute = Cookies.get("X-CSRF-Token")?.startsWith("sp_session=")
+        ? "planner/cached"
+        : "planner";
+      fetch(`${baseURL}/api/auth/${plannerRoute}`, requestOptions)
         .then((response) => {
           if (typeof response === "string") {
             return null;

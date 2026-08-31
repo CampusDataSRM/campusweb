@@ -18,6 +18,8 @@ import { getPlannerData } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
+import DemoNotice from "@/components/global/demo-notice";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -102,6 +104,19 @@ const Attendance = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (isDemoSession()) {
+        getDemoStudent()
+          .then((demoStudent) => {
+            setCourseData(demoStudent.courses || []);
+            localStorage.setItem("studentData", JSON.stringify(demoStudent));
+            setShowStudentPortalPrompt(false);
+          })
+          .catch((error) =>
+            toast.error(error?.message || "Could not load demo attendance.")
+          )
+          .finally(() => setLoading(false));
+        return;
+      }
       const result = JSON.parse(localStorage.getItem("studentData"));
 
       if (!result) {
@@ -143,7 +158,10 @@ const Attendance = () => {
       }
       const planner = JSON.parse(localStorage.getItem("studentCalendar"));
       if (!planner) {
-        const plannerResult = getPlannerData(Cookies.get("X-CSRF-Token"));
+        const plannerResult = getPlannerData(
+          Cookies.get("X-CSRF-Token"),
+          savedNetId
+        );
         plannerResult.then((data) => {
           if (data?.message === "failed_to_fetch") {
             console.log("Failed to fetch data");
@@ -231,6 +249,7 @@ const Attendance = () => {
         <Navbar items={pageNames.filter((item) => item !== "Attendance")} />
         <FloatingNavbar />
         <div className="px-3">
+          <DemoNotice />
           <div className="flex justify-between items-center">
             <SectionTitle title="Attendance" />
             <button

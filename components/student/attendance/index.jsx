@@ -14,10 +14,12 @@ const AttendanceCard = ({ attendance }) => {
         <div className="flex gap-3 justify-between items-end">
           <div className="flex flex-col gap-1 justify-start">
             <span className="text-base font-normal text-theme_text_normal tracking-wide text-wrap">
-              {attendance?.courseTitle}
+              {attendance?.eventName || attendance?.courseTitle}
             </span>
             <span className="text-theme_text_normal_60 text-sm">
-              {String(attendance?.courseCode).replace("Regular", "")}{" - "}{attendance?.category}
+              {attendance?.organizerName
+                ? `Organized by ${attendance.organizerName}`
+                : `${String(attendance?.courseCode).replace("Regular", "")} - ${attendance?.category}`}
             </span>
             <div className="flex gap-3 items-center text-xs mt-2">
               <span className="theme_box_bg flex gap-3 rounded-full py-1 px-3">

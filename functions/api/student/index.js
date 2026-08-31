@@ -15,6 +15,7 @@ const getStudentData = async (authToken, netId = "") => {
     headers: myHeaders,
     redirect: "follow",
     cache: "no-store",
+    credentials: "include",
   };
 
   try {
@@ -22,7 +23,10 @@ const getStudentData = async (authToken, netId = "") => {
     if (response.status === 429) {
       return { message: "too_many_requests" };
     }
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      return { message: "error", content: result };
+    }
     return { message: "success", content: result };
   } catch (error) {
     return { message: "error", content: error };
@@ -41,6 +45,7 @@ const getStudentBatch = async (authToken) => {
     method: "GET",
     headers: myHeaders,
     redirect: "follow",
+    credentials: "include",
   };
 
   try {
@@ -56,19 +61,29 @@ const getStudentBatch = async (authToken) => {
 };
 
 // Planner API
-const getPlannerData = async (authToken) => {
+const getPlannerData = async (authToken, netId = "") => {
   const myHeaders = new Headers();
   myHeaders.append("X-CSRF-Token", authToken);
+  if (netId?.trim()) {
+    myHeaders.append("X-Net-ID", netId.trim());
+  }
 
   const requestOptions = {
     method: "GET",
     headers: myHeaders,
     redirect: "follow",
+    credentials: "include",
   };
 
   try {
-    const response = await fetch(`${baseURL}/api/auth/planner`, requestOptions);
-    const result = await response.json();
+    const route = authToken?.startsWith("sp_session=")
+      ? "planner/cached"
+      : "planner";
+    const response = await fetch(`${baseURL}/api/auth/${route}`, requestOptions);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      return { message: "error", content: result };
+    }
     return { message: "success", content: result };
   } catch (error) {
     return { message: "error", content: error };
@@ -76,15 +91,19 @@ const getPlannerData = async (authToken) => {
 };
 
 const studentPortalRequest = async (path, payload, authToken) => {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  if (authToken?.trim()) {
+    headers["X-CSRF-Token"] = authToken.trim();
+  }
   const response = await fetch(`${baseURL}/api/student-portal/${path}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": authToken,
-    },
+    headers,
     body: JSON.stringify(payload),
     redirect: "follow",
     cache: "no-store",
+    credentials: "include",
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result?.status !== "success") {
@@ -113,6 +132,7 @@ const forceRefreshStudentData = async (authToken, netId) => {
     },
     redirect: "follow",
     cache: "no-store",
+    credentials: "include",
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -137,6 +157,7 @@ const getTimetableData = async (authToken) => {
     method: "GET",
     headers: myHeaders,
     redirect: "follow",
+    credentials: "include",
   };
 
   try {

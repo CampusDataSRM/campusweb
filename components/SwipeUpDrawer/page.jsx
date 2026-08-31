@@ -5,6 +5,7 @@ import SettingsInDrawer from "./DrawerComponents/SettingsInDrawer";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
+import { logoutDemo } from "@/functions/demo/student-demo";
 
 const useClickOutside = (ref, callback) => {
   const handleClick = (e) => {
@@ -41,6 +42,14 @@ export default function SwipeUpDrawer({
   });
 
   const handleLogout = () => {
+    if (localStorage.getItem("campuswebDemo") === "true") {
+      logoutDemo().finally(() => {
+        localStorage.clear();
+        Cookies.remove("X-CSRF-Token");
+        router.push("/");
+      });
+      return;
+    }
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 

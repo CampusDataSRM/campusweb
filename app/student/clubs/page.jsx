@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getDemoClubs, isDemoSession } from "@/functions/demo/student-demo";
+import DemoNotice from "@/components/global/demo-notice";
 
 const Clubs = () => {
   const router = useRouter();
@@ -27,6 +29,13 @@ const Clubs = () => {
     } else {
       const student = JSON.parse(localStorage.getItem("studentData"));
       setStudentID(student.registrationNumber);
+      if (isDemoSession()) {
+        getDemoClubs()
+          .then(setClubData)
+          .catch(console.error)
+          .finally(() => setLoading(false));
+        return;
+      }
       const requestOptions = {
         method: "GET",
         redirect: "follow",
@@ -50,6 +59,7 @@ const Clubs = () => {
         <Navbar items={pageNames.filter((item) => item !== "Clubs")} />
         <FloatingNavbar />
         <main className="px-3">
+          <DemoNotice />
           <div className="flex justify-between items-center">
             <SectionTitle
               title="Clubs"

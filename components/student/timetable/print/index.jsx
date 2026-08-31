@@ -24,12 +24,15 @@ const PrintTimetable = () => {
           dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+        const savedNetId = localStorage.getItem("studentNetId")?.trim();
+        if (savedNetId) myHeaders.append("X-Net-ID", savedNetId);
 
         const requestOptions = {
           method: "GET",
           headers: myHeaders,
           redirect: "follow",
           cache: "no-store",
+          credentials: "include",
         };
 
         fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)

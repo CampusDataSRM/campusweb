@@ -15,6 +15,7 @@ import { RWebShare } from "react-web-share";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import Banner3to1 from "@/components/sponsorship/Banner3to1";
 import { forceRefreshStudentData } from "@/functions/api/student";
+import { isDemoSession } from "@/functions/demo/student-demo";
 
 const hasAttendanceData = (courses) =>
   Array.isArray(courses) &&
@@ -51,6 +52,9 @@ const Student = () => {
         setTestPerformance(studentData?.testPerformances);
         setLoading(false);
       }
+      if (isDemoSession()) {
+        return;
+      }
       if (localStorage.getItem("studentCalendar")){
         localStorage.removeItem("studentCalendar");
       }
@@ -67,6 +71,7 @@ const Student = () => {
         headers: myHeaders,
         redirect: "follow",
         cache: "no-store",
+        credentials: "include",
       };
 
       fetch(`${baseURL}/api/auth/user/`, requestOptions)
@@ -151,6 +156,7 @@ const Student = () => {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
+      credentials: "include",
     };
 
     fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)

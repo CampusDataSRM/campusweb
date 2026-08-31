@@ -7,6 +7,21 @@ import Link from "next/link";
 import LoginLayout from "@/components/global/layout";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
+import { getStudentData, loginStudentPortal } from "@/functions/api/student";
+import {
+  DEMO_NET_ID,
+  DEMO_SESSION,
+  getDemoStudent,
+  loginDemo,
+} from "@/functions/demo/student-demo";
+
+const STUDENT_PORTAL_SESSION_MARKER = "sp_session=http_only";
+
+const normalizedNetId = (value) =>
+  value.trim().split("@")[0].toLowerCase();
+
+const usesStudentPortalPrimary = (semesterId) =>
+  semesterId === 1 || semesterId === 2;
 
 const StudentLogin = () => {
   const router = useRouter();
@@ -46,29 +61,142 @@ const StudentLogin = () => {
     if (loading) return;
     setLoading(true);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      username: userid,
-      password: password,
-      ...(captcha && {
-        captcha_content: captchaContent.trim(),
-        captcha_digest: captcha.digest,
-      }),
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-      mode: "cors",
-    };
-
     try {
-      const response = await fetch(`${baseURL}/api/auth/login/`, requestOptions);
-      const result = await response.json().catch(() => ({}));
+      const netId = normalizedNetId(userid);
+      if (!netId || !password) {
+        throw new Error("NetID and password are required.");
+      }
+
+      if (netId === DEMO_NET_ID) {
+        await loginDemo(netId, password);
+        const demoStudent = await getDemoStudent();
+        Cookies.set("X-CSRF-Token", DEMO_SESSION, { sameSite: "strict" });
+        localStorage.setItem("studentNetId", DEMO_NET_ID);
+        localStorage.setItem("studentData", JSON.stringify(demoStudent));
+        setPassword("");
+        router.push("/student");
+        return;
+      }
+
+      localStorage.removeItem("campuswebDemo");
+
+      // Capture both outcomes so a rejected parallel request never becomes an
+      // unhandled promise. Whichever provider completes first is inspected;
+      // semester 1/2 still remains Student Portal-primary.
+      const academiaController = new AbortController();
+      const academiaAttempt = fetch(`${baseURL}/api/auth/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: userid,
+          password,
+          ...(captcha && {
+            captcha_content: captchaContent.trim(),
+            captcha_digest: captcha.digest,
+          }),
+        }),
+        redirect: "follow",
+        mode: "cors",
+        cache: "no-store",
+        signal: academiaController.signal,
+      })
+        .then(async (response) => ({
+          response,
+          result: await response.json().catch(() => ({})),
+        }))
+        .catch((error) => ({ error }));
+
+      const studentPortalAttempt = loginStudentPortal(netId, password)
+        .then((result) => ({ result }))
+        .catch((error) => ({ error }));
+
+      let firstCompleted = await Promise.race([
+        academiaAttempt.then((attempt) => ({ source: "academia", attempt })),
+        studentPortalAttempt.then((attempt) => ({
+          source: "studentPortal",
+          attempt,
+        })),
+      ]);
+
+      // An Academia success must not wait behind the slower Student Portal
+      // request. The latter keeps running and refreshes the backend SID used by
+      // attendance and marks, but it is not part of the navigation critical
+      // path for an existing Academia user.
+      if (firstCompleted.source === "academia") {
+        const earlyResponse = firstCompleted.attempt?.response;
+        const earlyResult = firstCompleted.attempt?.result || {};
+        const earlyCookie =
+          earlyResult.Cookies ||
+          earlyResult.cookies ||
+          earlyResult.COOKIE ||
+          earlyResult.cookie ||
+          earlyResult["X-CSRF-Token"];
+        const earlySuccess =
+          earlyResponse?.ok &&
+          (earlyResult.passResponse?.status_code === 201 ||
+            earlyResult.status === "success" ||
+            earlyResult.Status === "success") &&
+          earlyCookie;
+        if (earlySuccess) {
+          const quickStudentPortal = await Promise.race([
+            studentPortalAttempt,
+            new Promise((resolve) => setTimeout(() => resolve(null), 750)),
+          ]);
+          if (
+            quickStudentPortal?.result &&
+            usesStudentPortalPrimary(
+              Number(quickStudentPortal.result.semester_id)
+            )
+          ) {
+            firstCompleted = {
+              source: "studentPortal",
+              attempt: quickStudentPortal,
+            };
+          } else {
+            Cookies.set("X-CSRF-Token", earlyCookie, { expires: 365 });
+            localStorage.setItem("studentNetId", netId);
+            setPassword("");
+            setCaptcha(null);
+            router.push("/student");
+            return;
+          }
+        }
+      }
+
+      const studentPortal =
+        firstCompleted.source === "studentPortal"
+          ? firstCompleted.attempt
+          : await studentPortalAttempt;
+      const semesterId = Number(studentPortal?.result?.semester_id);
+      if (studentPortal?.result && usesStudentPortalPrimary(semesterId)) {
+        academiaController.abort();
+        // This marker is not a credential. CampusAPI resolves the actual
+        // session from its Secure, HttpOnly cookie sent by the browser.
+        Cookies.set("X-CSRF-Token", STUDENT_PORTAL_SESSION_MARKER, {
+          expires: 30,
+          sameSite: "strict",
+          secure: window.location.protocol === "https:",
+        });
+        localStorage.setItem("studentNetId", netId);
+        const snapshot = await getStudentData(
+          STUDENT_PORTAL_SESSION_MARKER,
+          netId
+        );
+        if (snapshot?.message !== "success" || !snapshot?.content) {
+          throw new Error(
+            "Student Portal login succeeded, but student data could not be loaded."
+          );
+        }
+        localStorage.setItem("studentData", JSON.stringify(snapshot.content));
+        setPassword("");
+        setCaptcha(null);
+        router.push("/student");
+        return;
+      }
+
+      const academia = await academiaAttempt;
+      const response = academia?.response;
+      const result = academia?.result || {};
       if (result?.captcha_required) {
         setCaptcha({
           digest: result.captcha_digest,
@@ -78,11 +206,12 @@ const StudentLogin = () => {
         toast.info("Complete the CAPTCHA to continue.");
         return;
       }
-      if (!response.ok) {
+      if (!response?.ok) {
         throw new Error(
           result?.message ||
             result?.Message ||
             result?.errors?.[0]?.message ||
+            studentPortal?.error?.message ||
             "Student login failed"
         );
       }
@@ -105,8 +234,9 @@ const StudentLogin = () => {
           Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
           localStorage.setItem(
             "studentNetId",
-            userid.trim().split("@")[0].toLowerCase()
+            netId
           );
+          setPassword("");
           setCaptcha(null);
           router.push("/student");
         } else {

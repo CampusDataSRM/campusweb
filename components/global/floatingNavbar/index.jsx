@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
+import { logoutDemo } from "@/functions/demo/student-demo";
 
 const studentPageLink = [
   { name: "Home", link: "/student", icon: "/icons/home/" },
@@ -62,6 +63,14 @@ const FloatingNavbar = () => {
     console.log("logout");
 
     e?.preventDefault();
+    if (localStorage.getItem("campuswebDemo") === "true") {
+      logoutDemo().finally(() => {
+        localStorage.clear();
+        Cookies.remove("X-CSRF-Token");
+        router.push("/");
+      });
+      return;
+    }
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 

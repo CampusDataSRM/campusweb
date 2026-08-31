@@ -111,7 +111,10 @@ const Planner = () => {
       setPlanner(JSON.parse(planner));
       setLoading(false);
     }
-    getPlannerData(Cookies.get("X-CSRF-Token")).then((data) => {
+    getPlannerData(
+      Cookies.get("X-CSRF-Token"),
+      localStorage.getItem("studentNetId") || ""
+    ).then((data) => {
       if ((data.message = "success")) {
         // console.log(data);
 

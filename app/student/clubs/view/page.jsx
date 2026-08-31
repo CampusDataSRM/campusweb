@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getDemoClubs, isDemoSession } from "@/functions/demo/student-demo";
 
 const ViewClub = () => {
   const router = useRouter();
@@ -25,6 +26,13 @@ const ViewClub = () => {
     } else {
       const student = JSON.parse(localStorage.getItem("studentData"));
       setStudentID(student.registrationNumber);
+      if (isDemoSession()) {
+        getDemoClubs()
+          .then(setClubData)
+          .catch(console.error)
+          .finally(() => setLoading(false));
+        return;
+      }
       const requestOptions = {
         method: "GET",
         redirect: "follow",
