@@ -26,11 +26,12 @@ import {
   getDemoStudent,
   loginDemo,
 } from "@/functions/demo/student-demo";
+import {
+  usesStudentPortalPrimary,
+} from "@/functions/auth/student-login-routing.mjs";
 
 const STUDENT_PORTAL_SESSION_MARKER = "sp_session=http_only";
 const normalizedNetId = (value) => value.trim().split("@")[0].toLowerCase();
-const usesStudentPortalPrimary = (semesterId) =>
-  semesterId === 1 || semesterId === 2;
 
 const StudentLogin = () => {
   const router = useRouter();
@@ -115,6 +116,7 @@ const StudentLogin = () => {
 
       localStorage.removeItem("campuswebDemo");
 
+      const academiaController = new AbortController();
       const academiaAttempt = (async () => {
         let remainingURLs = shuffleArray(baseURLS);
         let lastError = new Error("Academia is temporarily unavailable.");
@@ -128,6 +130,7 @@ const StudentLogin = () => {
               redirect: "follow",
               mode: "cors",
               cache: "no-store",
+              signal: academiaController.signal,
             });
             const result = await response.json().catch(() => ({}));
             const definitive =
@@ -138,6 +141,9 @@ const StudentLogin = () => {
             if (definitive) return { response, result };
             lastError = new Error(result?.message || lastError.message);
           } catch (error) {
+            if (academiaController.signal.aborted) {
+              return { error: new Error("Academia check cancelled") };
+            }
             lastError = error;
           }
           remainingURLs = shuffleArray(remainingURLs.slice(1));
@@ -195,9 +201,7 @@ const StudentLogin = () => {
           ]);
           if (
             quickStudentPortal?.result &&
-            usesStudentPortalPrimary(
-              Number(quickStudentPortal.result.semester_id),
-            )
+            usesStudentPortalPrimary(quickStudentPortal.result)
           ) {
             firstCompleted = {
               source: "studentPortal",
@@ -216,8 +220,11 @@ const StudentLogin = () => {
           : await studentPortalAttempt;
       if (
         studentPortal?.result &&
-        usesStudentPortalPrimary(Number(studentPortal.result.semester_id))
+        usesStudentPortalPrimary(studentPortal.result)
       ) {
+        // First-year authentication is complete. Stop further Academia
+        // retries and never use its failure as the login result.
+        academiaController.abort();
         Cookies.set("X-CSRF-Token", STUDENT_PORTAL_SESSION_MARKER, {
           expires: 30,
           sameSite: "strict",
