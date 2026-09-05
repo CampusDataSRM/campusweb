@@ -1,4 +1,7 @@
-import { tr } from "date-fns/locale";
+import {
+  countCourseOccurrences,
+  normalizeAttendanceTitle,
+} from "./attendance-prediction-core.mjs";
 
 export const predictAttendance = async (
   calendar,
@@ -10,7 +13,11 @@ export const predictAttendance = async (
 ) => {
   const planner = calendar;
   const timetable = userTimetable;
-  const userJsonData = courseData;
+  // Predictions are temporary UI state. Never mutate the cached server
+  // snapshot kept in localStorage.
+  const userJsonData = Array.isArray(courseData)
+    ? courseData.map((course) => ({ ...course }))
+    : [];
 
   // Helper function to format dates for comparison
   function formatDate(dateString) {
@@ -90,8 +97,8 @@ export const predictAttendance = async (
       if (daySchedule) {
         Object.values(daySchedule).forEach((details) => {
           const subjectName = details.subject_name;
-          const subjectType = details.subject_type;
-          const key = `${subjectName}-${subjectType}`;
+          const key = normalizeAttendanceTitle(subjectName);
+          if (!key || key === "no class" || key === "n a") return;
           if (!acc[key]) {
             acc[key] = 0;
           }
@@ -107,8 +114,8 @@ export const predictAttendance = async (
       if (daySchedule) {
         Object.values(daySchedule).forEach((details) => {
           const subjectName = details.subject_name;
-          const subjectType = details.subject_type;
-          const key = `${subjectName}-${subjectType}`;
+          const key = normalizeAttendanceTitle(subjectName);
+          if (!key || key === "no class" || key === "n a") return;
           if (!acc[key]) {
             acc[key] = 0;
           }
@@ -121,23 +128,19 @@ export const predictAttendance = async (
     // Update course data based on the counts
     userJsonData.forEach((course) => {
       const courseTitle = course.courseTitle;
-      const courseCategory = course.category;
-      const key = `${courseTitle}-${courseCategory}`;
-
-      const totalOccurrences =
-        (presentSubjectCount[key] || 0) + (absentSubjectCount[key] || 0);
+      const presentCount = countCourseOccurrences(presentSubjectCount, course);
+      const absentCount = countCourseOccurrences(absentSubjectCount, course);
+      const totalOccurrences = presentCount + absentCount;
 
       if (totalOccurrences > 0) {
         // Update hoursConducted
         course.hoursConducted = (
-          parseFloat(course.hoursConducted) + totalOccurrences
+          (parseFloat(course.hoursConducted) || 0) + totalOccurrences
         ).toFixed(2);
 
         // Update hoursPresent (only increment from presentSubjectCount)
-        const presentCount = presentSubjectCount[key] || 0;
-        const absentCount = absentSubjectCount[key] || 0;
         course.hoursPresent = (
-          parseFloat(course.hoursPresent) + presentCount
+          (parseFloat(course.hoursPresent) || 0) + presentCount
         ).toFixed(2);
 
         // Update hoursAbsent as (hoursConducted - hoursPresent)

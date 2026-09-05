@@ -15,7 +15,6 @@ import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
 import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
-import DemoNotice from "@/components/global/demo-notice";
 import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 const defaultStyle =
@@ -162,7 +161,6 @@ const Attendance = () => {
         <Navbar items={pageNames.filter((item) => item !== "Attendance")} />
         <FloatingNavbar />
         <div className="px-3">
-          <DemoNotice />
           <div className="flex justify-between items-center">
             <SectionTitle title="Attendance" />
             <button

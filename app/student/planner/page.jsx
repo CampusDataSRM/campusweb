@@ -80,7 +80,7 @@ const Planner = () => {
       Cookies.get("X-CSRF-Token"),
       localStorage.getItem("studentNetId")?.trim() || ""
     ).then((data) => {
-      if ((data.message = "success")) {
+      if (data.message === "success") {
         // console.log(data);
 
         setUserJsonData(data.content);
