@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getDemoEvents, isDemoSession } from "@/functions/demo/student-demo";
 
 const Events = () => {
   const router = useRouter();
@@ -26,6 +27,13 @@ const Events = () => {
     } else {
       const student = JSON.parse(localStorage.getItem("studentData"));
       setStudentID(student.registrationNumber);
+      if (isDemoSession()) {
+        getDemoEvents()
+          .then(setEventData)
+          .catch(console.error)
+          .finally(() => setLoading(false));
+        return;
+      }
       const requestOptions = {
         method: "GET",
         redirect: "follow",
@@ -201,6 +209,7 @@ const Events = () => {
                           : false
                       }
                       flaggedHidden={true}
+                      disabledPopularity={isDemoSession()}
                     />
                   ))
               ) : (

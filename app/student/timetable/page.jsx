@@ -15,6 +15,8 @@ import FloatingNavbar from "@/components/global/floatingNavbar";
 import PrintTimetable from "@/components/student/timetable/print";
 import { generatePDF } from "@/functions/generatePDF";
 import { downloadImage } from "@/functions/generateImage";
+import { getDemoTimetable, isDemoSession } from "@/functions/demo/student-demo";
+import { resolveStudentBatch } from "@/functions/student-batch.mjs";
 
 const Timetable = () => {
   const router = useRouter();
@@ -30,6 +32,20 @@ const Timetable = () => {
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
     } else {
+      if (isDemoSession()) {
+        setLoading(true);
+        getDemoTimetable()
+          .then((result) => {
+            setTimetable(result);
+            localStorage.setItem("studentTimetable", JSON.stringify(result));
+            setDayOrders(Object.keys(result?.timetable || {}));
+            setSelectedDay("Day" + (query.get("do") || result?.day_order));
+            setCurrentDayOrder(query.get("do") || result?.day_order);
+          })
+          .catch(() => router.push("/client/login/student"))
+          .finally(() => setLoading(false));
+        return;
+      }
       if (localStorage.getItem("studentTimetable")) {
         const res = JSON.parse(localStorage.getItem("studentTimetable"));
         setTimetable(res);
@@ -46,16 +62,22 @@ const Timetable = () => {
       } else {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
-        const studentBatch =
-          dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        const studentBatch = resolveStudentBatch(dataStudent?.comboBatch);
+        if (!studentBatch) {
+          setLoading(false);
+          return;
+        }
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+        const savedNetId = localStorage.getItem("studentNetId")?.trim();
+        if (savedNetId) myHeaders.append("X-Net-ID", savedNetId);
 
         const requestOptions = {
           method: "GET",
           headers: myHeaders,
           redirect: "follow",
           cache: "no-store",
+          credentials: "include",
         };
 
         fetch(`${baseURL}/api/auth/timetable/${studentBatch}`, requestOptions)
@@ -100,6 +122,7 @@ const Timetable = () => {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
+      credentials: "include",
     };
 
     fetch(`${baseURL}/api/auth/logoutuser/`, requestOptions)
@@ -211,7 +234,7 @@ const Timetable = () => {
           )}
         </main>
       </div>
-      <PrintTimetable />
+      {!isDemoSession() && <PrintTimetable />}
     </>
   );
 };

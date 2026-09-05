@@ -10,6 +10,7 @@ import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { isDemoSession } from "@/functions/demo/student-demo";
 
 const Calendar = () => {
   const router = useRouter();
@@ -38,6 +39,10 @@ const Calendar = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (isDemoSession()) {
+        router.replace("/student/timetable");
+        return;
+      }
       if (localStorage.getItem("studentCalendar")) {
         const res = JSON.parse(localStorage.getItem("studentCalendar"));
         setPlanner(res);
@@ -46,15 +51,21 @@ const Calendar = () => {
       }
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
+      const savedNetId = localStorage.getItem("studentNetId")?.trim();
+      if (savedNetId) myHeaders.append("X-Net-ID", savedNetId);
 
       const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
         cache: "no-store",
+        credentials: "include",
       };
 
-      fetch(`${baseURL}/api/auth/planner`, requestOptions)
+      const plannerRoute = Cookies.get("X-CSRF-Token")?.startsWith("sp_session=")
+        ? "planner/cached"
+        : "planner";
+      fetch(`${baseURL}/api/auth/${plannerRoute}`, requestOptions)
         .then((response) => {
           if (typeof response === "string") {
             return null;

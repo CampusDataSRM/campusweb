@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getDemoClubs, isDemoSession } from "@/functions/demo/student-demo";
 
 const Clubs = () => {
   const router = useRouter();
@@ -27,6 +28,13 @@ const Clubs = () => {
     } else {
       const student = JSON.parse(localStorage.getItem("studentData"));
       setStudentID(student.registrationNumber);
+      if (isDemoSession()) {
+        getDemoClubs()
+          .then(setClubData)
+          .catch(console.error)
+          .finally(() => setLoading(false));
+        return;
+      }
       const requestOptions = {
         method: "GET",
         redirect: "follow",
@@ -55,7 +63,7 @@ const Clubs = () => {
               title="Clubs"
               icon={"/icons/user-group/secondary.svg"}
             />
-            <button
+            {!isDemoSession() && <button
               className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center text-[13px] font-semibold flex items-center justify-center gap-2 tracking-widest"
               onClick={() => router.push("/client/login/club")}
             >
@@ -65,7 +73,7 @@ const Clubs = () => {
                 alt="Club Swap"
                 className="w-4 h-auto"
               />
-            </button>
+            </button>}
           </div>
           <form className="mb-5 -mt-2 flex gap-2 items-center theme_box_bg w-full">
             <svg
@@ -135,6 +143,7 @@ const Clubs = () => {
                       checkLiked={
                         club.likedby ? club.likedby.includes(studentID) : false
                       }
+                      disabledPopularity={isDemoSession()}
                     />
                   ))
               ) : (

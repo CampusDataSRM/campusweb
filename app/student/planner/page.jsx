@@ -20,6 +20,7 @@ import {
 } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { isDemoSession } from "@/functions/demo/student-demo";
 
 const Planner = () => {
   const router = useRouter();
@@ -62,6 +63,10 @@ const Planner = () => {
   const [getMonth, setGetMonth] = useState([]);
 
   useEffect(() => {
+    if (isDemoSession()) {
+      router.replace("/student/timetable");
+      return;
+    }
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
@@ -71,8 +76,11 @@ const Planner = () => {
       setUserJsonData(JSON.parse(studentData));
       setLoading(false);
     }
-    getStudentData(Cookies.get("X-CSRF-Token")).then((data) => {
-      if ((data.message = "success")) {
+    getStudentData(
+      Cookies.get("X-CSRF-Token"),
+      localStorage.getItem("studentNetId")?.trim() || ""
+    ).then((data) => {
+      if (data.message === "success") {
         // console.log(data);
 
         setUserJsonData(data.content);
@@ -84,6 +92,7 @@ const Planner = () => {
   }, []);
 
   useEffect(() => {
+    if (isDemoSession()) return;
     setLoading(true);
 
     const timetableData = localStorage.getItem("timetableData");
@@ -102,13 +111,17 @@ const Planner = () => {
   }, []);
 
   useEffect(() => {
+    if (isDemoSession()) return;
     setLoading(true);
     const planner = localStorage.getItem("planner");
     if (planner) {
       setPlanner(JSON.parse(planner));
       setLoading(false);
     }
-    getPlannerData(Cookies.get("X-CSRF-Token")).then((data) => {
+    getPlannerData(
+      Cookies.get("X-CSRF-Token"),
+      localStorage.getItem("studentNetId") || ""
+    ).then((data) => {
       if ((data.message = "success")) {
         // console.log(data);
 

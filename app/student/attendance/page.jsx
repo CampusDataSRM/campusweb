@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
+import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
+import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 const defaultStyle =
   "theme_box_bg px-3 py-2 rounded-md text-theme_text_normal text-sm tracking-wide caret-theme_text_primary placeholder:text-theme_text_primary placeholder:text-xs shadow-xl";
@@ -70,35 +72,52 @@ const Attendance = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (isDemoSession()) {
+        getDemoStudent()
+          .then((demoStudent) => {
+            setCourseData(demoStudent.courses || []);
+            localStorage.setItem("studentData", JSON.stringify(demoStudent));
+          })
+          .catch((error) =>
+            toast.error(error?.message || "Could not load demo attendance.")
+          )
+          .finally(() => setLoading(false));
+        return;
+      }
       const result = JSON.parse(localStorage.getItem("studentData"));
 
       if (!result) {
         router.push("/client/login/student");
       } else {
-        setCourseData(result?.courses);
+        setCourseData(Array.isArray(result?.courses) ? result.courses : []);
         setLoading(false);
-        const someResult = getStudentData(Cookies.get("X-CSRF-Token"));
+        const savedNetId = localStorage.getItem("studentNetId")?.trim() || "";
+        const someResult = getStudentData(
+          Cookies.get("X-CSRF-Token"),
+          savedNetId,
+        );
         someResult.then((data) => {
-          if (data?.message === "failed_to_fetch") {
-            console.log("Failed to fetch data");
-          } else if (data?.message === "too_many_requests") {
+          if (data?.message === "too_many_requests") {
             toast.error("Too many requests. Try again in a min.");
-          } else {
-            setCourseData(data?.content.courses);
-            localStorage.setItem("studentData", JSON.stringify(data?.content));
-            setPortalSyncReady(true);
+          } else if (data?.message === "success" && data?.content) {
+            const merged = mergeStudentSnapshot(data.content, result);
+            setCourseData(merged.courses);
+            localStorage.setItem("studentData", JSON.stringify(merged));
+            setPortalSyncReady(merged.studentPortalLoginRequired === true);
           }
         });
       }
       const planner = JSON.parse(localStorage.getItem("studentCalendar"));
       if (!planner) {
-        const plannerResult = getPlannerData(Cookies.get("X-CSRF-Token"));
+        const savedNetId = localStorage.getItem("studentNetId")?.trim() || "";
+        const plannerResult = getPlannerData(
+          Cookies.get("X-CSRF-Token"),
+          savedNetId
+        );
         plannerResult.then((data) => {
-          if (data?.message === "failed_to_fetch") {
-            console.log("Failed to fetch data");
-          } else if (data?.message === "too_many_requests") {
+          if (data?.message === "too_many_requests") {
             toast.error("Too many requests. Try again in a min.");
-          } else {
+          } else if (data?.message === "success" && data?.content) {
             localStorage.setItem(
               "studentCalendar",
               JSON.stringify(data?.content)

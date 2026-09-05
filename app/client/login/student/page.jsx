@@ -19,6 +19,21 @@ import {
 } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import { isAndroid, isIOS } from "@/functions/device-check";
+import { getStudentData, loginStudentPortal } from "@/functions/api/student";
+import {
+  DEMO_NET_ID,
+  DEMO_SESSION,
+  clearDemoSession,
+  getDemoStudent,
+  isDemoSession,
+  loginDemo,
+} from "@/functions/demo/student-demo";
+import {
+  usesStudentPortalPrimary,
+} from "@/functions/auth/student-login-routing.mjs";
+import { isDemoNetId, normalizeStudentNetId } from "@/functions/demo/demo-session.mjs";
+import { STUDENT_PORTAL_SESSION_MARKER } from "@/functions/auth/session-type.mjs";
+
 
 const StudentLogin = () => {
   const router = useRouter();
@@ -30,7 +45,9 @@ const StudentLogin = () => {
   const [showAppStoreBadge, setShowAppStoreBadge] = useState(false);
 
   useEffect(() => {
-    if (Cookies.get("X-CSRF-Token")) {
+    if (Cookies.get("X-CSRF-Token") === DEMO_SESSION && !isDemoSession()) {
+      clearDemoSession();
+    } else if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
     setShowPlayStoreBadge(isAndroid());
@@ -76,102 +93,169 @@ const StudentLogin = () => {
     baseURL_7,
     baseURL_8,
     baseURL_9,
-  ];
+  ].filter(Boolean);
 
   const handleStudentLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     localStorage.setItem("net_id", userid);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      username: userid,
-      password: password,
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-      mode: "cors",
-    };
-    let remainingURLs = [...baseURLS];
-
-    // Try each baseURL with randomization
-    while (remainingURLs.length > 0) {
-      // Randomize the remaining URLs
-      remainingURLs = shuffleArray(remainingURLs);
-
-      // Take the first URL from the randomized array
-      const currentURL = remainingURLs[0];
-
-      try {
-        const response = await fetch(
-          `${currentURL}/api/auth/login/`,
-          requestOptions,
-        );
-        const result = await response.json();
-        if (
-          result.passResponse?.status_code === 500 &&
-          result.passResponse?.message == "Matched with old password"
-        ) {
-          toast.error(
-            "You've entered an old password. Please enter your current password.",
-          );
-          setLoading(false);
-          return;
-        } else if (
-          (result.passResponse?.status_code === 201 ||
-            result.status === "success" ||
-            result.Status === "success") &&
-          (result.cookies || result.Cookies)
-        ) {
-          const csrfToken =
-            result.Cookies ||
-            result.cookies ||
-            result.COOKIE ||
-            result.cookie ||
-            result["X-CSRF-Token"];
-
-          if (csrfToken) {
-            Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
-            router.push("/student");
-            return;
-          } else {
-            toast.error("Login succeeded but session token was missing. Please try again.");
-            setLoading(false);
-            return;
-          }
-        } else {
-          if (result.message == "Invalid password") {
-            toast.error(result.message);
-            setLoading(false);
-            return;
-          } else {
-            toast.error("Something went wrong! Trying another server...");
-          }
-          setLoading(false);
-        }
-      } catch (error) {
-        // Log the failed connection
-        console.log(`Failed to connect to ${currentURL}:`, error);
-        setLoading(false);
+    try {
+      const netId = normalizeStudentNetId(userid);
+      if (!netId || !password) {
+        throw new Error("NetID and password are required.");
       }
 
-      // Remove the failed URL from the remaining URLs array
-      remainingURLs = remainingURLs.filter((url) => url !== currentURL);
+      if (isDemoNetId(userid)) {
+        await loginDemo(netId, password);
+        const demoStudent = await getDemoStudent();
+        Cookies.set("X-CSRF-Token", DEMO_SESSION, { sameSite: "strict" });
+        localStorage.setItem("studentNetId", DEMO_NET_ID);
+        localStorage.setItem("studentData", JSON.stringify(demoStudent));
+        setPassword("");
+        router.push("/student");
+        return;
+      }
+
+      clearDemoSession();
+
+      const academiaController = new AbortController();
+      const academiaAttempt = (async () => {
+        let remainingURLs = shuffleArray(baseURLS);
+        let lastError = new Error("Academia is temporarily unavailable.");
+        while (remainingURLs.length > 0) {
+          const currentURL = remainingURLs[0];
+          try {
+            const response = await fetch(`${currentURL}/api/auth/login/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: userid, password }),
+              redirect: "follow",
+              mode: "cors",
+              cache: "no-store",
+              signal: academiaController.signal,
+            });
+            const result = await response.json().catch(() => ({}));
+            const definitive =
+              response.ok ||
+              response.status === 401 ||
+              result?.code === "academia_credentials_rejected" ||
+              result?.passResponse?.message === "Matched with old password";
+            if (definitive) return { response, result };
+            lastError = new Error(result?.message || lastError.message);
+          } catch (error) {
+            if (academiaController.signal.aborted) {
+              return { error: new Error("Academia check cancelled") };
+            }
+            lastError = error;
+          }
+          remainingURLs = shuffleArray(remainingURLs.slice(1));
+        }
+        return { error: lastError };
+      })();
+
+      const studentPortalAttempt = loginStudentPortal(netId, password)
+        .then((result) => ({ result }))
+        .catch((error) => ({ error }));
+
+      let firstCompleted = await Promise.race([
+        academiaAttempt.then((attempt) => ({ source: "academia", attempt })),
+        studentPortalAttempt.then((attempt) => ({
+          source: "studentPortal",
+          attempt,
+        })),
+      ]);
+
+      const finishAcademia = (attempt) => {
+        const response = attempt?.response;
+        const result = attempt?.result || {};
+        if (
+          result?.passResponse?.message === "Matched with old password" ||
+          result?.code === "P201"
+        ) {
+          throw new Error(
+            "You've entered an old password. Please enter your current password.",
+          );
+        }
+        const csrfToken =
+          result.Cookies ||
+          result.cookies ||
+          result.COOKIE ||
+          result.cookie ||
+          result["X-CSRF-Token"];
+        if (!response?.ok || !csrfToken) {
+          throw new Error(
+            result?.message || attempt?.error?.message || "Student login failed",
+          );
+        }
+        Cookies.set("X-CSRF-Token", csrfToken, { expires: 365 });
+        localStorage.setItem("studentNetId", netId);
+        setPassword("");
+        router.push("/student");
+      };
+
+      if (firstCompleted.source === "academia") {
+        const earlyResult = firstCompleted.attempt?.result || {};
+        const earlyCookie = earlyResult.Cookies || earlyResult.cookies;
+        if (firstCompleted.attempt?.response?.ok && earlyCookie) {
+          const quickStudentPortal = await Promise.race([
+            studentPortalAttempt,
+            new Promise((resolve) => setTimeout(() => resolve(null), 750)),
+          ]);
+          if (
+            quickStudentPortal?.result &&
+            usesStudentPortalPrimary(quickStudentPortal.result)
+          ) {
+            firstCompleted = {
+              source: "studentPortal",
+              attempt: quickStudentPortal,
+            };
+          } else {
+            finishAcademia(firstCompleted.attempt);
+            return;
+          }
+        }
+      }
+
+      const studentPortal =
+        firstCompleted.source === "studentPortal"
+          ? firstCompleted.attempt
+          : await studentPortalAttempt;
+      if (
+        studentPortal?.result &&
+        usesStudentPortalPrimary(studentPortal.result)
+      ) {
+        // First-year authentication is complete. Stop further Academia
+        // retries and never use its failure as the login result.
+        academiaController.abort();
+        Cookies.set("X-CSRF-Token", STUDENT_PORTAL_SESSION_MARKER, {
+          expires: 30,
+          sameSite: "strict",
+          secure: window.location.protocol === "https:",
+        });
+        localStorage.setItem("studentNetId", netId);
+        const snapshot = await getStudentData(
+          STUDENT_PORTAL_SESSION_MARKER,
+          netId,
+        );
+        if (snapshot?.message !== "success" || !snapshot?.content) {
+          throw new Error(
+            "Student Portal login succeeded, but student data could not be loaded.",
+          );
+        }
+        localStorage.setItem("studentData", JSON.stringify(snapshot.content));
+        setPassword("");
+        router.push("/student");
+        return;
+      }
+
+      finishAcademia(await academiaAttempt);
+    } catch (error) {
+      toast.error(error?.message || "Could not reach the login service");
+    } finally {
+      setLoading(false);
     }
-
-    // If we reach here, all URLs have failed
-    toast.error(
-      "Login failed - Unable to connect to any server. Please try again later.",
-    );
-    setLoading(false);
-
-    return;
   };
 
   const handleKeyDown = (e) => {
@@ -459,4 +543,3 @@ const StudentLogin = () => {
 };
 
 export default StudentLogin;
-
