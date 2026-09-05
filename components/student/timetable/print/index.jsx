@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
+import { resolveStudentBatch } from "@/functions/student-batch.mjs";
 import { useRouter } from "next/navigation";
 
 const PrintTimetable = () => {
@@ -20,7 +21,11 @@ const PrintTimetable = () => {
       } else {
         const rawData = localStorage.getItem("studentData");
         const dataStudent = JSON.parse(rawData);
-        const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
+        const studentBatch = resolveStudentBatch(dataStudent?.comboBatch);
+        if (!studentBatch) {
+          setLoading(false);
+          return;
+        }
         // dataStudent?.comboBatch[dataStudent?.comboBatch.length - 1];
         const myHeaders = new Headers();
         myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));

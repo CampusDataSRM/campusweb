@@ -3,7 +3,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 
-const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
+const ClubCard = ({ club, visitLinkActive, clubID, checkLiked, disabledPopularity = false }) => {
   const [clubPopularity, setClubPopularity] = useState(
     club?.popularity ? club?.popularity : 0
   );
@@ -105,7 +105,7 @@ const ClubCard = ({ club, visitLinkActive, clubID, checkLiked }) => {
             <button
               className="pl-1"
               onClick={actionLikeUnlike}
-              disabled={userClicked}
+              disabled={disabledPopularity || userClicked}
             >
               {userClicked ? (
                 <>

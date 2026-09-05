@@ -17,7 +17,9 @@ import Banner3to1 from "@/components/sponsorship/Banner3to1";
 import RecruitmentBanner3to1 from "@/components/global/recruitmentBanner";
 import FeedbackWidget from "@/components/student/feedback/FeedbackWidget";
 import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
-import { isDemoSession } from "@/functions/demo/student-demo";
+import { isDemoSession, logoutDemo } from "@/functions/demo/student-demo";
+import { isStudentPortalSession } from "@/functions/auth/session-type.mjs";
+import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 import SectionTitle from "@/components/global/section-title";
 
@@ -58,6 +60,8 @@ const Student = () => {
       const myHeaders = new Headers();
       myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
       myHeaders.append("Content-Type", "application/json");
+      const savedNetId = localStorage.getItem("studentNetId")?.trim();
+      if (savedNetId) myHeaders.append("X-Net-ID", savedNetId);
 
       const requestOptions = {
         method: "GET",
@@ -87,14 +91,13 @@ const Student = () => {
           } else if (result === null) {
             router.push("/student/timetable");
           } else {
-            setStudentName(result?.name);
-            localStorage.setItem(
-              "studentData",
-              result && JSON.stringify(result)
-            );
-            setCourseData(result?.courses);
-            setTestPerformance(result?.testPerformances);
-            setPortalSyncReady(true);
+            const cached = JSON.parse(localStorage.getItem("studentData")) || {};
+            const merged = mergeStudentSnapshot(result, cached);
+            setStudentName(merged?.name);
+            localStorage.setItem("studentData", JSON.stringify(merged));
+            setCourseData(merged.courses);
+            setTestPerformance(merged.testPerformances);
+            setPortalSyncReady(merged.studentPortalLoginRequired === true);
           }
           setLoading(false);
         })
@@ -104,6 +107,14 @@ const Student = () => {
 
   const sessionLogout = (e) => {
     e?.preventDefault();
+    if (isDemoSession()) {
+      logoutDemo().finally(() => {
+        localStorage.clear();
+        Cookies.remove("X-CSRF-Token");
+        router.push("/");
+      });
+      return;
+    }
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
 
@@ -278,7 +289,10 @@ const Student = () => {
             />
           )}
 
-          <FeedbackWidget />
+          {!isDemoSession() &&
+            !isStudentPortalSession(Cookies.get("X-CSRF-Token")) && (
+              <FeedbackWidget />
+            )}
 
           <EventCarousel />
 

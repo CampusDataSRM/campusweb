@@ -211,6 +211,7 @@ const Events = () => {
                           : false
                       }
                       flaggedHidden={true}
+                      disabledPopularity={isDemoSession()}
                     />
                   ))
               ) : (

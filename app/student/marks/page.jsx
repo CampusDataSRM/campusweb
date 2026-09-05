@@ -10,6 +10,9 @@ import { pageNames } from "@/components/global/navbar/page-link";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
 import { useRouter } from "next/navigation";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { getStudentData } from "@/functions/api/student";
+import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
+import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 const Marks = () => {
   const router = useRouter();
@@ -22,8 +25,24 @@ const Marks = () => {
     } else {
       const rawData = localStorage.getItem("studentData");
       const dataStudent = JSON.parse(rawData);
-      setTestreport(dataStudent?.testPerformances);
+      setTestreport(
+        Array.isArray(dataStudent?.testPerformances)
+          ? dataStudent.testPerformances
+          : [],
+      );
       setLoading(false);
+      const refresh = isDemoSession()
+        ? getDemoStudent().then((content) => ({ message: "success", content }))
+        : getStudentData(
+            Cookies.get("X-CSRF-Token"),
+            localStorage.getItem("studentNetId")?.trim() || "",
+          );
+      refresh.then((data) => {
+        if (data?.message !== "success" || !data?.content) return;
+        const merged = mergeStudentSnapshot(data.content, dataStudent);
+        setTestreport(merged.testPerformances);
+        localStorage.setItem("studentData", JSON.stringify(merged));
+      }).catch(() => {});
     }
   }, []);
 
