@@ -6,6 +6,7 @@ import "swiper/css/pagination";
 import { Pagination, Autoplay } from "swiper";
 import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
+import { getDemoEvents, isDemoSession } from "@/functions/demo/student-demo";
 
 const EventCarousel = () => {
   const [events, setEvents] = useState([]);
@@ -37,6 +38,13 @@ const EventCarousel = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (isDemoSession()) {
+      getDemoEvents()
+        .then(setEvents)
+        .catch(console.error)
+        .finally(() => setLoading(false));
+      return;
+    }
     const requestOptions = {
       method: "GET",
       redirect: "follow",

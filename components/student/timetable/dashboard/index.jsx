@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import { set } from "date-fns";
+import { getDemoTimetable, isDemoSession } from "@/functions/demo/student-demo";
+import { resolveStudentBatch } from "@/functions/student-batch.mjs";
 
 const DashboardTimetable = () => {
   const router = useRouter();
@@ -30,7 +32,25 @@ const DashboardTimetable = () => {
     }
     const rawData = localStorage.getItem("studentData");
     const dataStudent = JSON.parse(rawData);
-    const studentBatch = dataStudent?.comboBatch[dataStudent?.comboBatch?.length - 1]
+    if (isDemoSession()) {
+      setLoading(true);
+      getDemoTimetable()
+        .then((result) => {
+          setTimetable(result);
+          localStorage.setItem("studentTimetable", JSON.stringify(result));
+          setDayOrders(Object.keys(result?.timetable || {}));
+          setSelectedDay("Day" + result?.day_order);
+          setCurrentDayOrder("Day" + result?.day_order);
+        })
+        .catch(() => router.push("/client/login/student"))
+        .finally(() => setLoading(false));
+      return;
+    }
+    const studentBatch = resolveStudentBatch(dataStudent?.comboBatch);
+    if (!studentBatch) {
+      setLoading(false);
+      return;
+    }
     const myHeaders = new Headers();
     myHeaders.append("X-CSRF-Token", Cookies.get("X-CSRF-Token"));
     const savedNetId = localStorage.getItem("studentNetId")?.trim();

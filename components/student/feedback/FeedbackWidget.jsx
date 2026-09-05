@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { isStudentPortalSession } from "@/functions/auth/session-type.mjs";
 
 export default function FeedbackWidget() {
   const router = useRouter();
@@ -22,6 +23,10 @@ export default function FeedbackWidget() {
     const token = Cookies.get("X-CSRF-Token");
     if (!token) {
       router.push("/client/login/student");
+      return;
+    }
+    if (isStudentPortalSession(token)) {
+      setLoading(false);
       return;
     }
 

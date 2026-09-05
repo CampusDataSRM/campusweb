@@ -11,7 +11,12 @@ const servers = [
   process.env.NEXT_PUBLIC_SERVE_9,
 ];
 
-export const baseURL = process.env.NEXT_PUBLIC_SERVE;
+// Older local/deployment environments use NEXT_PUBLIC_SERVER (with the final
+// "R"), while the multi-origin configuration uses NEXT_PUBLIC_SERVE.
+export const baseURL =
+  process.env.NEXT_PUBLIC_SERVE ||
+  process.env.NEXT_PUBLIC_SERVER ||
+  process.env.NEXT_PUBLIC_SERVE_1;
 export const baseURL_1 = process.env.NEXT_PUBLIC_SERVE_1;
 export const baseURL_2 = process.env.NEXT_PUBLIC_SERVE_2;
 export const baseURL_3 = process.env.NEXT_PUBLIC_SERVE_3;

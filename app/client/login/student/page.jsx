@@ -23,15 +23,17 @@ import { getStudentData, loginStudentPortal } from "@/functions/api/student";
 import {
   DEMO_NET_ID,
   DEMO_SESSION,
+  clearDemoSession,
   getDemoStudent,
+  isDemoSession,
   loginDemo,
 } from "@/functions/demo/student-demo";
 import {
   usesStudentPortalPrimary,
 } from "@/functions/auth/student-login-routing.mjs";
+import { isDemoNetId, normalizeStudentNetId } from "@/functions/demo/demo-session.mjs";
+import { STUDENT_PORTAL_SESSION_MARKER } from "@/functions/auth/session-type.mjs";
 
-const STUDENT_PORTAL_SESSION_MARKER = "sp_session=http_only";
-const normalizedNetId = (value) => value.trim().split("@")[0].toLowerCase();
 
 const StudentLogin = () => {
   const router = useRouter();
@@ -43,7 +45,9 @@ const StudentLogin = () => {
   const [showAppStoreBadge, setShowAppStoreBadge] = useState(false);
 
   useEffect(() => {
-    if (Cookies.get("X-CSRF-Token")) {
+    if (Cookies.get("X-CSRF-Token") === DEMO_SESSION && !isDemoSession()) {
+      clearDemoSession();
+    } else if (Cookies.get("X-CSRF-Token")) {
       router.push("/student");
     }
     setShowPlayStoreBadge(isAndroid());
@@ -89,7 +93,7 @@ const StudentLogin = () => {
     baseURL_7,
     baseURL_8,
     baseURL_9,
-  ];
+  ].filter(Boolean);
 
   const handleStudentLogin = async (e) => {
     e.preventDefault();
@@ -98,12 +102,12 @@ const StudentLogin = () => {
     localStorage.setItem("net_id", userid);
 
     try {
-      const netId = normalizedNetId(userid);
+      const netId = normalizeStudentNetId(userid);
       if (!netId || !password) {
         throw new Error("NetID and password are required.");
       }
 
-      if (netId === DEMO_NET_ID) {
+      if (isDemoNetId(userid)) {
         await loginDemo(netId, password);
         const demoStudent = await getDemoStudent();
         Cookies.set("X-CSRF-Token", DEMO_SESSION, { sameSite: "strict" });
@@ -114,7 +118,7 @@ const StudentLogin = () => {
         return;
       }
 
-      localStorage.removeItem("campuswebDemo");
+      clearDemoSession();
 
       const academiaController = new AbortController();
       const academiaAttempt = (async () => {

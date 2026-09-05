@@ -10,6 +10,7 @@ import { baseURL } from "@/constants/baseURL";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { isDemoSession } from "@/functions/demo/student-demo";
 
 const Calendar = () => {
   const router = useRouter();
@@ -38,6 +39,10 @@ const Calendar = () => {
     if (!Cookies.get("X-CSRF-Token")) {
       router.push("/client/login/student");
     } else {
+      if (isDemoSession()) {
+        router.replace("/student/timetable");
+        return;
+      }
       if (localStorage.getItem("studentCalendar")) {
         const res = JSON.parse(localStorage.getItem("studentCalendar"));
         setPlanner(res);

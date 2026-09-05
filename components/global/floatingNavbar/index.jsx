@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
-import { logoutDemo } from "@/functions/demo/student-demo";
+import { isDemoSession, logoutDemo } from "@/functions/demo/student-demo";
 
 const studentPageLink = [
   { name: "Home", link: "/student", icon: "/icons/home/" },
@@ -56,6 +56,11 @@ const FloatingNavbar = () => {
   const [showMore, setShowMore] = useState(false);
   const router = useRouter();
   const currentRoute = usePathname();
+  const visibleLinks = isDemoSession()
+    ? studentPageLink.filter((item) =>
+        ["Home", "Atten", "TimeT", "Marks", "Events", "Clubs", "Logout"].includes(item.name)
+      )
+    : studentPageLink;
 
   const handleMoreClick = () => setShowMore(!showMore);
 
@@ -95,7 +100,7 @@ const FloatingNavbar = () => {
     <div className="fixed bottom-4 z-50 w-full px-2 max-w-[630px]">
       <nav className="w-full md:mx-0  rounded-xl bg-black/50 backdrop-blur-lg shadow-lg py-1">
         <ul className="flex justify-around relative">
-          {studentPageLink.slice(0, 5).map((item) => (
+          {visibleLinks.slice(0, 5).map((item) => (
             <li
               key={item.name}
               className="flex flex-col items-center px-[5px] py-2"
@@ -152,7 +157,7 @@ const FloatingNavbar = () => {
               <>
                 {/* original menu */}
                 <ul className="absolute bottom-[4.4rem] right-0 bg-[#070a1c]/95 rounded-xl shadow-lg p-2 space-y-2">
-                  {studentPageLink
+                  {visibleLinks
                     .slice(5)
                     .reverse()
                     .map((item) => (

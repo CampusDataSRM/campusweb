@@ -84,6 +84,7 @@ const ViewClub = () => {
                             ? club.likedby.includes(studentID)
                             : false
                         }
+                        disabledPopularity={isDemoSession()}
                       />
                       <div className="mt-4">
                         <SectionTitle
@@ -157,12 +158,13 @@ const ViewClub = () => {
                                     name: club.name,
                                     logo: club.logo,
                                   }}
-                                  eventID={event.ID}
+                                  eventID={event.ID || event.id}
                                   checkLiked={
                                     event.likedby
                                       ? event.likedby.includes(studentID)
                                       : false
                                   }
+                                  disabledPopularity={isDemoSession()}
                                 />
                               ))
                           ) : (

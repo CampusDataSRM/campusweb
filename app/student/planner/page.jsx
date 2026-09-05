@@ -20,6 +20,7 @@ import {
 } from "@/functions/api/student";
 import { useRouter } from "next/navigation";
 import FloatingNavbar from "@/components/global/floatingNavbar";
+import { isDemoSession } from "@/functions/demo/student-demo";
 
 const Planner = () => {
   const router = useRouter();
@@ -62,6 +63,10 @@ const Planner = () => {
   const [getMonth, setGetMonth] = useState([]);
 
   useEffect(() => {
+    if (isDemoSession()) {
+      router.replace("/student/timetable");
+      return;
+    }
     setLoading(true);
     if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
       router.push("/client/login/student");
@@ -87,6 +92,7 @@ const Planner = () => {
   }, []);
 
   useEffect(() => {
+    if (isDemoSession()) return;
     setLoading(true);
 
     const timetableData = localStorage.getItem("timetableData");
@@ -105,6 +111,7 @@ const Planner = () => {
   }, []);
 
   useEffect(() => {
+    if (isDemoSession()) return;
     setLoading(true);
     const planner = localStorage.getItem("planner");
     if (planner) {
