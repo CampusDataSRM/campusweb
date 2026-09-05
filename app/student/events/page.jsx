@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import { getDemoEvents, isDemoSession } from "@/functions/demo/student-demo";
-import DemoNotice from "@/components/global/demo-notice";
 
 const Events = () => {
   const router = useRouter();
@@ -95,7 +94,6 @@ const Events = () => {
         <Navbar items={pageNames.filter((item) => item !== "Events")} />
         <FloatingNavbar />
         <main className="px-4">
-          <DemoNotice />
           <SectionTitle title="Events" icon={"/icons/event/secondary.svg"} />
           <form className="mb-5 flex gap-2 items-center theme_box_bg w-full">
             <svg
