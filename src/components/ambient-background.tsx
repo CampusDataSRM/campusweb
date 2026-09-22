@@ -15,7 +15,7 @@ export function AmbientBackground() {
       <div
         className="campus-glow absolute -left-24 -top-24 h-[420px] w-[420px]"
         style={{
-          background: "var(--campus-text-primary)",
+          background: "var(--color-theme-text-primary)",
           animation: "campus-drift-1 18s ease-in-out infinite",
         }}
       />
@@ -24,7 +24,7 @@ export function AmbientBackground() {
       <div
         className="campus-glow absolute -right-20 top-12 h-[360px] w-[360px]"
         style={{
-          background: "var(--campus-primary)",
+          background: "var(--color-theme-primary)",
           animation: "campus-drift-2 22s ease-in-out infinite",
         }}
       />
@@ -33,7 +33,7 @@ export function AmbientBackground() {
       <div
         className="campus-glow absolute -bottom-32 -left-16 h-[500px] w-[500px]"
         style={{
-          background: "var(--campus-secondary)",
+          background: "var(--color-theme-secondary)",
           filter: "blur(100px)",
           animation: "campus-drift-3 25s ease-in-out infinite",
         }}
