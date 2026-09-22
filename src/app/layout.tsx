@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Head from "next/head";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from "next/script";
 import { GA_ID } from "@/constants";
 import { plusJakartaSans, nunito } from "@/lib/fonts";
+import Providers from "./providers";
 import "./globals.css";
 
 const APP_NAME = "Campus Web";
@@ -99,7 +100,9 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        <TooltipProvider>{children}</TooltipProvider>
+        <Providers>
+          <TooltipProvider>{children}</TooltipProvider>
+        </Providers>
       </body>
     </html>
   );
