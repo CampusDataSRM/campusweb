@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Head from "next/head";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AmbientBackground } from "@/components/ambient-background";
 import Script from "next/script";
 import { GA_ID } from "@/constants";
 import { plusJakartaSans, nunito } from "@/lib/fonts";
@@ -71,7 +70,10 @@ export default function RootLayout({
         <meta name="description" content={APP_DESCRIPTION} />
         <meta name="application-name" content={APP_NAME} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content={APP_DEFAULT_TITLE} />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -97,8 +99,6 @@ export default function RootLayout({
             </Script>
           </>
         )}
-
-        <AmbientBackground />
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
