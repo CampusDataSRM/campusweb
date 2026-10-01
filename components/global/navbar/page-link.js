@@ -51,6 +51,11 @@ const studentPageLink = [
         icon: "/icons/CGPA/primary.svg",
     },
     {
+        name: "Legal",
+        link: "/legal",
+        icon: "/icons/legal/primary.svg",
+    },
+    {
         name: "About us",
         link: "/about",
         icon: "/icons/us/primary.svg",

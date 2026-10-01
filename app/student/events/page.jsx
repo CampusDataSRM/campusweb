@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { baseURL } from "@/constants/baseURL";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import { getDemoEvents, isDemoSession } from "@/functions/demo/student-demo";
+import { isGuestSession } from "@/functions/guest/guest-session";
 
 const Events = () => {
   const router = useRouter();
@@ -22,11 +23,14 @@ const Events = () => {
 
   useEffect(() => {
     setLoading(true);
-    if (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData")) {
+    const guest = isGuestSession();
+    if (!guest && (!Cookies.get("X-CSRF-Token") || !localStorage.getItem("studentData"))) {
       router.push("/client/login/student");
     } else {
-      const student = JSON.parse(localStorage.getItem("studentData"));
-      setStudentID(student.registrationNumber);
+      if (!guest) {
+        const student = JSON.parse(localStorage.getItem("studentData"));
+        setStudentID(student.registrationNumber);
+      }
       if (isDemoSession()) {
         getDemoEvents()
           .then(setEventData)
@@ -209,7 +213,7 @@ const Events = () => {
                           : false
                       }
                       flaggedHidden={true}
-                      disabledPopularity={isDemoSession()}
+                      disabledPopularity={isDemoSession() || isGuestSession()}
                     />
                   ))
               ) : (

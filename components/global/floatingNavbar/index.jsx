@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import { isDemoSession, logoutDemo } from "@/functions/demo/student-demo";
+import { clearGuestSession, isGuestSession } from "@/functions/guest/guest-session";
 
 const studentPageLink = [
   { name: "Home", link: "/student", icon: "/icons/home/" },
@@ -43,6 +44,7 @@ const studentPageLink = [
     link: "/student/cgpacalc",
     icon: "/icons/CGPA/",
 },
+  { name: "Legal", link: "/legal", icon: "/icons/legal/" },
   { name: "About us", link: "/about", icon: "/icons/us/" },
   {
     name: "WhatsApp",
@@ -56,9 +58,18 @@ const FloatingNavbar = () => {
   const [showMore, setShowMore] = useState(false);
   const router = useRouter();
   const currentRoute = usePathname();
-  const visibleLinks = isDemoSession()
+  // Guests browse only public pages, as in Campus App; the demo session
+  // keeps the legal pages a reviewer needs.
+  const visibleLinks = isGuestSession()
+    ? [
+        ...studentPageLink.filter((item) =>
+          ["Events", "Clubs", "Legal", "About us"].includes(item.name)
+        ),
+        { name: "Sign in", link: "/", icon: "/icons/user/" },
+      ]
+    : isDemoSession()
     ? studentPageLink.filter((item) =>
-        ["Home", "Atten", "TimeT", "Marks", "Events", "Clubs", "Logout"].includes(item.name)
+        ["Home", "Atten", "TimeT", "Marks", "Events", "Clubs", "Legal", "Logout"].includes(item.name)
       )
     : studentPageLink;
 
@@ -68,6 +79,11 @@ const FloatingNavbar = () => {
     console.log("logout");
 
     e?.preventDefault();
+    if (isGuestSession()) {
+      clearGuestSession();
+      router.push("/");
+      return;
+    }
     if (localStorage.getItem("campuswebDemo") === "true") {
       logoutDemo().finally(() => {
         localStorage.clear();
@@ -107,7 +123,7 @@ const FloatingNavbar = () => {
             >
               <button
                 onClick={
-                  item.name === "Logout"
+                  (item.name === "Logout" || item.name === "Sign in")
                     ? sessionLogout
                     : item.name === "WhatsApp"
                     ? () => router.replace(item.link)
@@ -141,6 +157,7 @@ const FloatingNavbar = () => {
               </button>
             </li>
           ))}
+          {visibleLinks.length > 5 && (
           <li className="flex flex-col items-center p-2">
             <button
               onClick={handleMoreClick}
@@ -168,7 +185,7 @@ const FloatingNavbar = () => {
                         <button
                           // href={item.link}
                           onClick={
-                            item.name === "Logout"
+                            (item.name === "Logout" || item.name === "Sign in")
                               ? sessionLogout
                               : item.name === "WhatsApp"
                               ? () => router.replace(item.link)
@@ -204,6 +221,7 @@ const FloatingNavbar = () => {
               </>
             )}
           </li>
+          )}
         </ul>
       </nav>
     </div>

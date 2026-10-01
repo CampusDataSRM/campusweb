@@ -11,6 +11,43 @@
         "source": "**",
         "destination": "/index.html"
       }
+    ],
+    "redirects": [
+      {
+        "regex": "^/(terms-and-conditions|terms-of-service|tnc|tos)/?$",
+        "destination": "/terms/",
+        "type": 301
+      },
+      {
+        "regex": "^/(refund|refunds|cancellation|cancellation-policy|refund-and-cancellation|refund-cancellation-policy)/?$",
+        "destination": "/refund-policy/",
+        "type": 301
+      },
+      {
+        "regex": "^/(shipping|shipping-and-delivery|delivery|delivery-policy)/?$",
+        "destination": "/shipping-policy/",
+        "type": 301
+      },
+      {
+        "regex": "^/(privacy|privacy-notice)/?$",
+        "destination": "/privacy-policy/",
+        "type": 301
+      },
+      {
+        "regex": "^/(contact-us|support)/?$",
+        "destination": "/contact/",
+        "type": 301
+      },
+      {
+        "regex": "^/(about-us)/?$",
+        "destination": "/about/",
+        "type": 301
+      },
+      {
+        "regex": "^/(policies|policy)/?$",
+        "destination": "/legal/",
+        "type": 301
+      }
     ]
   }
 }

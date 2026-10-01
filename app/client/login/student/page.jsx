@@ -33,6 +33,8 @@ import {
 } from "@/functions/auth/student-login-routing.mjs";
 import { isDemoNetId, normalizeStudentNetId } from "@/functions/demo/demo-session.mjs";
 import { STUDENT_PORTAL_SESSION_MARKER } from "@/functions/auth/session-type.mjs";
+import { startGuestSession } from "@/functions/guest/guest-session";
+import LegalFooter from "@/components/legal/footer";
 
 
 const StudentLogin = () => {
@@ -536,6 +538,27 @@ const StudentLogin = () => {
             Are you a Club Organiser ?
           </Link>
         </div>
+
+        <div className="mt-4 flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              startGuestSession();
+              router.push("/student/events");
+            }}
+            className="theme_box_bg w-full py-3 text-theme_text_primary font-semibold tracking-wide"
+          >
+            Browse as guest
+          </button>
+          <Link
+            href="/legal"
+            className="text-theme_text_normal_60 text-sm hover:underline"
+          >
+            Legal & policies
+          </Link>
+        </div>
+
+        <LegalFooter className="mt-6" />
 
       </LoginLayout>
     </>
