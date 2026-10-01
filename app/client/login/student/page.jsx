@@ -36,6 +36,21 @@ import { STUDENT_PORTAL_SESSION_MARKER } from "@/functions/auth/session-type.mjs
 import { startGuestSession } from "@/functions/guest/guest-session";
 
 
+// Sign-in errors come from the backend, worded for the app. The website asks
+// for a username, so it never shows an institution name or "NetID".
+const loginErrorMessage = (error) => {
+  const message = error?.message || "Could not reach the login service";
+  if (/did not accept this NetID and password/i.test(message)) {
+    return "Incorrect username or password.";
+  }
+  if (/doesn't recognise this NetID/i.test(message)) {
+    return "We couldn't find an account with this username. Check it and try again.";
+  }
+  return message
+    .replace(/\bSRM(IST)?\s*/gi, "")
+    .replace(/\bNet ?ID\b/gi, "username");
+};
+
 const StudentLogin = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -57,9 +72,9 @@ const StudentLogin = () => {
 
   const studentLoginFields = [
     {
-      name: "SRM Email / Net ID",
+      name: "Username",
       type: "text",
-      placeholder: "SRM Email / Net ID",
+      placeholder: "Username",
       onChange: (e) => {
         if (e.target.value.includes("@")) setUserid(e.target.value.trim());
         else setUserid(e.target.value.trim() + "@srmist.edu.in");
@@ -105,7 +120,7 @@ const StudentLogin = () => {
     try {
       const netId = normalizeStudentNetId(userid);
       if (!netId || !password) {
-        throw new Error("NetID and password are required.");
+        throw new Error("Username and password are required.");
       }
 
       if (isDemoNetId(userid)) {
@@ -253,7 +268,7 @@ const StudentLogin = () => {
 
       finishAcademia(await academiaAttempt);
     } catch (error) {
-      toast.error(error?.message || "Could not reach the login service");
+      toast.error(loginErrorMessage(error));
     } finally {
       setLoading(false);
     }
