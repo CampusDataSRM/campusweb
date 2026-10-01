@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { baseURL } from "@/constants/baseURL";
 import { isDemoSession, logoutDemo } from "@/functions/demo/student-demo";
+import { clearGuestSession, isGuestSession } from "@/functions/guest/guest-session";
 
 const studentPageLink = [
   { name: "Home", link: "/student", icon: "/icons/home/" },
@@ -43,6 +44,7 @@ const studentPageLink = [
     link: "/student/cgpacalc",
     icon: "/icons/CGPA/",
 },
+  { name: "Legal", link: "/legal", icon: "/icons/legal/" },
   { name: "About us", link: "/about", icon: "/icons/us/" },
   {
     name: "WhatsApp",
@@ -52,14 +54,33 @@ const studentPageLink = [
   { name: "Logout", link: "/", icon: "/icons/logout/" },
 ];
 
+// The evaluator's tabs, named as in Campus App: Home, Check-in, Events,
+// Scores, Clubs, Legal.
+const demoPageLink = [
+  { name: "Home", link: "/student", icon: "/icons/home/" },
+  { name: "Check-in", link: "/student/attendance", icon: "/icons/percent/" },
+  { name: "Events", link: "/student/events", icon: "/icons/event/" },
+  { name: "Scores", link: "/student/marks", icon: "/icons/bar-chart/" },
+  { name: "Clubs", link: "/student/clubs", icon: "/icons/user-group/" },
+  { name: "Legal", link: "/legal", icon: "/icons/legal/" },
+  { name: "Logout", link: "/", icon: "/icons/logout/" },
+];
+
 const FloatingNavbar = () => {
   const [showMore, setShowMore] = useState(false);
   const router = useRouter();
   const currentRoute = usePathname();
-  const visibleLinks = isDemoSession()
-    ? studentPageLink.filter((item) =>
-        ["Home", "Atten", "TimeT", "Marks", "Events", "Clubs", "Logout"].includes(item.name)
-      )
+  // Guests browse only public pages, as in Campus App; the demo session
+  // keeps the legal pages a reviewer needs.
+  const visibleLinks = isGuestSession()
+    ? [
+        ...studentPageLink.filter((item) =>
+          ["Events", "Clubs", "Legal", "About us"].includes(item.name)
+        ),
+        { name: "Sign in", link: "/", icon: "/icons/user/" },
+      ]
+    : isDemoSession()
+    ? demoPageLink
     : studentPageLink;
 
   const handleMoreClick = () => setShowMore(!showMore);
@@ -68,6 +89,11 @@ const FloatingNavbar = () => {
     console.log("logout");
 
     e?.preventDefault();
+    if (isGuestSession()) {
+      clearGuestSession();
+      router.push("/");
+      return;
+    }
     if (localStorage.getItem("campuswebDemo") === "true") {
       logoutDemo().finally(() => {
         localStorage.clear();
@@ -107,7 +133,7 @@ const FloatingNavbar = () => {
             >
               <button
                 onClick={
-                  item.name === "Logout"
+                  (item.name === "Logout" || item.name === "Sign in")
                     ? sessionLogout
                     : item.name === "WhatsApp"
                     ? () => router.replace(item.link)
@@ -136,11 +162,12 @@ const FloatingNavbar = () => {
                       : "text-gray-200/80 text-xs font-semibold"
                   }`}
                 >
-                  {item.name.slice(0, 7)}
+                  {item.name.slice(0, 8)}
                 </span>
               </button>
             </li>
           ))}
+          {visibleLinks.length > 5 && (
           <li className="flex flex-col items-center p-2">
             <button
               onClick={handleMoreClick}
@@ -168,7 +195,7 @@ const FloatingNavbar = () => {
                         <button
                           // href={item.link}
                           onClick={
-                            item.name === "Logout"
+                            (item.name === "Logout" || item.name === "Sign in")
                               ? sessionLogout
                               : item.name === "WhatsApp"
                               ? () => router.replace(item.link)
@@ -204,6 +231,7 @@ const FloatingNavbar = () => {
               </>
             )}
           </li>
+          )}
         </ul>
       </nav>
     </div>

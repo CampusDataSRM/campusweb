@@ -4,7 +4,7 @@ import SectionTitle from "@/components/global/section-title";
 import { toTwoDecimalPlaces } from "@/functions/round-off";
 import { useRouter } from "next/navigation";
 
-const YourStats = ({ courseData, testPerformance }) => {
+const YourStats = ({ courseData, testPerformance, demo = false }) => {
   const Router = useRouter();
 
   let attendance = 0;
@@ -25,12 +25,12 @@ const YourStats = ({ courseData, testPerformance }) => {
 
   const stats = [
     {
-      name: "Attendance",
+      name: demo ? "Check-ins" : "Attendance",
       value: `${(attendance / applicableCoursesForAvgAttendance?.length).toFixed(2)} %`,
       goTo: "/student/attendance",
     },
     {
-      name: "Marks",
+      name: demo ? "Score" : "Marks",
       value: `${toTwoDecimalPlaces(marksObtained)} / ${totalMarksObtained}`,
       goTo: "/student/marks",
     },
@@ -39,7 +39,7 @@ const YourStats = ({ courseData, testPerformance }) => {
     <>
       <div className="mt-5">
         <SectionTitle
-          title="Your Standings"
+          title={demo ? "Event Performance" : "Your Standings"}
           icon="/icons/user/white.svg"
           textColor="theme_text_normal"
         />

@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import StudentPortalSync from "@/components/student/portal-sync/StudentPortalSync";
 import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
+import { useDemoSession } from "@/functions/demo/use-demo-session";
 import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 const defaultStyle =
@@ -22,6 +23,7 @@ const defaultStyle =
 
 const Attendance = () => {
   const router = useRouter();
+  const demo = useDemoSession();
   const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [portalSyncReady, setPortalSyncReady] = useState(false);
@@ -162,7 +164,10 @@ const Attendance = () => {
         <FloatingNavbar />
         <div className="px-3">
           <div className="flex justify-between items-center">
-            <SectionTitle title="Attendance" />
+            <SectionTitle
+              title={demo ? "Event & Workshop Check-Ins" : "Attendance"}
+            />
+            {!demo && (
             <button
               className="z-10 bg-gradient-to-br from-theme_primary/90 to-theme_secondary/90 p-2 rounded-md text-theme_text_normal text-center tracking-wider text-sm font-semibold flex items-center justify-center gap-2"
               onClick={() => {
@@ -188,6 +193,7 @@ const Attendance = () => {
                 <path d="M480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-200v-80h320v80H320Zm10-120q-69-41-109.5-110T180-580q0-125 87.5-212.5T480-880q125 0 212.5 87.5T780-580q0 81-40.5 150T630-320H330Z" />
               </svg>
             </button>
+            )}
           </div>
           {predictBox && (
             <div className="theme_box_bg pt-3 pb-6 flex flex-col justify-center mb-5 px-3">
@@ -341,7 +347,7 @@ const Attendance = () => {
               <div className="flex flex-wrap justify-center gap-5">
               {courseData ? (
                 courseData.map((course, index) => (
-                  <AttendanceCard key={index} attendance={course} />
+                  <AttendanceCard key={index} attendance={course} demo={demo} />
                 ))
               ) : (
                 <div className="theme_box_bg py-6 w-full">

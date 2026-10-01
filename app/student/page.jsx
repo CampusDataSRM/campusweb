@@ -5,7 +5,8 @@ import EventCarousel from "@/components/global/events/carousel";
 import { useEffect, useState } from "react";
 import YourStats from "@/components/student/stats";
 import Cookies from "js-cookie";
-import { studentPageLink } from "@/components/global/navbar/page-link";
+import { demoPageLink, studentPageLink } from "@/components/global/navbar/page-link";
+import { useDemoSession } from "@/functions/demo/use-demo-session";
 import DashboardTimetable from "@/components/student/timetable/dashboard";
 import { toTitleCase } from "@/functions/title-case-convert";
 import InstallButton from "@/components/global/InstallButton";
@@ -25,6 +26,8 @@ import SectionTitle from "@/components/global/section-title";
 
 const Student = () => {
   const router = useRouter();
+  const demo = useDemoSession();
+  const menuLinks = demo ? demoPageLink : studentPageLink;
   const [itemCount, setItemCount] = useState(4);
   const [studentName, setStudentName] = useState(". . .");
   const [loading, setLoading] = useState(true);
@@ -206,7 +209,7 @@ const Student = () => {
             </div>
           </div>
           <div className="grid grid-cols-2 justify-center gap-2 mt-2">
-            {studentPageLink
+            {menuLinks
               .filter((ele) => !["Dashboard"].includes(ele.name))
               .slice(0, itemCount)
               .map((menu, index) => (
@@ -251,7 +254,7 @@ const Student = () => {
               className="theme_box_bg py-2 w-full flex justify-center items-center mt-2"
               onClick={() => {
                 setItemCount(
-                  studentPageLink.filter(
+                  menuLinks.filter(
                     (ele) => !["Dashboard"].includes(ele.name)
                   ).length
                 );
@@ -298,11 +301,12 @@ const Student = () => {
 
           {!loading && (
             <div className="mt-4">
-              <DashboardTimetable />
+              <DashboardTimetable demo={demo} />
             </div>
           )}
           <div>
             <YourStats
+              demo={demo}
               courseData={courseData}
               testPerformance={testPerformance}
             />
