@@ -1,5 +1,12 @@
-const AttendanceCard = ({ attendance }) => {
+// In the evaluator session the rows are event check-ins, worded as in
+// Campus App: IN / MISSED / SESSIONS, and Checked in or Missed.
+const AttendanceCard = ({ attendance, demo = false }) => {
   const attendanceColor = (margin, required) => {
+    if (demo) {
+      return Number(required) <= 0
+        ? { color: "theme_green", value: margin, label: "Checked in" }
+        : { color: "theme_red", value: required, label: "Missed" };
+    }
     if (margin > required) {
       return { color: "theme_green", value: margin, label: "Margin" };
     } else if (margin == required) {
@@ -23,19 +30,19 @@ const AttendanceCard = ({ attendance }) => {
             </span>
             <div className="flex gap-3 items-center text-xs mt-2">
               <span className="theme_box_bg flex gap-3 rounded-full py-1 px-3">
-                <span className="text-theme_green">P</span>
+                <span className="text-theme_green">{demo ? "IN" : "P"}</span>
                 <span className="text-theme_text_normal">
                   {attendance?.hoursPresent}
                 </span>
               </span>
               <span className="theme_box_bg flex gap-3 rounded-full py-1 px-3">
-                <span className="text-theme_red">A</span>
+                <span className="text-theme_red">{demo ? "MISSED" : "A"}</span>
                 <span className="text-theme_text_normal">
                   {attendance?.hoursAbsent}
                 </span>
               </span>
               <span className="theme_box_bg flex gap-3 rounded-full py-1 px-3">
-                <span className="text-theme_primary">T</span>
+                <span className="text-theme_primary">{demo ? "SESSIONS" : "T"}</span>
                 <span className="text-theme_text_normal">
                   {attendance?.hoursConducted}
                 </span>

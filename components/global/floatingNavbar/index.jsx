@@ -54,6 +54,18 @@ const studentPageLink = [
   { name: "Logout", link: "/", icon: "/icons/logout/" },
 ];
 
+// The evaluator's tabs, named as in Campus App: Home, Check-in, Events,
+// Scores, Clubs, Legal.
+const demoPageLink = [
+  { name: "Home", link: "/student", icon: "/icons/home/" },
+  { name: "Check-in", link: "/student/attendance", icon: "/icons/percent/" },
+  { name: "Events", link: "/student/events", icon: "/icons/event/" },
+  { name: "Scores", link: "/student/marks", icon: "/icons/bar-chart/" },
+  { name: "Clubs", link: "/student/clubs", icon: "/icons/user-group/" },
+  { name: "Legal", link: "/legal", icon: "/icons/legal/" },
+  { name: "Logout", link: "/", icon: "/icons/logout/" },
+];
+
 const FloatingNavbar = () => {
   const [showMore, setShowMore] = useState(false);
   const router = useRouter();
@@ -68,9 +80,7 @@ const FloatingNavbar = () => {
         { name: "Sign in", link: "/", icon: "/icons/user/" },
       ]
     : isDemoSession()
-    ? studentPageLink.filter((item) =>
-        ["Home", "Atten", "TimeT", "Marks", "Events", "Clubs", "Legal", "Logout"].includes(item.name)
-      )
+    ? demoPageLink
     : studentPageLink;
 
   const handleMoreClick = () => setShowMore(!showMore);
@@ -152,7 +162,7 @@ const FloatingNavbar = () => {
                       : "text-gray-200/80 text-xs font-semibold"
                   }`}
                 >
-                  {item.name.slice(0, 7)}
+                  {item.name.slice(0, 8)}
                 </span>
               </button>
             </li>

@@ -12,7 +12,7 @@ import { set } from "date-fns";
 import { getDemoTimetable, isDemoSession } from "@/functions/demo/student-demo";
 import { resolveStudentBatch } from "@/functions/student-batch.mjs";
 
-const DashboardTimetable = () => {
+const DashboardTimetable = ({ demo = false }) => {
   const router = useRouter();
   const [timetable, setTimetable] = useState([]);
   const [dayOrders, setDayOrders] = useState([]);
@@ -95,7 +95,7 @@ const DashboardTimetable = () => {
     <>
       <main className="">
         <SectionTitle
-          title="Timetable"
+          title={demo ? "Participation Overview" : "Timetable"}
           icon="/icons/sun/white.svg"
           textColor="theme_text_normal"
         />

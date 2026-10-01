@@ -72,6 +72,16 @@ const studentPageLink = [
    },
 ];
 
+// The evaluator's menu, named as in Campus App.
+const demoPageLink = [
+    { name: "Check-ins", link: "/student/attendance", icon: "/icons/percent/primary.svg" },
+    { name: "Events", link: "/student/events", icon: "/icons/event/primary.svg" },
+    { name: "Scores", link: "/student/marks", icon: "/icons/bar-chart/primary.svg" },
+    { name: "Clubs", link: "/student/clubs", icon: "/icons/user-group/primary.svg" },
+    { name: "Legal", link: "/legal", icon: "/icons/legal/primary.svg" },
+    { name: "Logout", link: "/", icon: "/icons/logout/primary.svg" },
+];
+
 const pageNames = studentPageLink.map((entity) => entity.name);
 
-export { studentPageLink, pageNames };
+export { studentPageLink, demoPageLink, pageNames };

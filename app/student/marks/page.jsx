@@ -12,10 +12,12 @@ import { useRouter } from "next/navigation";
 import FloatingNavbar from "@/components/global/floatingNavbar";
 import { getStudentData } from "@/functions/api/student";
 import { getDemoStudent, isDemoSession } from "@/functions/demo/student-demo";
+import { useDemoSession } from "@/functions/demo/use-demo-session";
 import { mergeStudentSnapshot } from "@/functions/student-snapshot.mjs";
 
 const Marks = () => {
   const router = useRouter();
+  const demo = useDemoSession();
   const [testreport, setTestreport] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -72,7 +74,7 @@ const Marks = () => {
         <Navbar items={pageNames.filter((item) => item !== "Marks")} />
         <FloatingNavbar />
         <main className="px-3">
-          <SectionTitle title="Marks" />
+          <SectionTitle title={demo ? "Event Leaderboard" : "Marks"} />
           {testreport ? (
             <>
               {testreport.length > 0 ? (
@@ -148,7 +150,7 @@ const Marks = () => {
                         {test.tests && Object.keys(test.tests).length === 0 && (
                           <div className="theme_box_bg flex flex-col gap-2 justify-center items-center py-4 w-full">
                             <span className="text-base font-medium text-theme_text_normal tracking-wide">
-                              No Record Found
+                              {demo ? "No results yet" : "No Record Found"}
                             </span>
                           </div>
                         )}
@@ -163,7 +165,9 @@ const Marks = () => {
           ) : (
             <div className="theme_box_bg py-6 w-full">
               <span className="text-theme_text_normal font-medium tracking-wide flex justify-center">
-                No data found for Test Performances.
+                {demo
+                  ? "Results appear here once they are published."
+                  : "No data found for Test Performances."}
               </span>
             </div>
           )}
