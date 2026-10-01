@@ -190,7 +190,7 @@ const StudentPortalSync = ({ onSync }) => {
     const netId = portalNetId.trim().toLowerCase();
 
     if (!netId) {
-      toast.error("Please enter your Net ID.");
+      toast.error("Please enter your username.");
       return;
     }
 
@@ -311,7 +311,7 @@ const StudentPortalSync = ({ onSync }) => {
           {/* Net ID — editable if not found in localStorage, read-only if pre-filled */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Net ID
+              Username
             </label>
             <input
               type="text"
@@ -321,7 +321,7 @@ const StudentPortalSync = ({ onSync }) => {
                 !!(extractNetId(localStorage.getItem("net_id")) ||
                 extractNetId(localStorage.getItem("userid")))
               }
-              placeholder="Enter your Net ID (e.g. ac2741)"
+              placeholder="Enter your username"
               className={`w-full bg-black/40 border border-gray-700 rounded-md p-3 text-sm tracking-wide focus:outline-none focus:border-theme_primary ${
                 extractNetId(localStorage.getItem("net_id")) ||
                 extractNetId(localStorage.getItem("userid"))
@@ -376,7 +376,7 @@ const StudentPortalSync = ({ onSync }) => {
           </div>
 
           <p className="text-[11px] text-gray-500 leading-relaxed">
-            This is your SRM Student Portal password, which may differ from your
+            This is your Student Portal password, which may differ from your
             Campus Web login password.
           </p>
         </form>
