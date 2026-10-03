@@ -20,9 +20,8 @@ import type { ForceRefreshUserResponse } from "@/network-calls/types";
  *   })
  * Global header wiring happens at integration time.
  *
- * Typed fetcher through the shared axios client:
- * - server-side (RSC/prefetch): direct to API_BASE_URL
- * - client-side: same-origin /api, proxied by the Next.js rewrite
+ * Typed fetcher through the shared axios client; direct client-to-API calls
+ * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
  */
 export async function forceRefreshUser(
   config?: RequestConfig,

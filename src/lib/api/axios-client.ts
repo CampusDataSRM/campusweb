@@ -1,15 +1,13 @@
 /**
  * Shared axios client for all API calls.
  *
- * URL strategy (matches the rewrite in next.config.ts):
- * - Browser: relative `/api` — requests stay same-origin and are proxied by the
- *   Next.js rewrite (`/api/:path*` -> `${API_BASE_URL}/:path*`).
- * - Server (RSC / prefetch): absolute `API_BASE_URL` — making a server-side
- *   request back to our own origin would get rewritten again and turn into a
- *   self-request, which is a known deadlock/anti-pattern. The server talks to
- *   the API origin directly instead.
- *
- * Both paths land on the exact same backend endpoints.
+ * URL strategy — direct client-to-API, no proxy in between:
+ * every request goes straight from the browser to the API origin
+ * (NEXT_PUBLIC_SERVE, inlined into the client bundle at build time). There is
+ * no Next.js rewrite / same-origin proxy, so the API origin must allow CORS
+ * from the frontend's origin. Because cookies live on the frontend origin and
+ * auth travels as explicit headers (e.g. Authorization), requests are
+ * credentialless by default.
  */
 
 import axios, {
@@ -32,18 +30,9 @@ export class ApiError extends Error {
   }
 }
 
-function getBaseURL(): string {
-  // Server-side: hit the API origin directly (no self-request through Next).
-  if (typeof window === "undefined") {
-    return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_SERVE ?? "";
-  }
-  // Client-side: same-origin, proxied by the Next.js rewrite.
-  return "/api";
-}
-
 function createApiClient(): AxiosInstance {
   const client = axios.create({
-    baseURL: getBaseURL(),
+    baseURL: process.env.NEXT_PUBLIC_SERVE ?? "",
     timeout: 15_000,
     headers: {
       "Content-Type": "application/json",

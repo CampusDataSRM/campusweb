@@ -3,22 +3,22 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
 import { queryKeys } from "@/network-calls/query-keys";
-import type { AllEventsResponse } from "@/network-calls/types";
+import type { ClubEventsResponse } from "@/network-calls/types";
 
 /**
- * GET /users/allevent
+ * GET /users/club-events
  *
- * Public endpoint — no auth headers required. Returns every club event
- * (currently live, recruitment and otherwise).
+ * Authenticated endpoint: requires the club token as the `Authorization` header
+ *   fetchClubEvents({ headers: { Authorization: `Bearer ${token}` } })
  *
  * Typed fetcher through the shared axios client; direct client-to-API calls
  * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
  */
-export async function fetchAllEvents(
+export async function fetchClubEvents(
   config?: RequestConfig,
-): Promise<AllEventsResponse> {
-  const { data } = await apiClient.get<AllEventsResponse>(
-    "/users/allevent",
+): Promise<ClubEventsResponse> {
+  const { data } = await apiClient.get<ClubEventsResponse>(
+    "/users/club-events",
     config,
   );
   return data;
@@ -29,13 +29,13 @@ export async function fetchAllEvents(
  * (queryClient.prefetchQuery) and client hooks (useQuery) alike, guaranteeing
  * identical keys and fetchers on both sides.
  */
-export const allEventsQueryOptions = (config?: RequestConfig) =>
+export const clubEventsQueryOptions = (config?: RequestConfig) =>
   queryOptions({
-    queryKey: queryKeys.events.list,
-    queryFn: () => fetchAllEvents(config),
+    queryKey: queryKeys.clubEvents.current,
+    queryFn: () => fetchClubEvents(config),
   });
 
 /** Client-side hook. Server-hydrated data is picked up automatically. */
-export function useAllEvents() {
-  return useQuery(allEventsQueryOptions());
+export function useClubEvents(config?: RequestConfig) {
+  return useQuery(clubEventsQueryOptions(config));
 }

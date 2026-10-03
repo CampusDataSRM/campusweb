@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Central query key registry.
  *
  * Always build keys through these factories — never inline string keys — so
@@ -28,5 +28,13 @@ export const queryKeys = {
   events: {
     all: ["events"] as const,
     list: ["events", "list"] as const,
+  },
+  clubs: {
+    all: ["clubs"] as const,
+    list: ["clubs", "list"] as const,
+  },
+  clubEvents: {
+    all: ["clubEvents"] as const,
+    current: ["clubEvents", "current"] as const,
   },
 } as const;

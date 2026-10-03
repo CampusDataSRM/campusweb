@@ -14,9 +14,8 @@ import type {
  * no Academia proxying — the backend returns a JWT directly, which authenticates
  * subsequent club endpoints. Token persistence is wired at integration time.
  *
- * Typed fetcher through the shared axios client:
- * - server-side (RSC/prefetch): direct to API_BASE_URL
- * - client-side: same-origin /api, proxied by the Next.js rewrite
+ * Typed fetcher through the shared axios client; direct client-to-API calls
+ * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
  */
 export async function postClubLogin(
   credentials: ClubLoginRequest,

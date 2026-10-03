@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shared API response types.
  *
  * Add endpoint-specific types here (or in sibling files) as the API surface
@@ -296,6 +296,60 @@ export interface ClubEvent {
 export interface AllEventsResponse {
   data: {
     events: ClubEvent[];
+  };
+  /** "success" on a completed fetch; other values indicate failure. */
+  status: string;
+}
+
+export interface ClubEmbeddedEvent {
+  ID: string;
+  ClubID: string;
+  banner_url: string;
+  title: string;
+  website_link?: string;
+  dates: string;
+  timing: string;
+  ods_provided?: boolean;
+  refreshments_provided?: boolean;
+  labels: string[];
+  CreatedAt: string;
+  UpdatedAt: string;
+  likedby: string[];
+  popularity: number;
+}
+
+/** GET /users/allclub — a club record. Public endpoint, no auth required. */
+export interface Club {
+  id: string;
+  name: string;
+  description: string;
+  email: string;
+  websiteLink?: string;
+  isRecruiting?: boolean;
+  labels: string[];
+  logo: string;
+  created_at: string;
+  updated_at: string;
+  verified: boolean;
+  popularity: number;
+  likedby: string[];
+  events?: ClubEmbeddedEvent[];
+}
+
+/** GET /users/allclub — response. */
+export interface AllClubsResponse {
+  data: {
+    clubs: Club[];
+  };
+  /** "success" on a completed fetch; other values indicate failure. */
+  status?: string;
+}
+
+/** GET /users/club-events — response. */
+export interface ClubEventsResponse {
+  data: {
+    club: Club;
+    events: ClubEmbeddedEvent[];
   };
   /** "success" on a completed fetch; other values indicate failure. */
   status: string;

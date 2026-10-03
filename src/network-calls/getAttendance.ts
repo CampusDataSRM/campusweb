@@ -13,9 +13,8 @@ import type {
  * Per-subject attendance for the signed-in student (net id only — relies on
  * the student-portal session established by /student-portal/login).
  *
- * Typed fetcher through the shared axios client:
- * - server-side (RSC/prefetch): direct to API_BASE_URL
- * - client-side: same-origin /api, proxied by the Next.js rewrite
+ * Typed fetcher through the shared axios client; direct client-to-API calls
+ * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
  */
 export async function postAttendance(
   body: AttendanceRequest,
