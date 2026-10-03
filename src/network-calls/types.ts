@@ -103,7 +103,7 @@ export type Planner = Record<string, PlannerMonth>;
 export interface StudentPortalLoginRequest {
   net_id: string;
   password: string;
-  registration_number: string;
+  registration_number?: string;
 }
 
 /** POST /student-portal/login — response. */
@@ -117,6 +117,8 @@ export interface StudentPortalLoginResponse {
 /** POST /student-portal/attendance — request body. */
 export interface AttendanceRequest {
   net_id: string;
+  /** Bypass the backend cache and pull from the Student Portal now. */
+  force_refresh?: boolean;
 }
 
 /** POST /student-portal/attendance — per-subject attendance row. */
@@ -167,6 +169,10 @@ export interface UserCourse {
   attendancePercent: string;
   practicalDetails: string;
   roomNo: string;
+  /** Classes credited as present for approved OD/ML (Student Portal merge). */
+  odMlCount?: number;
+  /** True when this row merges Academia and Student Portal attendance. */
+  studentPortalMergedAttendance?: boolean;
 }
 
 /** POST /auth/force-refresh/user — one named test's marks inside a course. */
@@ -380,4 +386,50 @@ export interface TimetableResponse {
   /** e.g. "1"; "No Day Order" outside term time. */
   day_order: string;
   timetable: Timetable;
+}
+
+/**
+ * GET /auth/user - the signed-in student's profile, served from the backend's
+ * cache (vs the live /auth/force-refresh/user). Same shape, plus the demo
+ * flag; any field may be missing on a partial upstream response.
+ */
+export type StudentProfile = Partial<ForceRefreshUserResponse> & {
+  /** True for the evaluator (demo) account. */
+  isTestUser?: boolean;
+};
+
+/** POST /demo/login - request body. */
+export interface DemoLoginRequest {
+  net_id: string;
+  password: string;
+}
+
+/** POST /demo/login - response. */
+export interface DemoLoginResponse {
+  /** Signed demo session token, "<base64 payload>.<signature>". */
+  demo_token: string;
+  /** Lifetime in seconds. */
+  expires_in?: number;
+  is_test_user?: boolean;
+}
+
+/** GET /demo/snapshot - the demo profile. */
+export interface DemoSnapshotResponse {
+  status: string;
+  content: StudentProfile;
+}
+
+/** PUT /users/eventaction and /users/clubaction - the `action` header. */
+export type LikeAction = "like" | "unlike";
+
+/** POST /student-portal/marks - request body. */
+export interface StudentPortalMarksRequest {
+  net_id: string;
+  force_refresh: boolean;
+}
+
+/** POST /student-portal/marks - response. */
+export interface StudentPortalMarksResponse {
+  status: string;
+  testPerformances: UserTestPerformance[];
 }
