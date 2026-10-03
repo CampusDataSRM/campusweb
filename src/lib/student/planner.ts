@@ -104,3 +104,18 @@ export function plannerEntryDate(month: PlannerMonth, day: PlannerDay): Date | n
   if (!Number.isFinite(dayOfMonth) || month.year === null) return null;
   return new Date(month.year, month.month, dayOfMonth);
 }
+
+/** First and last dated planner entries - the semester's span. */
+export function plannerRange(months: PlannerMonth[]): { start: Date; end: Date } | null {
+  let start: Date | null = null;
+  let end: Date | null = null;
+  for (const month of months) {
+    for (const day of month.days) {
+      const date = plannerEntryDate(month, day);
+      if (!date) continue;
+      if (!start || date < start) start = date;
+      if (!end || date > end) end = date;
+    }
+  }
+  return start && end ? { start, end } : null;
+}
