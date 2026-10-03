@@ -433,3 +433,61 @@ export interface StudentPortalMarksResponse {
   status: string;
   testPerformances: UserTestPerformance[];
 }
+
+/** POST /auth/forgotpassword, PATCH /auth/resetpassword, POST /users/updatepassword. */
+export interface StatusMessageResponse {
+  status: string;
+  message?: string;
+}
+
+/** PATCH /auth/resetpassword/{token} - body. */
+export interface ResetPasswordRequest {
+  password: string;
+  passwordConfirm: string;
+}
+
+/** POST /users/updatepassword - body (field casing as the backend expects). */
+export interface UpdatePasswordRequest {
+  currentPassword: string;
+  NewPassword: string;
+  PasswordConfirm: string;
+}
+
+/** GET /users/getprofile - the signed-in club. */
+export interface ClubProfileResponse {
+  status?: string;
+  data: Club;
+}
+
+/** Club profile fields, for sign-up and profile updates (sent as multipart). */
+export interface ClubProfileInput {
+  name: string;
+  description: string;
+  websiteLink: string;
+  isRecruiting: boolean;
+  labels: [string, string, string];
+  logo?: File | null;
+}
+
+/** POST /auth/club-register - profile plus credentials. */
+export interface ClubRegisterInput extends ClubProfileInput {
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+/** POST /users/create-event - sent as multipart. */
+export interface CreateEventInput {
+  title: string;
+  websiteLink: string;
+  /** "YYYY-MM-DD". */
+  startDate: string;
+  endDate: string;
+  /** "HH:MM". */
+  startTime: string;
+  endTime: string;
+  odsProvided: boolean;
+  refreshmentsProvided: boolean;
+  labels: [string, string, string];
+  banner: File;
+}
