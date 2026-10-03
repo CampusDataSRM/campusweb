@@ -1,5 +1,7 @@
+import { StudentShell } from "@/components/layout/student-shell";
+
 export default function StudentLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <>{children}</>;
+  return <StudentShell>{children}</StudentShell>;
 }

@@ -322,3 +322,45 @@ export function predictAttendance(
     selectedClassCount: missedClassCount + creditedClassCount,
   };
 }
+
+/* ── Timetable class -> attendance course ── */
+
+const significantWords = (value: string) =>
+  normalizeTitle(value).split(" ").filter((word) => word.length > 3);
+
+/**
+ * The course a timetable class belongs to: exact title with matching
+ * theory/practical type first, then any exact title, then the course sharing
+ * the most significant words (as the app's dashboard does).
+ */
+export function courseForSubject(
+  courses: readonly UserCourse[],
+  subject: string,
+  practical: boolean,
+): UserCourse | undefined {
+  const key = normalizeTitle(subject);
+  if (!key) return undefined;
+  const titled = courses.filter((course) => normalizeTitle(course.courseTitle) === key);
+  const typed = titled.find(
+    (course) => /practical|lab/i.test(course.courseType ?? course.category ?? "") === practical,
+  );
+  if (typed ?? titled[0]) return typed ?? titled[0];
+
+  const words = new Set(significantWords(subject));
+  let best: UserCourse | undefined;
+  let bestScore = 0;
+  for (const course of courses) {
+    const score = significantWords(course.courseTitle).filter((word) => words.has(word)).length;
+    if (score > bestScore) {
+      best = course;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
+export type AttendanceTier = "good" | "warn" | "bad";
+
+/** Green at 75%+, amber from 60%, red below - the app's colour bands. */
+export const attendanceTier = (percent: number): AttendanceTier =>
+  percent >= ATTENDANCE_THRESHOLD ? "good" : percent >= 60 ? "warn" : "bad";
