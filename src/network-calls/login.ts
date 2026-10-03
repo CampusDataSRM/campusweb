@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -32,11 +31,4 @@ export async function postLogin(
  */
 export function isLoginSuccess(response: LoginResponse): boolean {
   return response.Status === "success";
-}
-
-/** Client-side login mutation. Session persistence is wired at integration time. */
-export function useLogin() {
-  return useMutation({
-    mutationFn: (credentials: LoginRequest) => postLogin(credentials),
-  });
 }

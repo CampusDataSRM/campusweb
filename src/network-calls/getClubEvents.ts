@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -34,8 +34,3 @@ export const clubEventsQueryOptions = (config?: RequestConfig) =>
     queryKey: queryKeys.clubEvents.current,
     queryFn: () => fetchClubEvents(config),
   });
-
-/** Client-side hook. Server-hydrated data is picked up automatically. */
-export function useClubEvents(config?: RequestConfig) {
-  return useQuery(clubEventsQueryOptions(config));
-}

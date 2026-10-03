@@ -1,0 +1,98 @@
+"use client";
+
+import { BookOpenCheck, Sparkles, X } from "lucide-react";
+import { useState } from "react";
+
+import { AttendanceSummary } from "@/components/attendance/attendance-summary";
+import { CourseCard } from "@/components/attendance/course-card";
+import { PredictionSheet } from "@/components/attendance/prediction-sheet";
+import { UnlockPrompt } from "@/components/attendance/unlock-prompt";
+import { CachedBadge, EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
+import { PageHeader } from "@/components/layout/page-header";
+import { Button } from "@/components/ui/button";
+import { useSession } from "@/context/session-context";
+import { useAttendancePrediction } from "@/hooks/use-attendance-prediction";
+import { useStudentCopy } from "@/hooks/use-student-copy";
+import { useProfile } from "@/hooks/use-student-data";
+
+export function AttendanceView() {
+  const copy = useStudentCopy();
+  const { session } = useSession();
+  const profile = useProfile();
+  const prediction = useAttendancePrediction();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const canPredict = session?.kind !== "demo";
+  const predicted = prediction.result !== null;
+
+  const header = (
+    <PageHeader
+      title={copy.attendanceTitle}
+      status={<CachedBadge savedAt={profile.savedAt} refreshing={profile.isFetching} />}
+      description={predicted ? "Showing a prediction - your real attendance is unchanged." : "Updated from your student account."}
+      actions={
+        canPredict && prediction.courses.length > 0 ? (
+          predicted ? (
+            <>
+              <Button variant="outline" size="touch" onClick={() => setSheetOpen(true)}>Edit</Button>
+              <Button variant="tonal" size="touch" onClick={prediction.clear}>
+                <X aria-hidden /> Clear
+              </Button>
+            </>
+          ) : (
+            <Button size="touch" onClick={() => setSheetOpen(true)}>
+              <Sparkles aria-hidden /> Predict
+            </Button>
+          )
+        ) : undefined
+      }
+    />
+  );
+
+  if (profile.isLoading) {
+    return (
+      <div className="flex flex-col gap-6">
+        {header}
+        <ShimmerBlock className="h-28" />
+        <div className="grid gap-3 md:grid-cols-2">
+          {Array.from({ length: 4 }, (_, i) => <ShimmerBlock key={i} className="h-44" />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile.data) {
+    return (
+      <div className="flex flex-col gap-6">
+        {header}
+        <ErrorState error={profile.error} title="Couldn't load attendance" onRetry={() => void profile.refetch()} retrying={profile.isFetching} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      {header}
+      {profile.data.studentPortalLoginRequired && <UnlockPrompt />}
+      {prediction.courses.length === 0 ? (
+        <EmptyState icon={BookOpenCheck} title="No attendance yet" description="Your courses appear here once attendance is published." />
+      ) : (
+        <>
+          <AttendanceSummary courses={prediction.courses} />
+          {predicted && prediction.result && (
+            <p className="rounded-2xl border border-secondary/40 bg-secondary-container px-4 py-3 text-sm font-semibold text-on-secondary-container">
+              Prediction covers {prediction.result.projectedClassCount} upcoming classes, {prediction.result.missedClassCount} of them missed.
+            </p>
+          )}
+          <div className="grid gap-3 md:grid-cols-2">
+            {prediction.courses.map((course) => (
+              <CourseCard key={`${course.courseCode}-${course.courseTitle}`} course={course} predicted={predicted} />
+            ))}
+          </div>
+        </>
+      )}
+      {canPredict && sheetOpen && (
+        <PredictionSheet open={sheetOpen} onOpenChange={setSheetOpen} prediction={prediction} />
+      )}
+    </div>
+  );
+}

@@ -1,11 +1,6 @@
-import { Plus_Jakarta_Sans, Nunito } from "next/font/google";
+import { Nunito } from "next/font/google";
 
-export const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
-});
-
+/** Campus App's typeface, used for everything - headings at heavy weights. */
 export const nunito = Nunito({
   subsets: ["latin"],
   display: "swap",

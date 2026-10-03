@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -32,11 +31,4 @@ export async function forceRefreshUser(
     config,
   );
   return data;
-}
-
-/** Client-side mutation. Use after stale-period or on explicit user request. */
-export function useForceRefreshUser() {
-  return useMutation({
-    mutationFn: () => forceRefreshUser(),
-  });
 }

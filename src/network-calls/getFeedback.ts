@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -46,11 +46,6 @@ export const feedbackQueryOptions = (config?: RequestConfig) =>
     queryFn: () => fetchFeedback(config),
   });
 
-/** Client-side hook. Server-hydrated data is picked up automatically. */
-export function useFeedback() {
-  return useQuery(feedbackQueryOptions());
-}
-
 /**
  * POST /auth/feedback
  *
@@ -70,11 +65,4 @@ export async function postFeedback(
     config,
   );
   return data;
-}
-
-/** Client-side feedback submission mutation. */
-export function useSubmitFeedback() {
-  return useMutation({
-    mutationFn: (body: FeedbackRequest) => postFeedback(body),
-  });
 }
