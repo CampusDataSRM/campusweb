@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-cta text-on-primary shadow-sm hover:brightness-110",
+        default: "sheen bg-cta text-on-primary shadow-[0_8px_24px_-10px_var(--primary),inset_0_1px_0_color-mix(in_oklab,var(--on-primary)_22%,transparent)] hover:brightness-110",
         tonal:
           "bg-primary-container text-on-primary-container hover:bg-[color-mix(in_oklch,var(--primary-container),var(--on-primary-container)_8%)]",
         outline:

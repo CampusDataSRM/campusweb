@@ -71,15 +71,15 @@ export function NewEventForm() {
   });
 
   return (
-    <form noValidate onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="flex flex-col gap-4 rounded-3xl border border-outline-variant bg-surface-container p-5 sm:p-6">
+    <form noValidate onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="flex flex-col gap-4 rounded-3xl panel p-5 sm:p-6">
         <FormField id={`${id}-title`} label="Event title" error={errors.title?.message}>
           <Input id={`${id}-title`} className="h-11 rounded-xl" {...register("title", { required: "Give the event a title.", maxLength: { value: 120, message: "Keep it under 120 characters." } })} />
         </FormField>
         <FormField id={`${id}-link`} label="Registration link" error={errors.websiteLink?.message}>
           <Input id={`${id}-link`} type="url" placeholder="https://" className="h-11 rounded-xl" {...register("websiteLink", { required: "Students need somewhere to register.", pattern: { value: /^https?:\/\/\S+$/i, message: "Use a full link starting with https://" } })} />
         </FormField>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField id={`${id}-sd`} label="Starts on" error={errors.startDate?.message}>
             <Input id={`${id}-sd`} type="date" className="h-11 rounded-xl" {...register("startDate", { required: "Pick a start date." })} />
           </FormField>
@@ -93,7 +93,7 @@ export function NewEventForm() {
             <Input id={`${id}-et`} type="time" className="h-11 rounded-xl" {...register("endTime", { required: "Pick an end time." })} />
           </FormField>
         </div>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <label className="flex min-h-11 items-center gap-3 rounded-xl border border-outline-variant bg-surface-high px-4 text-sm font-semibold text-on-surface">
             <input type="checkbox" className="size-5 accent-[var(--primary)]" {...register("odsProvided")} /> OD provided
           </label>

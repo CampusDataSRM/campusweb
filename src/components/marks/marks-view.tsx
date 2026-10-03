@@ -29,7 +29,7 @@ export function MarksView() {
         actions={showSgpa ? <SgpaSheet projection={projection} program={profile.data?.program} semester={profile.data?.semester} /> : undefined}
       />
       {profile.isLoading ? (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {Array.from({ length: 4 }, (_, i) => <ShimmerBlock key={i} className="h-56" />)}
         </div>
       ) : !profile.data ? (
@@ -41,7 +41,7 @@ export function MarksView() {
           <EmptyState icon={BarChart3} title={copy.noMarksTitle} description={copy.noMarksBody} />
         )
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {performances.map((performance) => (
             <MarksCard key={performance.courseCode} performance={performance} />
           ))}

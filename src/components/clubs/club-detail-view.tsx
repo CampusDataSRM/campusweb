@@ -54,7 +54,7 @@ export function ClubDetailView({ clubId }: { clubId: string }) {
   return (
     <div className="flex flex-col gap-6">
       {back}
-      <header className="flex flex-col gap-5 rounded-3xl border border-outline-variant bg-surface-container p-6 sm:flex-row sm:items-center">
+      <header className="flex flex-col gap-5 rounded-3xl panel p-6 sm:flex-row sm:items-center">
         {club.logo && <Image src={club.logo} alt="" width={80} height={80} unoptimized className="size-20 rounded-3xl object-cover" />}
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <h1 className="flex items-center gap-2 text-h1 font-extrabold text-on-surface">
@@ -86,7 +86,7 @@ export function ClubDetailView({ clubId }: { clubId: string }) {
         {!now || clubEvents.length === 0 ? (
           <EmptyState icon={Sparkles} title="No events right now" description="This club's next events appear here." />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clubEvents.map((event) => (
               <EventCard key={event.id} event={event} today={now} registrationNumber={reg} canLike={canLike} onLike={(id, action) => likeEvent({ id, action })} />
             ))}

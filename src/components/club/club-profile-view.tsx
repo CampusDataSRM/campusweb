@@ -28,7 +28,7 @@ function ProfileForm({ club }: { club: Club }) {
     },
   });
   return (
-    <form noValidate onSubmit={handleSubmit((values) => save.mutate(toProfileInput(values, logo)))} className="flex flex-col gap-5 rounded-3xl border border-outline-variant bg-surface-container p-5 sm:p-6">
+    <form noValidate onSubmit={handleSubmit((values) => save.mutate(toProfileInput(values, logo)))} className="flex flex-col gap-5 rounded-3xl panel p-5 sm:p-6">
       <ClubIdentityFields register={register} errors={errors} />
       <ClubContactFields register={register} errors={errors} onLogo={setLogo} logoName={logo?.name} />
       <Button type="submit" size="touch" className="w-fit" disabled={save.isPending || (!isDirty && !logo)}>
@@ -46,12 +46,12 @@ function PasswordForm() {
     <form
       noValidate
       onSubmit={handleSubmit((v) => update.mutate({ currentPassword: v.current, NewPassword: v.next, PasswordConfirm: v.confirm }, { onSuccess: () => reset() }))}
-      className="flex flex-col gap-4 rounded-3xl border border-outline-variant bg-surface-container p-5 sm:p-6"
+      className="flex flex-col gap-4 rounded-3xl panel p-5 sm:p-6"
     >
       <FormField id={`${id}-c`} label="Current password" error={errors.current?.message}>
         <Input id={`${id}-c`} type="password" autoComplete="current-password" className="h-11 rounded-xl" {...register("current", { required: "Enter your current password." })} />
       </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField id={`${id}-n`} label="New password" error={errors.next?.message}>
           <Input id={`${id}-n`} type="password" autoComplete="new-password" className="h-11 rounded-xl" {...register("next", { required: "Choose a new password.", minLength: { value: 8, message: "Use at least 8 characters." } })} />
         </FormField>

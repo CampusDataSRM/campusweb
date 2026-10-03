@@ -22,8 +22,8 @@ export function CourseCard({ course, predicted }: { course: UserCourse; predicte
     <article
       aria-label={`${course.courseTitle}, ${stats.percent.toFixed(1)}% attendance, ${needsClasses ? `${stats.required} classes required` : `margin ${stats.margin}`}`}
       className={cn(
-        "flex flex-col gap-4 rounded-3xl border bg-surface-container p-5",
-        predicted ? "border-secondary/50" : "border-outline-variant",
+        "panel spotlight flex flex-col gap-4 rounded-3xl p-5",
+        predicted && "border-secondary/60",
       )}
     >
       <div className="flex items-start justify-between gap-4">

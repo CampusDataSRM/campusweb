@@ -60,7 +60,7 @@ export function ThemePicker() {
 
   return (
     <div className="flex flex-col gap-5" aria-busy={!hydrated}>
-      <div role="radiogroup" aria-label="Theme" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div role="radiogroup" aria-label="Theme" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {PALETTE_OPTIONS.map((option) => {
           const selected = hydrated && preference.palette === option.id;
           return (
@@ -95,7 +95,7 @@ export function ThemePicker() {
         })}
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-outline-variant bg-surface-container p-4">
+      <div className="flex flex-col gap-3 rounded-2xl panel p-4">
         <div className="flex items-center gap-2">
           <Palette aria-hidden className="size-5 text-primary-accent" />
           <p className="font-bold text-on-surface">Custom colour</p>

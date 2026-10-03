@@ -242,7 +242,12 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="flex size-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border"
+          className={cn(
+            "flex size-full flex-col",
+            // Floating: the app's panel surface, so the sidebar reads as one
+            // more piece of glass on the glow rather than a slab.
+            variant === "floating" ? "panel overflow-hidden rounded-[1.5rem]" : "bg-sidebar"
+          )}
         >
           {children}
         </div>

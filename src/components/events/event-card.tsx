@@ -35,26 +35,27 @@ export function EventCard({ event, today, registrationNumber, canLike, onLike, c
   const labels = cleanLabels(event.labels);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-outline-variant bg-surface-container transition-colors hover:border-outline">
-      <div className="relative aspect-[16/9] overflow-hidden bg-surface-highest">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl panel spotlight">
+      <div className="relative aspect-[4/3] overflow-hidden bg-surface-lowest">
         {event.banner_url ? (
-          <Image
-            src={event.banner_url}
-            alt=""
-            fill
-            unoptimized
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-(--duration-long) ease-(--ease-standard) group-hover:scale-[1.03]"
-          />
+          <>
+            {/* The poster whole, on a blurred copy of itself - never cropped. */}
+            <Image src={event.banner_url} alt="" fill unoptimized sizes="20vw" className="scale-125 object-cover opacity-45 blur-2xl" />
+            <Image
+              src={event.banner_url}
+              alt=""
+              fill
+              unoptimized
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-contain transition-transform duration-(--duration-long) ease-(--ease-standard) group-hover:scale-[1.03]"
+            />
+          </>
         ) : (
           <div className="flex h-full items-center justify-center bg-primary-container">
             <span className="font-heading text-h2 font-extrabold text-on-primary-container/70">
               {event.club_name?.trim()?.[0]?.toUpperCase() ?? "#"}
             </span>
           </div>
-        )}
-        {phase === "ongoing" && (
-          <Badge className="absolute top-3 left-3 rounded-full bg-success px-2.5 text-on-success">Happening now</Badge>
         )}
       </div>
 
@@ -67,7 +68,12 @@ export function EventCard({ event, today, registrationNumber, canLike, onLike, c
               <Sparkles aria-hidden className="size-4" />
             </span>
           )}
-          <span className="truncate text-sm font-semibold text-on-surface-muted">{event.club_name}</span>
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-on-surface-muted">{event.club_name}</span>
+          {phase === "ongoing" && (
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-success-container px-2.5 py-1 text-xs font-extrabold text-on-success-container">
+              <span aria-hidden className="live-dot text-success-accent" /> Live
+            </span>
+          )}
         </div>
 
         <h3 className="line-clamp-2 font-heading text-lg font-bold text-on-surface">{event.title}</h3>

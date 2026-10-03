@@ -2,7 +2,7 @@
 
 import { Settings2 } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { AppSidebar } from "@/components/layout/app-sidebar";
@@ -17,12 +17,24 @@ import { STUDENT_ROUTES } from "@/constants/routes";
  * bar and bottom navigation on phones. Content is width-capped and padded
  * fluidly; bottom padding keeps it clear of the phone bar.
  */
+function useScrolled(threshold = 8): boolean {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
 export function StudentShell({ children }: { children: ReactNode }) {
+  const scrolled = useScrolled();
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="min-w-0 bg-transparent">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-outline-variant bg-surface/30 px-page backdrop-blur-xl md:h-12">
+        <header data-scrolled={scrolled} className="app-header sticky top-0 z-30 flex h-14 items-center gap-2 px-page md:h-16">
           <SidebarTrigger className="hidden text-on-surface-muted md:inline-flex" />
           <Link href={STUDENT_ROUTES.dashboard} aria-label="Dashboard" className="md:hidden">
             <Logo className="h-5" />
@@ -45,7 +57,7 @@ export function StudentShell({ children }: { children: ReactNode }) {
         </header>
         <main
           id="main"
-          className="mx-auto w-full max-w-content flex-1 px-page pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12"
+          className="mx-auto w-full max-w-content flex-1 px-page pt-6 pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pb-12"
         >
           {children}
         </main>

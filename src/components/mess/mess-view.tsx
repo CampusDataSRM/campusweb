@@ -7,7 +7,7 @@ import { ShimmerBlock } from "@/components/feedback/data-states";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { MEALS, MEAL_TIMES, MESSES, WEEKDAYS, type Meal, type MessId, type Weekday } from "@/constants/mess";
 import { useNow } from "@/hooks/use-now";
 import { usePreferredMess } from "@/hooks/use-preferred-mess";
@@ -29,13 +29,13 @@ export function MessView() {
     return (
       <div className="flex flex-col gap-6">
         <PageHeader title="What's in mess" description="Choose your mess - you can change it any time." />
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {MESSES.map((option) => (
             <button
               key={option.id}
               type="button"
               onClick={() => choose(option.id)}
-              className="flex items-center gap-4 rounded-3xl border border-outline-variant bg-surface-container p-6 text-left transition-colors hover:border-primary hover:bg-surface-high"
+              className="flex items-center gap-4 rounded-3xl panel spotlight pressable p-6 text-left hover:border-outline"
             >
               <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
                 <UtensilsCrossed aria-hidden className="size-6" />
@@ -72,13 +72,7 @@ export function MessView() {
       />
 
       <div className="flex flex-col gap-3">
-        <ToggleGroup value={[shownMeal]} onValueChange={(v) => v[0] && setMeal(v[0] as Meal)} aria-label="Meal" className="grid grid-cols-4 gap-1 rounded-2xl border border-outline-variant bg-surface-container p-1.5">
-          {MEALS.map((item) => (
-            <ToggleGroupItem key={item} value={item} className="h-10 rounded-xl text-sm font-bold data-[pressed]:bg-primary data-[pressed]:text-on-primary">
-              {item}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <Segmented label="Meal" value={shownMeal} onChange={(value) => setMeal(value)} options={MEALS.map((item) => ({ value: item, label: item }))} stretch />
         <div className="-mx-page flex gap-1.5 overflow-x-auto px-page pb-1 sm:mx-0 sm:px-0">
           {WEEKDAYS.map((item) => (
             <Button
@@ -101,7 +95,7 @@ export function MessView() {
       </div>
 
       {dishes.length === 0 ? (
-        <p className="rounded-2xl border border-outline-variant bg-surface-container p-6 text-on-surface-muted">No menu published for this meal.</p>
+        <p className="rounded-2xl panel p-6 text-on-surface-muted">No menu published for this meal.</p>
       ) : (
         <ul className="flex flex-wrap gap-2" aria-label={`${shownMeal} menu`}>
           {dishes.map((dish, index) => (

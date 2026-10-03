@@ -22,7 +22,7 @@ export function ClubAuthCard({
         <Logo className="h-6" />
         <p className="text-sm font-bold text-on-surface-brand">Club portal</p>
       </div>
-      <section className={`relative w-full ${wide ? "max-w-xl" : "max-w-md"} rounded-3xl border border-outline-variant bg-surface-container/95 p-6 shadow-2xl shadow-black/40 sm:p-8`}>
+      <section className={`relative w-full ${wide ? "max-w-xl" : "max-w-md"} rounded-3xl panel panel-raised p-6 sm:p-8`}>
         <div className="mb-6 flex flex-col gap-1.5">
           <h1 className="text-h2 font-bold text-on-surface">{title}</h1>
           {description && <p className="text-sm text-on-surface-muted">{description}</p>}

@@ -53,7 +53,7 @@ export function AttendanceView() {
       <div className="flex flex-col gap-6">
         {header}
         <ShimmerBlock className="h-28" />
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {Array.from({ length: 4 }, (_, i) => <ShimmerBlock key={i} className="h-44" />)}
         </div>
       </div>
@@ -83,7 +83,7 @@ export function AttendanceView() {
               Prediction covers {prediction.result.projectedClassCount} upcoming classes, {prediction.result.missedClassCount} of them missed.
             </p>
           )}
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {prediction.courses.map((course) => (
               <CourseCard key={`${course.courseCode}-${course.courseTitle}`} course={course} predicted={predicted} />
             ))}

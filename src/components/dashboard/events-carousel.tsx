@@ -49,7 +49,7 @@ export function EventsCarousel() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="glass flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-outline-variant"
+      className="panel spotlight flex h-full flex-col overflow-hidden rounded-[1.5rem]"
     >
       <div
         className="relative aspect-[16/10] w-full touch-pan-y overflow-hidden bg-surface-lowest lg:aspect-auto lg:min-h-64 lg:flex-1"

@@ -68,6 +68,31 @@ function headline(today: Today, copy: StudentCopy): { kicker: string; title: str
   return { kicker: todayFormat.format(now), title: `No ${copy.items} today.`, detail: after };
 }
 
+/** How far through the class on now - a bar that fills as the period runs. */
+function ClassProgress({ start, end, now }: { start: number; end: number; now: number }) {
+  const total = Math.max(1, end - start);
+  const done = Math.min(total, Math.max(0, now - start));
+  const left = total - done;
+  return (
+    <div className="flex max-w-md items-center gap-3">
+      <div
+        role="progressbar"
+        aria-label="Class progress"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={done}
+        className="relative h-2 flex-1 overflow-hidden rounded-full bg-surface-highest"
+      >
+        <span
+          className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,var(--success),var(--success-accent))] shadow-[0_0_12px_var(--success-accent)] transition-[width] duration-(--duration-long)"
+          style={{ width: `${(done / total) * 100}%` }}
+        />
+      </div>
+      <span className="shrink-0 text-sm font-extrabold text-on-surface tabular">{left} min left</span>
+    </div>
+  );
+}
+
 /**
  * The dashboard's hero: what's on now or next (or when you're back), next to
  * the overall attendance gauge - the two things every visit is for.
@@ -97,7 +122,7 @@ export function TodayHero() {
   ].filter(Boolean) as string[];
 
   return (
-    <section aria-label="Today" className="relative isolate overflow-hidden rounded-[2rem] border border-outline-variant bg-surface-container">
+    <section aria-label="Today" className="panel panel-raised relative isolate overflow-hidden rounded-[2rem]">
       <div aria-hidden className="aurora" />
       <div className="relative z-10 grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-10">
         <div className="flex min-w-0 flex-col gap-5">
@@ -116,6 +141,7 @@ export function TodayHero() {
             <h1 className="text-display font-black text-on-surface">{line.title}</h1>
             {line.detail && <p className="max-w-xl text-base font-semibold text-on-surface-muted sm:text-lg">{line.detail}</p>}
           </div>
+          {today.moment.current && <ClassProgress start={today.moment.current.startMinutes} end={today.moment.current.endMinutes} now={minutesSinceMidnight(today.now)} />}
           {chips.length > 0 && (
             <ul className="flex flex-wrap gap-2">
               {chips.map((chip) => (
@@ -130,7 +156,7 @@ export function TodayHero() {
         {stats.total > 0 && (
           <Link
             href={STUDENT_ROUTES.attendance}
-            className="glass pressable flex items-center gap-5 rounded-[1.5rem] border border-outline-variant p-4 pr-6 hover:border-outline lg:flex-col lg:gap-3 lg:p-6"
+            className="glass pressable flex items-center gap-5 rounded-[1.5rem] border border-outline-variant p-4 pr-6 shadow-[inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)] hover:border-outline lg:flex-col lg:gap-3 lg:p-6"
           >
             <AttendanceRing percent={stats.overall} label="overall" size={isMobile ? 112 : 148} />
             <span className="flex min-w-0 flex-1 flex-col gap-1 lg:items-center lg:text-center">

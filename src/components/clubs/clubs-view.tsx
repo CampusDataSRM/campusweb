@@ -39,7 +39,7 @@ export function ClubsView() {
         <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search clubs" aria-label="Search clubs" className="h-11 rounded-xl bg-surface-container pl-10 sm:max-w-md" />
       </div>
       {clubs.isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }, (_, i) => <ShimmerBlock key={i} className="h-56" />)}
         </div>
       ) : !clubs.data ? (
@@ -47,7 +47,7 @@ export function ClubsView() {
       ) : list.length === 0 ? (
         <EmptyState icon={UsersRound} title={query ? "No matching clubs" : "No clubs yet"} description={query ? "Try another search." : "Clubs appear here once they join."} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((club) => (
             <ClubCard key={club.id} club={club} registrationNumber={reg} canLike={canLike} onLike={(id, action) => likeClub({ id, action })} />
           ))}

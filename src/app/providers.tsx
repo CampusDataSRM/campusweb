@@ -4,6 +4,8 @@ import { useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
 
+import { RouteProgress } from "@/components/effects/route-progress";
+import { SpotlightTracker } from "@/components/effects/spotlight-tracker";
 import { AppToaster } from "@/components/feedback/app-toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SessionProvider } from "@/context/session-context";
@@ -26,6 +28,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             <TooltipProvider>{children}</TooltipProvider>
           </MotionConfig>
           <AppToaster />
+          <SpotlightTracker />
+          <RouteProgress />
         </SessionProvider>
       </ThemeProvider>
     </QueryClientProvider>

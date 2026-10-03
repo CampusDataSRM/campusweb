@@ -24,12 +24,12 @@ export function SettingsView() {
         <ThemePicker />
       </Section>
       <Section title="Account">
-        <div className="rounded-2xl border border-outline-variant bg-surface-container p-4">
+        <div className="rounded-2xl panel p-4">
           <AccountSummary />
         </div>
       </Section>
       <Section title="More">
-        <ul className="divide-y divide-outline-variant overflow-hidden rounded-2xl border border-outline-variant bg-surface-container">
+        <ul className="divide-y divide-outline-variant overflow-hidden rounded-2xl panel">
           <li>
             <Link href={LEGAL_ROUTES.center} className="flex min-h-14 items-center gap-3 px-4 font-semibold text-on-surface hover:bg-surface-high">
               <Scale aria-hidden className="size-5 text-primary-accent" />

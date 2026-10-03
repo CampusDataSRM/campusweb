@@ -7,7 +7,7 @@ import { EventCard } from "@/components/events/event-card";
 import { CachedBadge, EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { useLikeActions } from "@/hooks/use-like-actions";
 import { useNow } from "@/hooks/use-now";
 import { useEvents, useProfile } from "@/hooks/use-student-data";
@@ -55,17 +55,11 @@ export function EventsView() {
             className="h-11 rounded-xl bg-surface-container pl-10"
           />
         </div>
-        <ToggleGroup value={[filter]} onValueChange={(v) => v[0] && setFilter(v[0] as Filter)} className="rounded-xl border border-outline-variant bg-surface-container p-1">
-          {FILTERS.map((item) => (
-            <ToggleGroupItem key={item.id} value={item.id} className="h-9 rounded-lg px-3 text-sm font-semibold data-[pressed]:bg-primary data-[pressed]:text-on-primary">
-              {item.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <Segmented label="Show" value={filter} onChange={setFilter} options={FILTERS.map((item) => ({ value: item.id, label: item.label }))} />
       </div>
 
       {events.isLoading || !now ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }, (_, i) => <ShimmerBlock key={i} className="h-80" />)}
         </div>
       ) : !events.data ? (
@@ -73,7 +67,7 @@ export function EventsView() {
       ) : list.length === 0 ? (
         <EmptyState icon={Sparkles} title={query ? "No matching events" : "No events to show"} description={query ? "Try another search." : "New events appear here as clubs post them."} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((event) => (
             <EventCard key={event.id} event={event} today={now} registrationNumber={reg} canLike={canLike} onLike={(id, action) => likeEvent({ id, action })} />
           ))}

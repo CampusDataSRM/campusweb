@@ -36,7 +36,7 @@ export function CgpaView() {
       />
 
       <dl className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-outline-variant bg-surface-container p-4">
+        <div className="rounded-2xl panel p-4">
           <dt className="text-sm font-semibold text-on-surface-muted">Credits</dt>
           <dd className="font-heading text-stat font-extrabold text-on-surface tabular"><CountUp to={summary.credits} duration={0.5} /></dd>
         </div>
@@ -55,7 +55,7 @@ export function CgpaView() {
       ) : (
         <ul className="flex flex-col gap-2">
           {calc.subjects.map((subject) => (
-            <li key={subject.id} className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border border-outline-variant bg-surface-container p-3 sm:grid-cols-[1fr_7rem_7rem_auto]">
+            <li key={subject.id} className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl panel p-3 sm:grid-cols-[1fr_7rem_7rem_auto]">
               <Input
                 value={subject.name}
                 onChange={(event) => calc.update(subject.id, { name: event.target.value })}

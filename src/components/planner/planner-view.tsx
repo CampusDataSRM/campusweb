@@ -94,7 +94,7 @@ export function PlannerView() {
             </div>
             <dl className="flex gap-2">
               {stats.map(([label, value]) => (
-                <div key={label} className="rounded-xl border border-outline-variant bg-surface-container px-3 py-2 text-center">
+                <div key={label} className="rounded-xl panel px-3 py-2 text-center">
                   <dt className="text-[0.6875rem] font-semibold text-on-surface-muted">{label}</dt>
                   <dd className="font-heading font-extrabold text-on-surface tabular">{value}</dd>
                 </div>
@@ -103,21 +103,23 @@ export function PlannerView() {
           </div>
 
           {/* Desktop: month grid */}
-          <div className="hidden overflow-hidden rounded-3xl border border-outline-variant md:block">
-            <div className="grid grid-cols-7 border-b border-outline-variant bg-surface-low">
+          <div className="panel hidden overflow-hidden rounded-3xl md:block">
+            <div className="grid grid-cols-7 border-b border-outline-variant">
               {WEEKDAYS.map((day) => (
                 <div key={day} className="px-3 py-2 text-xs font-bold text-on-surface-muted">{day}</div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-px bg-outline-variant">
-              {Array.from({ length: leadingBlanks }, (_, i) => <div key={`blank-${i}`} className="bg-surface" />)}
+            <div className="grid grid-cols-7 [&>*]:shadow-[inset_-1px_-1px_0_var(--outline-variant)] [&>*:nth-child(7n)]:shadow-[inset_0_-1px_0_var(--outline-variant)]">
+              {Array.from({ length: leadingBlanks }, (_, i) => <div key={`blank-${i}`} />)}
               {cells.map((cell) => (
                 <div
                   key={cell.key}
                   aria-current={cell.today ? "date" : undefined}
                   className={cn(
-                    "flex min-h-24 flex-col gap-1 p-2",
-                    cell.today ? "bg-primary-container" : cell.holiday ? "bg-surface-low" : "bg-surface-container",
+                    "flex min-h-24 flex-col gap-1 p-2.5 transition-colors hover:bg-surface-high",
+                    cell.today
+                      ? "bg-primary-container shadow-[inset_0_0_0_1px_var(--primary-accent),0_0_24px_-6px_var(--primary-accent)]!"
+                      : cell.holiday && "bg-[repeating-linear-gradient(135deg,transparent_0_7px,color-mix(in_oklab,var(--on-surface)_4%,transparent)_7px_8px)]",
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -133,7 +135,7 @@ export function PlannerView() {
                 </div>
               ))}
               {Array.from({ length: (7 - ((leadingBlanks + cells.length) % 7)) % 7 }, (_, i) => (
-                <div key={`trail-${i}`} className="bg-surface" />
+                <div key={`trail-${i}`} />
               ))}
             </div>
           </div>

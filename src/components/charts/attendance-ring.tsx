@@ -24,6 +24,12 @@ export function AttendanceRing({
 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
+      {/* The ring's own light: a soft halo in the tier colour. */}
+      <span
+        aria-hidden
+        className="absolute inset-[12%] rounded-full opacity-35 blur-2xl"
+        style={{ background: style.stroke }}
+      />
       <RadialBarChart
         width={size}
         height={size}

@@ -31,13 +31,13 @@ export default function ContactPage() {
           We read every message. For anything about events, clubs, payments, access or refunds, email us and we will reply within 2 business days.
         </p>
       </header>
-      <dl className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 sm:col-span-2">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl panel p-5 sm:col-span-2">
           <dt className="text-sm font-semibold text-on-surface-subtle">Operator</dt>
           <dd className="mt-1 font-bold text-on-surface">{LEGAL_NAME}, trading as {TRADE_NAME}</dd>
         </div>
         {CONTACTS.map((contact) => (
-          <div key={contact.label} className="rounded-2xl border border-outline-variant bg-surface-container p-5">
+          <div key={contact.label} className="rounded-2xl panel p-5">
             <dt className="text-sm font-semibold text-on-surface-subtle">{contact.label}</dt>
             <dd className="mt-1">
               <a href={contact.href} className="font-semibold break-all text-primary-accent hover:underline">{contact.value}</a>
@@ -45,7 +45,7 @@ export default function ContactPage() {
           </div>
         ))}
       </dl>
-      <section className="flex flex-col gap-2 rounded-2xl border border-outline-variant bg-surface-container p-5">
+      <section className="flex flex-col gap-2 rounded-2xl panel p-5">
         <h2 className="font-heading font-bold text-on-surface">Before you write in</h2>
         <p className="text-sm text-on-surface-muted">
           For a payment issue, include your registration number and the order reference shown on the payment screen. Grievances are acknowledged within 2 business days and resolved within 30 days. Grievance officer: {LEGAL_NAME}.

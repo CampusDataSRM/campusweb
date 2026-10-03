@@ -18,7 +18,7 @@ export function AttendanceSummary({ courses }: { courses: UserCourse[] }) {
     { label: copy.belowThreshold, value: <CountUp to={below} duration={0.8} />, tone: below > 0 ? "text-danger-accent" : "text-on-surface" },
   ];
   return (
-    <dl className="grid grid-cols-3 gap-2 rounded-3xl border border-outline-variant bg-surface-container p-2 sm:gap-3 sm:p-3">
+    <dl className="grid grid-cols-3 gap-2 rounded-3xl panel p-2 sm:gap-3 sm:p-3">
       {tiles.map((tile) => (
         <div key={tile.label} className="flex flex-col gap-1 rounded-2xl bg-surface-high px-3 py-3 sm:px-4 sm:py-4">
           <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">{tile.label}</dt>

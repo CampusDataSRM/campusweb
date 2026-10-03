@@ -31,7 +31,7 @@ export function TodayClassesCard() {
   const nowMinutes = showingToday && today.now ? minutesSinceMidnight(today.now) : -1;
 
   return (
-    <section aria-label={`${title}'s ${copy.items}`} className="glass flex h-full flex-col gap-4 rounded-[1.5rem] border border-outline-variant p-5 sm:p-6">
+    <section aria-label={`${title}'s ${copy.items}`} className="panel spotlight flex h-full flex-col gap-4 rounded-[1.5rem] p-5 sm:p-6">
       <div className="flex items-center gap-2">
         <h2 className="text-h3 font-extrabold text-on-surface">{title}</h2>
         {day && <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-bold text-on-primary-container">Day {day}</span>}

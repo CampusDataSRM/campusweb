@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 
 import { CachedBadge, EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
 import { PageHeader } from "@/components/layout/page-header";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { useTimetable } from "@/hooks/use-student-data";
 import { useToday } from "@/hooks/use-today";
 import { classMoment, classesForDay, formatMinutes, minutesSinceMidnight } from "@/lib/student/timetable";
@@ -32,25 +32,14 @@ export function TimetableView() {
         description={today.dayOrder ? `Today is Day ${today.dayOrder}.` : "No day order today."}
       />
 
-      <ToggleGroup
-        value={[String(day)]}
-        onValueChange={(value) => value[0] && setPicked(Number(value[0]))}
-        aria-label="Day order"
-        className="grid w-full grid-cols-5 gap-1 rounded-2xl border border-outline-variant bg-surface-container p-1.5 sm:max-w-xl"
-      >
-        {DAY_ORDERS.map((order) => (
-          <ToggleGroupItem
-            key={order}
-            value={String(order)}
-            className="relative h-11 rounded-xl font-bold data-[pressed]:bg-primary data-[pressed]:text-on-primary"
-          >
-            Day {order}
-            {order === today.dayOrder && (
-              <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-success-accent" aria-label="today" />
-            )}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      <Segmented
+        label="Day order"
+        value={String(day)}
+        onChange={(value) => setPicked(Number(value))}
+        options={DAY_ORDERS.map((order) => ({ value: String(order), label: `Day ${order}`, marker: order === today.dayOrder }))}
+        stretch
+        className="sm:max-w-xl"
+      />
 
       {timetable.isLoading ? (
         <div className="flex flex-col gap-2">
@@ -61,7 +50,7 @@ export function TimetableView() {
       ) : classes.length === 0 ? (
         <EmptyState icon={CalendarOff} title={`Day ${day} is clear`} description="No classes are scheduled for this day order." />
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <ol className="flex flex-col gap-2" aria-label={`Day ${day} classes`}>
             {classes.map((item) => {
               const isNow = moment.current?.id === item.id;
@@ -96,7 +85,7 @@ export function TimetableView() {
               );
             })}
           </ol>
-          <dl className="grid h-fit grid-cols-3 gap-2 rounded-2xl border border-outline-variant bg-surface-container p-3 lg:grid-cols-1">
+          <dl className="grid h-fit grid-cols-3 gap-2 rounded-2xl panel p-3 lg:grid-cols-1">
             {[
               ["Classes", String(classes.length)],
               ["Starts", formatMinutes(classes[0].startMinutes)],

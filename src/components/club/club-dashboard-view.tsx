@@ -43,15 +43,15 @@ export function ClubDashboardView() {
         }
       />
       {events.isLoading ? (
-        <div className="grid gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, i) => <ShimmerBlock key={i} className="h-32" />)}</div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, i) => <ShimmerBlock key={i} className="h-32" />)}</div>
       ) : events.error ? (
         <ErrorState error={events.error} title="Couldn't load your events" onRetry={() => void events.refetch()} />
       ) : list.length === 0 ? (
         <EmptyState icon={CalendarPlus} title="No events yet" description="Post your first event - it shows up for every student on campus." />
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {list.map((event) => (
-            <li key={event.ID} className="flex gap-4 rounded-3xl border border-outline-variant bg-surface-container p-4">
+            <li key={event.ID} className="flex gap-4 rounded-3xl panel p-4">
               <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-surface-highest">
                 {event.banner_url && <Image src={event.banner_url} alt="" fill unoptimized sizes="96px" className="object-cover" />}
               </div>

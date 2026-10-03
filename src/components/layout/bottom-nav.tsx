@@ -65,7 +65,7 @@ export function BottomNav() {
     <>
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-modal/80 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl md:hidden"
+        className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-[1.75rem] border border-outline-variant bg-surface-modal/75 px-1.5 py-1 shadow-[0_20px_50px_-12px_color-mix(in_oklab,var(--surface-lowest)_90%,transparent),inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)] backdrop-blur-2xl backdrop-saturate-150 md:hidden"
       >
         <div className="mx-auto flex max-w-lg items-stretch">
           {primary.slice(0, Math.ceil(primary.length / 2)).map((item) => (
@@ -83,7 +83,7 @@ export function BottomNav() {
               className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[0.6875rem] font-bold"
             >
               <span
-                className="flex size-11 -translate-y-1 items-center justify-center rounded-full bg-cta text-on-primary shadow-lg shadow-black/40 transition-transform duration-(--duration-short) group-active:scale-90"
+                className="flex size-11 -translate-y-2.5 items-center justify-center rounded-full bg-cta text-on-primary shadow-[0_8px_24px_-6px_var(--primary)] ring-4 ring-surface transition-transform duration-(--duration-short) group-active:scale-90"
               >
                 <Ellipsis aria-hidden className="size-5" />
               </span>

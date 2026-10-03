@@ -173,6 +173,47 @@
   }
 }
 
+@keyframes route-load {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.92);
+  }
+}
+
+@keyframes route-done {
+  from {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-y {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes ring-draw {
+  from {
+    stroke-dashoffset: var(--ring-c);
+  }
+}
+
 @keyframes shimmer {
   from {
     background-position: 150% 0;
@@ -200,7 +241,9 @@
 
   body {
     @apply min-h-dvh text-on-surface antialiased;
-    background-color: var(--surface);
+    /* Transparent on purpose: <html> paints the canvas colour, and the
+       palette's glow (body::before) must sit between the two. */
+    background: transparent;
   }
 
   /* The palette's backdrop (Campus Glow's glow), pinned to the viewport. A
@@ -212,6 +255,18 @@
     z-index: -1;
     pointer-events: none;
     background: var(--backdrop);
+  }
+
+  /* A whisper of grain over the glow - smooths the banding dark gradients
+     show on most screens. Static, one tiny inline SVG. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   h1,
@@ -326,6 +381,155 @@
     background: radial-gradient(circle, var(--secondary), transparent 65%);
     animation-duration: 21s;
     animation-direction: alternate-reverse;
+  }
+
+  /* ── Panels ─────────────────────────────────────────────────────────
+     The one card surface. The palette's container tint, a soft top sheen
+     and a 1px inner highlight - light falling on dark glass - plus a
+     deep, soft drop shadow. No backdrop-filter, so it's cheap to scroll. */
+  .panel {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--on-surface) 5%, transparent) 0%, transparent 45%),
+      var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 8%, transparent),
+      0 1px 2px color-mix(in oklab, var(--surface-lowest) 40%, transparent),
+      0 18px 40px -18px color-mix(in oklab, var(--surface-lowest) 80%, transparent);
+  }
+  /* The raised variant for the one thing on a page that matters most. */
+  .panel-raised {
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 12%, transparent),
+      0 30px 80px -30px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 18px 40px -18px color-mix(in oklab, var(--surface-lowest) 90%, transparent);
+  }
+
+  /* ── Spotlight ──────────────────────────────────────────────────────
+     A soft light that follows the cursor across a card, and lights the
+     card's edge nearest to it. Position comes from SpotlightTracker
+     (--mx/--my); mouse and trackpad only. */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight::before,
+    .spotlight::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--duration-medium) var(--ease-standard);
+    }
+    .spotlight::before {
+      z-index: -1;
+      background: radial-gradient(
+        28rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 11%, transparent),
+        transparent 45%
+      );
+    }
+    .spotlight::after {
+      z-index: 1;
+      padding: 1px;
+      background: radial-gradient(
+        16rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 75%, transparent),
+        transparent 60%
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .spotlight:hover::before,
+    .spotlight:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* ── Header: clear at the top of the page, glass once content
+     scrolls under it (data-scrolled from StudentShell). */
+  .app-header {
+    transition:
+      background-color var(--duration-medium) var(--ease-standard),
+      border-color var(--duration-medium) var(--ease-standard);
+    border-bottom: 1px solid transparent;
+  }
+  .app-header[data-scrolled="true"] {
+    background: color-mix(in oklab, var(--surface) 65%, transparent);
+    border-bottom-color: var(--outline-variant);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* ── Route progress: a thin glowing line while a page loads. */
+  .route-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 2px;
+    pointer-events: none;
+    transform-origin: left;
+    background: var(--cta);
+    box-shadow: 0 0 12px var(--primary-accent);
+  }
+  .route-progress[data-state="loading"] {
+    animation: route-load 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  }
+  .route-progress[data-state="done"] {
+    animation: route-done 450ms var(--ease-standard) forwards;
+  }
+
+  /* ── Sheen: a light sweep across the primary button on hover. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      color-mix(in oklab, var(--on-primary) 28%, transparent) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+  }
+  .sheen:hover::after {
+    transition: transform 700ms var(--ease-standard);
+    transform: translateX(120%);
+  }
+
+  /* ── Sign-in product preview (components/auth/product-preview.tsx) */
+  .preview-stage {
+    transform: rotateX(var(--rx, 6deg)) rotateY(var(--ry, -12deg));
+    transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  /* Opaque, so overlapping layers read as stacked glass, not a smear. */
+  .preview-card {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--on-surface) 6%, transparent) 0%, transparent 50%),
+      linear-gradient(var(--surface-container), var(--surface-container)),
+      var(--surface-modal);
+  }
+  .preview-float {
+    animation: float-y 5s ease-in-out infinite alternate;
+  }
+  /* Bars fill from the left when they first appear. */
+  .bar-grow {
+    transform-origin: left;
+    animation: bar-grow 900ms var(--ease-decelerate) both;
+  }
+  .preview-ring {
+    animation: ring-draw 1.4s var(--ease-decelerate) both 300ms;
   }
 
   /* Glass: a translucent surface that lets the palette's glow through. */

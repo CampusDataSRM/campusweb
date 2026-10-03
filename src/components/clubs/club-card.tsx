@@ -4,7 +4,6 @@ import { BadgeCheck, Heart, UsersRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import SpotlightCard from "@/components/SpotlightCard";
 import ClickSpark from "@/components/ClickSpark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ export function ClubCard({
 }) {
   const liked = isLikedBy(club.likedby, registrationNumber);
   return (
-    <SpotlightCard className="flex h-full flex-col gap-4 p-5">
+    <article className="panel spotlight flex h-full min-w-0 flex-col gap-4 overflow-hidden rounded-3xl p-5">
       <div className="flex items-start gap-3">
         {club.logo ? (
           <Image src={club.logo} alt="" width={48} height={48} unoptimized className="size-12 shrink-0 rounded-2xl object-cover" />
@@ -69,6 +68,6 @@ export function ClubCard({
           </Button>
         </div>
       </ClickSpark>
-    </SpotlightCard>
+    </article>
   );
 }

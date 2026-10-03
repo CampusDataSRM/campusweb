@@ -79,7 +79,7 @@ export function SkipMeter() {
             <Link
               href={STUDENT_ROUTES.attendance}
               title={budget.label}
-              className="glass pressable flex h-full flex-col gap-2.5 rounded-[1.25rem] border border-outline-variant px-4 py-3.5 hover:border-outline"
+              className="panel spotlight pressable flex h-full flex-col gap-2.5 rounded-[1.25rem] px-4 py-3.5"
             >
               <span className="flex items-center justify-between gap-3">
                 <span className="truncate font-bold text-on-surface">{titleCase(stats.course.courseTitle)}</span>

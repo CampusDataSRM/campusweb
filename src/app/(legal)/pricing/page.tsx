@@ -26,9 +26,9 @@ export default function PricingPage() {
           {TRADE_NAME} sells one product: {ACCESS_DAYS} days of full access. Choose any amount - every tier unlocks exactly the same features. The higher amounts simply let you support development.
         </p>
       </header>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {PLAN_AMOUNTS_INR.map((amount) => (
-          <li key={amount} className="flex items-end justify-between rounded-2xl border border-outline-variant bg-surface-container p-5">
+          <li key={amount} className="flex items-end justify-between rounded-2xl panel p-5">
             <div>
               <p className="font-bold text-on-surface">{ACCESS_DAYS} days full access</p>
               <p className="text-sm text-on-surface-muted">One-time payment, never renews</p>
@@ -37,7 +37,7 @@ export default function PricingPage() {
           </li>
         ))}
       </ul>
-      <section className="flex flex-col gap-3 rounded-2xl border border-outline-variant bg-surface-container p-5">
+      <section className="flex flex-col gap-3 rounded-2xl panel p-5">
         <h2 className="font-heading font-bold text-on-surface">Every plan includes</h2>
         <ul className="flex flex-col gap-2">
           {PLAN_INCLUSIONS.map((item) => (

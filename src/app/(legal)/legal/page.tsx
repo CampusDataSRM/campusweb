@@ -23,7 +23,7 @@ export default function LegalCenterPage() {
           <li key={page.href}>
             <Link
               href={page.href}
-              className="flex items-center justify-between gap-4 rounded-2xl border border-outline-variant bg-surface-container p-5 transition-colors hover:border-outline hover:bg-surface-high"
+              className="flex items-center justify-between gap-4 rounded-2xl panel spotlight pressable p-5"
             >
               <span className="flex flex-col gap-1">
                 <span className="font-bold text-on-surface">{page.title}</span>

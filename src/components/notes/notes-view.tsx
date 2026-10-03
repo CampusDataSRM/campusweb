@@ -9,7 +9,7 @@ import { ResourceSheet, StudiqueCredit } from "@/components/notes/resource-sheet
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { useNotesCatalogue } from "@/hooks/use-notes-catalogue";
 import { useProfile } from "@/hooks/use-student-data";
 import {
@@ -33,7 +33,7 @@ function SubjectRow({ subject, onOpen }: { subject: StudiqueSubject; onOpen: (s:
       <button
         type="button"
         onClick={() => onOpen(subject)}
-        className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-outline-variant bg-surface-container px-4 py-3 text-left pressable hover:border-outline hover:bg-surface-high"
+        className="flex min-h-16 w-full items-center gap-3 rounded-2xl panel spotlight pressable px-4 py-3 text-left"
       >
         <span className="min-w-0 flex-1">
           <span className="block font-bold text-on-surface">{subject.name}</span>
@@ -140,22 +140,13 @@ export function NotesView() {
         </InputGroup>
 
         <div className="flex flex-wrap items-center gap-2">
-          <ToggleGroup
-            value={[filters.kind ?? EVERYTHING]}
-            onValueChange={(value) => value[0] && setFilters((f) => ({ ...f, kind: value[0] === EVERYTHING ? null : (value[0] as ResourceKind) }))}
-            aria-label="Material"
-            className="flex flex-wrap gap-1.5"
-          >
-            {[EVERYTHING, ...RESOURCE_KINDS].map((kind) => (
-              <ToggleGroupItem
-                key={kind}
-                value={kind}
-                className="h-9 rounded-full border border-outline-variant px-4 text-sm font-bold data-[pressed]:border-transparent data-[pressed]:bg-primary data-[pressed]:text-on-primary"
-              >
-                {kind === EVERYTHING ? "Everything" : RESOURCE_KIND_LABEL[kind as ResourceKind]}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+          <Segmented
+            label="Material"
+            size="sm"
+            value={filters.kind ?? EVERYTHING}
+            onChange={(value) => setFilters((f) => ({ ...f, kind: value === EVERYTHING ? null : (value as ResourceKind) }))}
+            options={[EVERYTHING, ...RESOURCE_KINDS].map((kind) => ({ value: kind, label: kind === EVERYTHING ? "Everything" : RESOURCE_KIND_LABEL[kind as ResourceKind] }))}
+          />
           {data.semesters.length > 0 && (
             <Select
               value={filters.semester === null ? EVERYTHING : String(filters.semester)}
@@ -189,7 +180,7 @@ export function NotesView() {
           {mine.length > 0 ? (
             <section aria-label="Your subjects">
               <GroupLabel>Your subjects</GroupLabel>
-              <ul className="grid gap-2 md:grid-cols-2">
+              <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {mine.map((course) =>
                   course.subject ? (
                     <SubjectRow key={course.title} subject={course.subject} onOpen={setOpen} />
@@ -210,7 +201,7 @@ export function NotesView() {
           )}
           <section aria-label={browsing ? "All subjects" : "Results"}>
             {browsing && <GroupLabel>All subjects</GroupLabel>}
-            <ul className="grid gap-2 md:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {all.map((subject) => (
                 <SubjectRow key={subject.name} subject={subject} onOpen={setOpen} />
               ))}

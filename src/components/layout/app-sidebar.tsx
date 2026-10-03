@@ -38,13 +38,13 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
                   isActive={active}
                   tooltip={itemLabel}
                   render={<Link href={href} aria-current={active ? "page" : undefined} />}
-                  className="relative isolate h-10 rounded-xl font-semibold text-on-surface-muted data-active:bg-transparent data-active:text-on-primary-container [&_svg]:size-[1.125rem]"
+                  className="relative isolate h-10 rounded-xl font-bold text-on-surface-muted transition-colors hover:bg-transparent hover:text-on-surface data-active:bg-transparent data-active:text-on-surface [&_svg]:size-[1.125rem] data-active:[&_svg]:text-primary-accent"
                 >
                   {active && (
                     <motion.span
                       layoutId="sidebar-pill"
                       aria-hidden
-                      className="absolute inset-0 -z-10 rounded-xl bg-primary-container"
+                      className="absolute inset-0 -z-10 rounded-xl border border-outline-variant bg-[linear-gradient(90deg,color-mix(in_oklab,var(--primary)_32%,transparent),color-mix(in_oklab,var(--secondary)_14%,transparent))] shadow-[inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)]"
                       transition={{ type: "spring", stiffness: 520, damping: 40 }}
                     />
                   )}
@@ -67,8 +67,8 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-outline-variant">
-      <SidebarHeader className="px-3 pt-5 pb-3">
+    <Sidebar collapsible="icon" variant="floating" className="p-3 pr-0">
+      <SidebarHeader className="px-4 pt-5 pb-4">
         <Link href={STUDENT_ROUTES.dashboard} aria-label="Dashboard" className="flex items-center rounded-lg px-1">
           {collapsed ? (
             <Logo variant="stacked" className="w-8" />
@@ -81,7 +81,7 @@ export function AppSidebar() {
         <NavGroup label="Campus" items={items} />
         <NavGroup label="More" items={utility} />
       </SidebarContent>
-      <SidebarFooter className="border-t border-outline-variant p-3">
+      <SidebarFooter className="m-2 rounded-2xl bg-surface-container p-2">
         <AccountSummary compact={collapsed} />
       </SidebarFooter>
       <SidebarRail />
