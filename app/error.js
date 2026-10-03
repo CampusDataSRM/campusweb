@@ -1,10 +1,13 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+
+// Cached student data that a page renders from. A crash is most often a
+// stale or malformed copy of one of these, so recovering clears them and
+// loads fresh - the login cookie and the saved NetID stay, so nobody is
+// signed out by a crash.
+const CACHED_DATA_KEYS = ["studentData", "studentTimetable", "studentCalendar"];
 
 const Error = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   return (
     <>
@@ -16,9 +19,12 @@ const Error = () => {
           type="submit"
           onClick={() => {
             setLoading(true);
-            Cookies.remove("X-CSRF-Token");
-            localStorage.clear();
-            router.push("/");
+            try {
+              CACHED_DATA_KEYS.forEach((key) => localStorage.removeItem(key));
+            } catch {
+              // Storage unavailable: a reload still recovers.
+            }
+            window.location.assign("/student");
           }}
           disabled={loading}
           className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary py-3 px-5 rounded-lg text-theme_text_normal w-48 text-center tracking-wider text-lg font-semibold"
