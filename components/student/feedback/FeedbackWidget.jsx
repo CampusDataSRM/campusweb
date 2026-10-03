@@ -39,14 +39,11 @@ export default function FeedbackWidget() {
         },
       });
 
-      if (response.status === 401) {
-        toast.error("Session expired. Please login again.");
-        Cookies.remove("X-CSRF-Token");
-        router.push("/client/login/student");
-        return;
-      }
-      
-      if (response.status === 404 || response.status === 422) {
+      // Feedback is optional, and a 401 here does not mean the session is
+      // over: Academia answers the feedback page with a login or
+      // announcement page for some sessions that still load everything
+      // else. Hide the card; never sign the student out over it.
+      if (response.status === 401 || response.status === 404 || response.status === 422) {
         setData({ available: false });
         setLoading(false);
         return;
@@ -93,9 +90,7 @@ export default function FeedbackWidget() {
       });
 
       if (response.status === 401) {
-        toast.error("Session expired. Please login again.");
-        Cookies.remove("X-CSRF-Token");
-        router.push("/client/login/student");
+        toast.error("Feedback can't be submitted right now. Please try again later.");
         return;
       }
 
