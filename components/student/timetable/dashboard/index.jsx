@@ -42,7 +42,9 @@ const DashboardTimetable = ({ demo = false }) => {
           setSelectedDay("Day" + result?.day_order);
           setCurrentDayOrder("Day" + result?.day_order);
         })
-        .catch(() => router.push("/client/login/student"))
+        // A failed timetable leaves the card empty; it never signs anyone
+        // out. An ended demo session is signed out by demoRequest itself.
+        .catch(console.error)
         .finally(() => setLoading(false));
       return;
     }
