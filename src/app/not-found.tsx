@@ -1,40 +1,21 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import ShapeWaves from "@/components/ShapeWaves";
-const NotFound = () => {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  return (
-    <>
-      <div className="flex flex-col justify-center items-center h-screen w-full">
-        <ShapeWaves
-          text="404 :("
-          fontFamily='Geist, "Geist Sans", system-ui, sans-serif'
-          fontWeight={500}
-          textSize={0.6}
-          shapes="mixed"
-          cellSize={10}
-          dotSize={0.58}
-          color="#9747ff"
-          hoverColor="#9747ff"
-          backgroundColor="#000000"
-          speed={1}
-          scale={1}
-          contrast={0.4}
-          brightness={0.4}
-          flow={0}
-          direction={0}
-          fade={0.25}
-          interactive
-          splashRadius={40}
-          splashStrength={0.4}
-          glow={0.45}
-          paused={false}
-        />
-      </div>
-    </>
-  );
-};
+import { Compass } from "lucide-react";
+import Link from "next/link";
 
-export default NotFound;
+import { Button } from "@/components/ui/button";
+
+export default function NotFound() {
+  return (
+    <main className="flex min-h-dvh flex-1 flex-col items-center justify-center gap-6 px-page text-center">
+      <p aria-hidden className="font-heading text-[clamp(5rem,4rem+8vw,10rem)] leading-none font-extrabold text-surface-bright">404</p>
+      <div className="flex max-w-md flex-col gap-2">
+        <h1 className="flex items-center justify-center gap-2 text-h2 font-extrabold text-on-surface">
+          <Compass aria-hidden className="size-7 text-primary-accent" /> Page not found
+        </h1>
+        <p className="text-on-surface-muted">That link doesn&apos;t go anywhere. It may have moved, or never existed.</p>
+      </div>
+      <Button size="touch" render={<Link href="/" />} nativeButton={false}>
+        Back to Campus Web
+      </Button>
+    </main>
+  );
+}
