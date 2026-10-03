@@ -1,99 +1,92 @@
 "use client";
 
-import { CalendarOff, MapPin, PartyPopper } from "lucide-react";
 import Link from "next/link";
 
-import { EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
-import { Badge } from "@/components/ui/badge";
+import { ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
 import { STUDENT_ROUTES } from "@/constants/routes";
+import { useStudentCopy } from "@/hooks/use-student-copy";
 import { useToday } from "@/hooks/use-today";
-import { formatMinutes } from "@/lib/student/timetable";
+import { formatMinutes, minutesSinceMidnight, type TimetableClass } from "@/lib/student/timetable";
 import { cn } from "@/lib/utils";
 
-/** Today's classes as a compact timeline, the current and next highlighted. */
+const dayFormat = new Intl.DateTimeFormat("en-IN", { weekday: "long" });
+
+/**
+ * The day's schedule as a timeline. With nothing left today it shows the next
+ * day that has classes instead of an empty box.
+ */
 export function TodayClassesCard() {
+  const copy = useStudentCopy();
   const today = useToday();
-  const { current, next } = today.moment;
+
+  if (today.isLoading) return <ShimmerBlock className="h-80 rounded-[1.5rem]" />;
+  if (today.error && today.classes.length === 0) {
+    return <ErrorState error={today.error} title="Couldn't load your timetable" onRetry={today.refetch} />;
+  }
+
+  const showingToday = today.classes.length > 0;
+  const day = showingToday ? today.dayOrder : today.upcoming?.dayOrder;
+  const classes: TimetableClass[] = showingToday ? today.classes : (today.upcoming?.classes ?? []);
+  const title = showingToday ? "Today" : today.upcoming ? dayFormat.format(today.upcoming.date) : "Today";
+  const nowMinutes = showingToday && today.now ? minutesSinceMidnight(today.now) : -1;
 
   return (
-    <article className="flex flex-col gap-3 rounded-[1.25rem] border border-outline-variant bg-surface-container p-5">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-extrabold text-on-surface">Today&apos;s classes</h2>
-          {today.dayOrder && (
-            <Badge className="rounded-full bg-primary-container px-2.5 text-on-primary-container">
-              Day {today.dayOrder}
-            </Badge>
-          )}
-        </div>
-        <Link
-          href={STUDENT_ROUTES.timetable}
-          className="inline-flex items-center gap-1 text-sm font-semibold text-primary-accent hover:underline"
-        >
-          View all
+    <section aria-label={`${title}'s ${copy.items}`} className="glass flex h-full flex-col gap-4 rounded-[1.5rem] border border-outline-variant p-5 sm:p-6">
+      <div className="flex items-center gap-2">
+        <h2 className="text-h3 font-extrabold text-on-surface">{title}</h2>
+        {day && <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-bold text-on-primary-container">Day {day}</span>}
+        <Link href={STUDENT_ROUTES.timetable} className="ml-auto text-sm font-bold text-primary-accent hover:underline">
+          Timetable
         </Link>
       </div>
 
-      {today.isLoading ? (
-        <div className="flex flex-col gap-2">
-          <ShimmerBlock className="h-14" />
-          <ShimmerBlock className="h-14" />
-          <ShimmerBlock className="h-14" />
-        </div>
-      ) : today.error && today.classes.length === 0 ? (
-        <ErrorState error={today.error} title="Couldn't load today's classes" onRetry={today.refetch} />
-      ) : today.dayOrder === null ? (
-        <EmptyState icon={CalendarOff} title="No classes scheduled" description="It's a holiday or a day without a day order." />
-      ) : today.classes.length === 0 ? (
-        <EmptyState icon={PartyPopper} title="No classes today" description="Nothing on the timetable for this day order." />
+      {classes.length === 0 ? (
+        <p className="py-6 text-on-surface-muted">Nothing scheduled in the next three weeks.</p>
       ) : (
-        <ol className="flex flex-col gap-1.5">
-          {today.classes.map((item) => {
-            const isNow = current?.id === item.id;
-            const isNext = !isNow && next?.id === item.id;
-            const isPast = !isNow && today.now !== null && item.endMinutes <= today.now.getHours() * 60 + today.now.getMinutes();
+        <ol className="relative flex flex-col">
+          {classes.map((item, i) => {
+            const isNow = today.moment.current?.id === item.id;
+            const isNext = !isNow && today.moment.next?.id === item.id;
+            const isPast = showingToday && item.endMinutes <= nowMinutes;
+            const last = i === classes.length - 1;
             return (
-              <li
-                key={item.id}
-                aria-current={isNow ? "time" : undefined}
-                className={cn(
-                  "relative flex items-center gap-3 rounded-xl px-2 py-2.5",
-                  isNow ? "bg-success-container" : isNext ? "bg-primary-container" : "bg-surface-high",
-                  isPast && "opacity-55",
-                )}
-              >
-                <span aria-hidden className={cn("h-8 w-1 shrink-0 rounded-full", isNow ? "bg-success-accent" : isNext ? "bg-primary-accent" : "bg-outline-variant")} />
-                <div className="w-16 shrink-0 tabular text-sm font-bold text-on-surface">
-                  {formatMinutes(item.startMinutes).replace(" ", " ")}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-on-surface">{item.subject}</p>
-                  <p className="flex items-center gap-1 truncate text-xs text-on-surface-muted">
-                    {item.room && (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin aria-hidden className="size-3" />
-                        {item.room}
-                      </span>
-                    )}
-                    <span className="ml-2">{item.kind === "practical" ? "Practical" : "Theory"}</span>
-                  </p>
-                </div>
-                {(isNow || isNext) && (
+              <li key={item.id} aria-current={isNow ? "time" : undefined} className="relative flex gap-4">
+                <span className="w-16 shrink-0 pt-2 text-right text-sm font-bold text-on-surface-muted tabular">{formatMinutes(item.startMinutes)}</span>
+                <span aria-hidden className="relative flex w-3 shrink-0 justify-center">
+                  {!last && <span className="absolute top-5 -bottom-1 w-px bg-outline-variant" />}
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-[0.6875rem] font-extrabold tracking-wide uppercase",
-                      isNow ? "bg-success text-on-success" : "bg-primary text-on-primary",
+                      "relative mt-3 size-3 rounded-full border-2",
+                      isNow ? "border-success-accent bg-success-accent shadow-[0_0_12px_var(--success-accent)]" : isNext ? "border-primary-accent bg-primary-accent shadow-[0_0_12px_var(--primary-accent)]" : isPast ? "border-outline bg-transparent" : "border-on-surface-subtle bg-surface",
                     )}
-                  >
-                    {isNow && <span aria-hidden className="live-dot mr-1.5 align-middle" />}
-                    {isNow ? "Now" : "Next"}
-                  </span>
-                )}
+                  />
+                </span>
+                <div
+                  className={cn(
+                    "mb-1.5 flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-2",
+                    isNow ? "bg-success-container" : isNext ? "bg-primary-container" : "",
+                    isPast && "opacity-45",
+                  )}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-2 font-bold leading-snug text-on-surface">{item.subject}</p>
+                    <p className="text-xs font-semibold text-on-surface-muted">
+                      {item.kind === "practical" ? "Practical" : "Theory"}
+                      {item.room && `, ${item.room}`}
+                    </p>
+                  </div>
+                  {(isNow || isNext) && (
+                    <span className={cn("flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-extrabold", isNow ? "bg-success text-on-success" : "bg-primary text-on-primary")}>
+                      {isNow && <span aria-hidden className="live-dot" />}
+                      {isNow ? "Now" : "Next"}
+                    </span>
+                  )}
+                </div>
               </li>
             );
           })}
         </ol>
       )}
-    </article>
+    </section>
   );
 }

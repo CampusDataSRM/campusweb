@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 function Tile({ href, icon, label, children, className }: { href: string; icon: ReactNode; label: string; children: ReactNode; className?: string }) {
   return (
-    <Link href={href} className={cn("flex min-h-28 flex-col justify-between gap-3 rounded-[1.25rem] border border-outline-variant bg-surface-container p-4 pressable hover:border-outline", className)}>
+    <Link href={href} className={cn("flex min-h-28 flex-col justify-between gap-3 glass rounded-[1.25rem] border border-outline-variant p-4 pressable hover:border-outline", className)}>
       <span className="flex items-center gap-2 text-sm font-bold text-on-surface-muted">
         <span className="flex size-8 items-center justify-center rounded-xl bg-primary-container text-on-primary-container">{icon}</span>
         {label}

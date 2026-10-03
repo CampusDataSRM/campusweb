@@ -20,6 +20,12 @@ export interface StudentCopy {
   nextItem: string;
   noMarksTitle: string;
   noMarksBody: string;
+  /** Dashboard per-subject budget. */
+  skipTitle: string;
+  skipDescription: string;
+  /** "class" / "session". */
+  item: string;
+  items: string;
 }
 
 const ACADEMIC: StudentCopy = {
@@ -36,6 +42,10 @@ const ACADEMIC: StudentCopy = {
   nextItem: "Next class",
   noMarksTitle: "No marks yet",
   noMarksBody: "Marks appear here once they are published.",
+  skipTitle: "Can I skip?",
+  skipDescription: "75% is the line. Here's your room in every subject.",
+  item: "class",
+  items: "classes",
 };
 
 const EVENTS: StudentCopy = {
@@ -52,6 +62,10 @@ const EVENTS: StudentCopy = {
   nextItem: "Next activity",
   noMarksTitle: "No results yet",
   noMarksBody: "Results appear here once they are published.",
+  skipTitle: "Check-in status",
+  skipDescription: "Where you stand in each activity.",
+  item: "session",
+  items: "sessions",
 };
 
 export const copyFor = (kind: SessionKind | undefined): StudentCopy =>

@@ -7,7 +7,8 @@
  * would show a stale day after a gap (the bug Campus App 1.0.43 fixed).
  */
 
-import type { Planner, PlannerDay } from "@/network-calls/types";
+import { classesForDay, type TimetableClass } from "@/lib/student/timetable";
+import type { Planner, PlannerDay, Timetable } from "@/network-calls/types";
 
 const MONTHS = [
   "jan", "feb", "mar", "apr", "may", "jun",
@@ -118,4 +119,32 @@ export function plannerRange(months: PlannerMonth[]): { start: Date; end: Date }
     }
   }
   return start && end ? { start, end } : null;
+}
+
+export interface ClassDay {
+  date: Date;
+  dayOrder: number;
+  classes: TimetableClass[];
+}
+
+/**
+ * The first day after `from` that has classes, looking ahead up to
+ * `lookahead` days. Only days the planner covers count - guessing a day
+ * order past the published planner would be wrong more often than right.
+ */
+export function nextClassDay(
+  months: PlannerMonth[],
+  timetable: Timetable | null | undefined,
+  from: Date,
+  lookahead = 21,
+): ClassDay | null {
+  if (!timetable) return null;
+  for (let offset = 1; offset <= lookahead; offset++) {
+    const date = new Date(from.getFullYear(), from.getMonth(), from.getDate() + offset);
+    if (!monthFor(months, date)) continue;
+    const dayOrder = resolveDayOrder(months, date, null);
+    const classes = classesForDay(timetable, dayOrder);
+    if (dayOrder !== null && classes.length > 0) return { date, dayOrder, classes };
+  }
+  return null;
 }
