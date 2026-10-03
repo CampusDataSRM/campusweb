@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import {
   CUSTOM_COLOR_SWATCHES,
   PALETTE_OPTIONS,
+  CUSTOM_EXTRAS,
+  PRESET_EXTRAS,
   PRESET_PALETTES,
   type PaletteId,
   type ThemePalette,
@@ -23,15 +25,21 @@ import { cn } from "@/lib/utils";
  * button - drawn with that palette's own values, so each option previews
  * itself regardless of the active theme.
  */
-function PalettePreview({ palette }: { palette: ThemePalette }) {
+function PalettePreview({ palette, backdrop }: { palette: ThemePalette; backdrop: string }) {
+  // A custom backdrop refers to its palette's variables; resolve them here,
+  // since the preview is not inside that palette.
+  const paint = backdrop
+    .replaceAll("var(--surface)", palette.surface)
+    .replaceAll("var(--primary)", palette.primary)
+    .replaceAll("var(--secondary)", palette.secondary);
   return (
-    <div aria-hidden className="flex h-20 gap-1.5 rounded-xl p-2" style={{ background: palette.surface, border: `1px solid ${palette["outline-variant"]}` }}>
+    <div aria-hidden className="flex h-20 gap-1.5 rounded-xl p-2" style={{ background: paint, border: `1px solid ${palette["outline-variant"]}` }}>
       <div className="w-1/4 rounded-md" style={{ background: palette["surface-low"] }} />
       <div className="flex flex-1 flex-col gap-1.5 rounded-md p-1.5" style={{ background: palette["surface-container"] }}>
         <div className="h-1.5 w-3/4 rounded-full" style={{ background: palette["on-surface"] }} />
         <div className="h-1.5 w-1/2 rounded-full" style={{ background: palette["on-surface-muted"] }} />
         <div className="mt-auto flex gap-1">
-          <div className="h-3 w-8 rounded-sm" style={{ background: palette.primary }} />
+          <div className="h-3 w-8 rounded-sm" style={{ background: palette["primary-accent"] }} />
           <div className="h-3 w-5 rounded-sm" style={{ background: palette["secondary-accent"] }} />
         </div>
       </div>
@@ -52,7 +60,7 @@ export function ThemePicker() {
 
   return (
     <div className="flex flex-col gap-5" aria-busy={!hydrated}>
-      <div role="radiogroup" aria-label="Theme" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div role="radiogroup" aria-label="Theme" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {PALETTE_OPTIONS.map((option) => {
           const selected = hydrated && preference.palette === option.id;
           return (
@@ -67,7 +75,10 @@ export function ThemePicker() {
                 selected ? "border-primary bg-primary-container/50" : "border-outline-variant bg-surface-container hover:border-outline",
               )}
             >
-              <PalettePreview palette={previewFor(option.id, preference.customColor)} />
+              <PalettePreview
+                palette={previewFor(option.id, preference.customColor)}
+                backdrop={option.id === "custom" ? CUSTOM_EXTRAS.backdrop : PRESET_EXTRAS[option.id].backdrop}
+              />
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-bold text-on-surface">{option.label}</p>
@@ -131,7 +142,7 @@ export function ThemePicker() {
       </div>
 
       <Button variant="ghost" size="touch" className="w-fit" onClick={reset}>
-        <RotateCcw aria-hidden /> Restore the Campus theme
+        <RotateCcw aria-hidden /> Restore Campus Glow
       </Button>
     </div>
   );

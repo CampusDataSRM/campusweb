@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
+        default: "bg-cta text-on-primary shadow-sm hover:brightness-110",
         tonal:
           "bg-primary-container text-on-primary-container hover:bg-[color-mix(in_oklch,var(--primary-container),var(--on-primary-container)_8%)]",
         outline:

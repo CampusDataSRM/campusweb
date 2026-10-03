@@ -46,10 +46,10 @@ export function AttendanceRing({
         />
       </RadialBarChart>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className={`font-heading text-2xl font-extrabold tabular ${style.text}`}>
+        <span className={`font-heading font-extrabold leading-none tabular ${style.text}`} style={{ fontSize: Math.round(size * 0.165) }}>
           {clamped.toFixed(1)}%
         </span>
-        <span className="text-[0.6875rem] font-semibold text-on-surface-muted">{label}</span>
+        <span className="mt-1 text-[0.6875rem] font-semibold text-on-surface-muted">{label}</span>
       </div>
     </div>
   );

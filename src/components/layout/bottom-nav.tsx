@@ -54,10 +54,10 @@ export function BottomNav() {
     <>
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-low/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-md md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-modal/80 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl md:hidden"
       >
         <div className="mx-auto flex max-w-lg items-stretch">
-          {primary.map((item) => (
+          {primary.slice(0, Math.ceil(primary.length / 2)).map((item) => (
             <BarLink key={item.href} item={item} active={isActive(item.href)} />
           ))}
           {overflow.length > 0 && (
@@ -69,21 +69,21 @@ export function BottomNav() {
               className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[0.6875rem] font-bold"
             >
               <span
-                className={cn(
-                  "flex h-8 w-14 items-center justify-center rounded-full",
-                  overflowActive ? "bg-primary-container text-on-primary-container" : "text-on-surface-muted",
-                )}
+                className="flex size-11 -translate-y-1 items-center justify-center rounded-full bg-cta text-on-primary shadow-lg shadow-black/40"
               >
                 <Ellipsis aria-hidden className="size-5" />
               </span>
               <span className={overflowActive ? "text-on-surface" : "text-on-surface-muted"}>More</span>
             </button>
           )}
+          {primary.slice(Math.ceil(primary.length / 2)).map((item) => (
+            <BarLink key={item.href} item={item} active={isActive(item.href)} />
+          ))}
         </div>
       </nav>
 
       <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl border-outline-variant bg-surface-container pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <SheetContent side="bottom" className="rounded-t-3xl border-outline-variant bg-surface-modal pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <SheetHeader className="pb-2">
             <SheetTitle className="font-heading text-h3 text-on-surface">More</SheetTitle>
             <SheetDescription className="text-on-surface-muted">Everything else on Campus Web.</SheetDescription>

@@ -5,64 +5,81 @@ import { useMemo } from "react";
 
 import { AttendanceRing } from "@/components/charts/attendance-ring";
 import { ShimmerBlock } from "@/components/feedback/data-states";
-import { TIER_STYLE } from "@/constants/attendance-tiers";
 import { STUDENT_ROUTES } from "@/constants/routes";
 import { useStudentCopy } from "@/hooks/use-student-copy";
 import { useProfile } from "@/hooks/use-student-data";
+import { useToday } from "@/hooks/use-today";
 import {
-  attendanceTier,
   courseAttendance,
-  countBelowThreshold,
+  courseForSubject,
   mergeTheoryPracticalCourses,
   overallAttendance,
 } from "@/lib/student/attendance";
+import { minutesSinceMidnight } from "@/lib/student/timetable";
+import { cn } from "@/lib/utils";
 
-/** Overall attendance, and the one subject that needs attention most. */
+const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
+
+function startsIn(minutes: number): string {
+  if (minutes < 60) return `in ${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  return `in ${hours}h ${minutes % 60}m`;
+}
+
+/**
+ * Campus App's attendance panel: a ring for the class that's on now (or
+ * next), its present / absent / margin, and overall attendance when no class
+ * is on.
+ */
 export function AttendanceOverviewCard() {
   const copy = useStudentCopy();
   const profile = useProfile();
-  const { courses, weakest } = useMemo(() => {
-    const merged = mergeTheoryPracticalCourses(profile.data?.courses ?? [], profile.data?.attendanceSource);
-    const stats = merged.map(courseAttendance).filter((s) => !s.isPending);
-    return { courses: merged, weakest: stats.sort((a, b) => a.percent - b.percent)[0] };
-  }, [profile.data]);
+  const today = useToday();
+  const courses = useMemo(
+    () => mergeTheoryPracticalCourses(profile.data?.courses ?? [], profile.data?.attendanceSource),
+    [profile.data],
+  );
 
-  if (profile.isLoading) return <ShimmerBlock className="h-full min-h-64 rounded-[1.25rem]" />;
-  const below = countBelowThreshold(courses);
+  if (profile.isLoading) return <ShimmerBlock className="h-56 rounded-[1.25rem]" />;
+
+  const { current, next } = today.moment;
+  const focus = current ?? next;
+  const course = focus ? courseForSubject(courses, focus.subject, focus.kind === "practical") : undefined;
+  const stats = course ? courseAttendance(course) : null;
+  const nowMinutes = today.now ? minutesSinceMidnight(today.now) : 0;
+  const chip = current ? copy.currentItem : next && stats ? `${copy.nextItem} · ${startsIn(next.startMinutes - nowMinutes)}` : copy.overallRate;
+  const subjectsBelow = courses.filter((c) => courseAttendance(c).isBelowThreshold).length;
 
   return (
-    <Link
-      href={STUDENT_ROUTES.attendance}
-      className="group flex h-full flex-col justify-between gap-5 rounded-[1.25rem] border border-outline-variant bg-surface-container p-6 transition-colors hover:border-outline"
-    >
-      <div className="flex items-center justify-between">
-        <h2 className="font-heading text-lg font-bold text-on-surface">{copy.attendanceShort}</h2>
-        <span className="text-sm font-semibold text-primary-accent group-hover:underline">Open</span>
-      </div>
+    <Link href={STUDENT_ROUTES.attendance} className="flex flex-col gap-4 rounded-[1.25rem] border border-outline-variant bg-surface-container p-5 transition-colors hover:border-outline">
+      <span className={cn("w-fit rounded-full px-3 py-1 text-xs font-bold", current ? "bg-success-container text-on-success-container" : "bg-primary-container text-on-primary-container")}>
+        {chip}
+      </span>
       <div className="flex items-center gap-5">
-        <AttendanceRing percent={overallAttendance(courses)} label="overall" size={120} />
-        <p className="text-sm text-on-surface-muted">
-          {below === 0 ? (
-            <span className="font-semibold text-success-accent">Every subject is above 75%.</span>
+        <AttendanceRing percent={stats ? stats.percent : overallAttendance(courses)} label={stats ? "this subject" : "overall"} size={112} />
+        <div className="min-w-0 flex-1">
+          {stats ? (
+            <>
+              <p className="line-clamp-2 font-extrabold text-on-surface">{stats.course.courseTitle}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-bold">
+                <span className="rounded-md bg-success-container px-2 py-1 text-on-success-container">P {fmt(stats.present)}</span>
+                <span className="rounded-md bg-danger-container px-2 py-1 text-on-danger-container">A {fmt(stats.absent)}</span>
+                <span className={cn("rounded-md px-2 py-1", stats.required > 0 ? "bg-danger-container text-on-danger-container" : "bg-primary-container text-on-primary-container")}>
+                  M {stats.required > 0 ? `-${stats.required}` : `+${stats.margin}`}
+                </span>
+              </div>
+            </>
           ) : (
             <>
-              <span className="font-heading text-2xl font-extrabold text-danger-accent tabular">{below}</span>{" "}
-              {below === 1 ? "subject is" : "subjects are"} under 75%.
+              <p className="font-extrabold text-on-surface">{courses.length} subjects tracked</p>
+              <p className="mt-1 text-sm text-on-surface-muted">
+                {subjectsBelow === 0 ? "All above 75%" : `${subjectsBelow} below 75%`}
+              </p>
             </>
           )}
-        </p>
-      </div>
-      {weakest && (
-        <div className="border-t border-outline-variant pt-4">
-          <p className="text-xs font-semibold text-on-surface-subtle">Needs you most</p>
-          <p className="mt-0.5 flex items-baseline justify-between gap-3">
-            <span className="truncate font-bold text-on-surface">{weakest.course.courseTitle}</span>
-            <span className={`font-heading font-extrabold tabular ${TIER_STYLE[attendanceTier(weakest.percent)].text}`}>
-              {weakest.percent.toFixed(1)}%
-            </span>
-          </p>
+          <p className="mt-3 text-sm font-bold text-primary-accent">View attendance</p>
         </div>
-      )}
+      </div>
     </Link>
   );
 }

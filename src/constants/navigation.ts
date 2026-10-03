@@ -10,6 +10,7 @@
 
 import {
   BarChart3,
+  BookOpen,
   Calculator,
   CalendarDays,
   CalendarCheck2,
@@ -49,9 +50,10 @@ const STUDENT_NAV: NavItem[] = [
   { href: STUDENT_ROUTES.marks, label: "Marks", icon: BarChart3 },
   { href: STUDENT_ROUTES.timetable, label: "Timetable", icon: Clock3 },
   { href: STUDENT_ROUTES.events, label: "Events", icon: Sparkles },
-  { href: STUDENT_ROUTES.clubs, label: "Clubs", icon: UsersRound },
   { href: STUDENT_ROUTES.mess, label: "Mess", icon: UtensilsCrossed },
+  { href: STUDENT_ROUTES.clubs, label: "Clubs", icon: UsersRound },
   { href: STUDENT_ROUTES.cgpa, label: "CGPA", icon: Calculator },
+  { href: STUDENT_ROUTES.notes, label: "Notes", icon: BookOpen },
 ];
 
 const DEMO_NAV: NavItem[] = [

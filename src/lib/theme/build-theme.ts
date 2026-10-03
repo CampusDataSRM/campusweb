@@ -17,12 +17,16 @@
  */
 
 import {
+  CUSTOM_BASE,
+  CUSTOM_EXTRAS,
   CUSTOM_RECIPE,
   DEFAULT_CUSTOM_COLOR,
   DEFAULT_PALETTE,
+  PRESET_EXTRAS,
   PRESET_PALETTES,
   THEME_COOKIE,
   THEME_TOKENS,
+  type PaletteExtras,
   type PaletteId,
   type PresetPaletteId,
   type ThemePalette,
@@ -67,7 +71,7 @@ export function deriveCustomPalette(color: string): ThemePalette {
 
   const roles = CUSTOM_RECIPE.primary;
   const cap = Math.max(base.c, 0.02);
-  const palette = { ...PRESET_PALETTES.campus };
+  const palette = { ...CUSTOM_BASE };
 
   for (const [token, lc] of Object.entries(CUSTOM_RECIPE.surfaces)) {
     palette[token as ThemeToken] = tone(lc, hue);
@@ -106,6 +110,9 @@ export function paletteDeclarations(palette: ThemePalette): string {
   return THEME_TOKENS.map((token) => `--${token}:${palette[token]};`).join("");
 }
 
+const extrasDeclarations = (extras: PaletteExtras) =>
+  `--backdrop:${extras.backdrop};--cta:${extras.cta};`;
+
 /**
  * Every preset palette as a CSS block. The default palette is also `:root`,
  * so the page is themed even before the pre-paint script runs.
@@ -113,12 +120,14 @@ export function paletteDeclarations(palette: ThemePalette): string {
 export function themeStylesheet(): string {
   const blocks = (Object.keys(PRESET_PALETTES) as PresetPaletteId[]).map(
     (id) =>
-      `[data-palette="${id}"]{${paletteDeclarations(PRESET_PALETTES[id])}}`,
+      `[data-palette="${id}"]{${paletteDeclarations(PRESET_PALETTES[id])}${extrasDeclarations(PRESET_EXTRAS[id])}}`,
   );
-  const fallback = isPresetPalette(DEFAULT_PALETTE)
-    ? PRESET_PALETTES[DEFAULT_PALETTE]
-    : PRESET_PALETTES.campus;
-  return `:root{${paletteDeclarations(fallback)}}${blocks.join("")}`;
+  const fallback: PresetPaletteId = isPresetPalette(DEFAULT_PALETTE) ? DEFAULT_PALETTE : "campus-glow";
+  return (
+    `:root{${paletteDeclarations(PRESET_PALETTES[fallback])}${extrasDeclarations(PRESET_EXTRAS[fallback])}}` +
+    blocks.join("") +
+    `[data-palette="custom"]{${extrasDeclarations(CUSTOM_EXTRAS)}}`
+  );
 }
 
 /* ── persisted preference (cookie) ── */

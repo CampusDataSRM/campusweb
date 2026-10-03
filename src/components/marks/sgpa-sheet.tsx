@@ -17,7 +17,7 @@ export function SgpaSheet({ projection, program, semester }: { projection: SgpaP
       <SheetTrigger render={<Button variant="tonal" size="touch" />}>
         <Sigma aria-hidden /> SGPA {projection.sgpa.toFixed(2)}
       </SheetTrigger>
-      <SheetContent side={isMobile ? "bottom" : "right"} className="flex max-h-[92dvh] flex-col border-outline-variant bg-surface-container data-[side=bottom]:rounded-t-3xl sm:max-w-md">
+      <SheetContent side={isMobile ? "bottom" : "right"} className="flex max-h-[92dvh] flex-col border-outline-variant bg-surface-modal data-[side=bottom]:rounded-t-3xl sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="font-heading text-h3 text-on-surface">Projected SGPA</SheetTitle>
           <SheetDescription className="text-on-surface-muted">

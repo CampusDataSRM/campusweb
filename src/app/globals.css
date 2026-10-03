@@ -21,6 +21,7 @@
   --color-surface-high: var(--surface-high);
   --color-surface-highest: var(--surface-highest);
   --color-surface-bright: var(--surface-bright);
+  --color-surface-modal: var(--surface-modal);
 
   --color-on-surface: var(--on-surface);
   --color-on-surface-brand: var(--on-surface-brand);
@@ -73,7 +74,7 @@
   --color-foreground: var(--on-surface);
   --color-card: var(--surface-container);
   --color-card-foreground: var(--on-surface);
-  --color-popover: var(--surface-high);
+  --color-popover: var(--surface-modal);
   --color-popover-foreground: var(--on-surface);
   --color-primary-foreground: var(--on-primary);
   --color-secondary-foreground: var(--on-secondary);
@@ -97,7 +98,7 @@
 
   /* ── Typography ── */
   --font-sans: var(--font-nunito);
-  --font-heading: var(--font-display);
+  --font-heading: var(--font-nunito);
 
   /* ── Radius: 12px base. Controls 8, cards 12-16, sheets/dialogs 20-28. ── */
   --radius-sm: calc(var(--radius) - 6px);
@@ -172,7 +173,19 @@
   }
 
   body {
-    @apply min-h-dvh bg-surface text-on-surface antialiased;
+    @apply min-h-dvh text-on-surface antialiased;
+    background-color: var(--surface);
+  }
+
+  /* The palette's backdrop (Campus Glow's glow), pinned to the viewport. A
+     fixed layer rather than background-attachment, which iOS ignores. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--backdrop);
   }
 
   h1,
@@ -226,27 +239,13 @@
     animation: var(--animate-shimmer);
   }
 
+  /* The primary call-to-action fill - a gradient in Campus Glow. */
+  .bg-cta {
+    background: var(--cta);
+  }
+
   /* Stat numbers line up as they count. */
   .tabular {
     font-variant-numeric: tabular-nums;
-  }
-}
-
-/* Film grain: one static noise texture at very low opacity, fixed behind
-   content. Gives the dark surfaces depth without colour or motion; costs a
-   single tiny image. Hidden when the user asks for more contrast. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-@media (prefers-contrast: more) {
-  body::before {
-    display: none;
   }
 }

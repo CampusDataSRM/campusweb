@@ -34,6 +34,9 @@ export const queryKeys = {
     all: ["feedback"] as const,
     current: ["feedback", "current"] as const,
   },
+  notes: {
+    catalogue: ["notes", "catalogue"] as const,
+  },
   clubEvents: {
     all: ["clubEvents"] as const,
     current: ["clubEvents", "current"] as const,

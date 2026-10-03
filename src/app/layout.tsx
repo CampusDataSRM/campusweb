@@ -5,7 +5,7 @@ import { ThemeHead } from "@/components/theme/theme-head";
 import { GA_ID } from "@/constants";
 import { DEFAULT_PALETTE, PRESET_PALETTES } from "@/constants/theme";
 import { SITE } from "@/constants/site";
-import { bricolage, nunito } from "@/lib/fonts";
+import { nunito } from "@/lib/fonts";
 import Providers from "./providers";
 import "./globals.css";
 
@@ -45,7 +45,7 @@ export const viewport: Viewport = {
   colorScheme: "dark",
   themeColor:
     DEFAULT_PALETTE === "custom"
-      ? PRESET_PALETTES.campus.surface
+      ? PRESET_PALETTES["campus-glow"].surface
       : PRESET_PALETTES[DEFAULT_PALETTE].surface,
 };
 
@@ -59,7 +59,7 @@ export default function RootLayout({
       // The pre-paint script may change data-palette and inline variables
       // before React hydrates; the DOM is authoritative for those.
       suppressHydrationWarning
-      className={`${nunito.variable} ${bricolage.variable} h-full`}
+      className={`${nunito.variable} h-full`}
     >
       <head>
         <ThemeHead />

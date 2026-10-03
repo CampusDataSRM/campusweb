@@ -73,7 +73,7 @@ export function ClubDashboardView() {
       )}
 
       <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
-        <DialogContent className="border-outline-variant bg-surface-container">
+        <DialogContent className="border-outline-variant bg-surface-modal">
           <DialogHeader>
             <DialogTitle className="font-heading text-on-surface">Delete this event?</DialogTitle>
             <DialogDescription className="text-on-surface-muted">&quot;{pending?.title}&quot; will be removed for every student. This can&apos;t be undone.</DialogDescription>

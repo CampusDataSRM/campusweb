@@ -491,3 +491,29 @@ export interface CreateEventInput {
   labels: [string, string, string];
   banner: File;
 }
+
+/* ── Studique notes catalogue (public/data/studique) ── */
+
+export interface StudiqueFileEntry {
+  name: string;
+  fileId?: string;
+  url: string;
+}
+
+export interface StudiqueSubjectEntry {
+  name: string;
+  semester: string;
+  ppts: StudiqueFileEntry[];
+  pyqs: StudiqueFileEntry[];
+  syllabus: StudiqueFileEntry[];
+}
+
+export interface StudiqueCatalogueFile {
+  success: boolean;
+  updatedAt: string;
+  source: string;
+  subjects: StudiqueSubjectEntry[];
+}
+
+/** Subject name -> semester (1-8) or null; `_README` is a comment. */
+export type StudiqueSemesterMap = Record<string, number | string | null>;

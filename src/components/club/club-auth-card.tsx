@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { SignInBackdrop } from "@/components/auth/sign-in-backdrop";
 import { Logo } from "@/components/brand/logo";
 
 /** The centred card every public club page uses (sign in, sign up, reset). */
@@ -19,7 +18,6 @@ export function ClubAuthCard({
 }) {
   return (
     <main className="relative isolate flex min-h-dvh flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-page py-10">
-      <SignInBackdrop />
       <div className="relative flex flex-col items-center gap-2 text-center">
         <Logo className="h-6" />
         <p className="text-sm font-bold text-on-surface-brand">Club portal</p>

@@ -87,7 +87,7 @@ export function PredictionSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={isMobile ? "bottom" : "right"}
-        className="flex max-h-[92dvh] flex-col gap-0 border-outline-variant bg-surface-container data-[side=bottom]:rounded-t-3xl sm:max-w-md"
+        className="flex max-h-[92dvh] flex-col gap-0 border-outline-variant bg-surface-modal data-[side=bottom]:rounded-t-3xl sm:max-w-md"
       >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 font-heading text-h3 text-on-surface">

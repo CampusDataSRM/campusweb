@@ -6,22 +6,20 @@ import Link from "next/link";
 import { EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
 import { Badge } from "@/components/ui/badge";
 import { STUDENT_ROUTES } from "@/constants/routes";
-import { useStudentCopy } from "@/hooks/use-student-copy";
 import { useToday } from "@/hooks/use-today";
 import { formatMinutes } from "@/lib/student/timetable";
 import { cn } from "@/lib/utils";
 
 /** Today's classes as a compact timeline, the current and next highlighted. */
 export function TodayClassesCard() {
-  const copy = useStudentCopy();
   const today = useToday();
   const { current, next } = today.moment;
 
   return (
-    <article className="flex flex-col gap-3">
+    <article className="flex flex-col gap-3 rounded-[1.25rem] border border-outline-variant bg-surface-container p-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <h2 className="font-heading text-lg font-bold text-on-surface">{copy.overviewTitle}</h2>
+          <h2 className="text-lg font-extrabold text-on-surface">Today&apos;s classes</h2>
           {today.dayOrder && (
             <Badge className="rounded-full bg-primary-container px-2.5 text-on-primary-container">
               Day {today.dayOrder}
@@ -32,7 +30,7 @@ export function TodayClassesCard() {
           href={STUDENT_ROUTES.timetable}
           className="inline-flex items-center gap-1 text-sm font-semibold text-primary-accent hover:underline"
         >
-          Whole week
+          View all
         </Link>
       </div>
 
@@ -49,7 +47,7 @@ export function TodayClassesCard() {
       ) : today.classes.length === 0 ? (
         <EmptyState icon={PartyPopper} title="No classes today" description="Nothing on the timetable for this day order." />
       ) : (
-        <ol className="flex flex-col divide-y divide-outline-variant border-y border-outline-variant">
+        <ol className="flex flex-col gap-1.5">
           {today.classes.map((item) => {
             const isNow = current?.id === item.id;
             const isNext = !isNow && next?.id === item.id;
@@ -59,7 +57,8 @@ export function TodayClassesCard() {
                 key={item.id}
                 aria-current={isNow ? "time" : undefined}
                 className={cn(
-                  "relative flex items-center gap-3 px-1 py-3",
+                  "relative flex items-center gap-3 rounded-xl px-2 py-2.5",
+                  isNow ? "bg-success-container" : isNext ? "bg-primary-container" : "bg-surface-high",
                   isPast && "opacity-55",
                 )}
               >

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { SignInBackdrop } from "@/components/auth/sign-in-backdrop";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { SignInHero } from "@/components/auth/sign-in-hero";
 
@@ -16,7 +15,6 @@ export const metadata: Metadata = {
 export default function SignInPage() {
   return (
     <main className="relative isolate flex min-h-dvh flex-1 items-center justify-center overflow-hidden px-page py-8 sm:py-12">
-      <SignInBackdrop />
       <div className="relative grid w-full max-w-content items-center gap-7 sm:gap-10 lg:grid-cols-[1.1fr_minmax(0,28rem)] lg:gap-16">
         <SignInHero />
         <section

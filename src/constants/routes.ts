@@ -10,6 +10,7 @@ export const STUDENT_ROUTES = {
   clubs: "/student/clubs",
   mess: "/student/mess",
   cgpa: "/student/cgpa",
+  notes: "/student/notes",
   settings: "/student/settings",
 } as const;
 

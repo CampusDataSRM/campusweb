@@ -21,8 +21,8 @@ export function StudentShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="min-w-0 bg-surface">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-outline-variant bg-surface/90 px-page backdrop-blur-md md:h-12">
+      <SidebarInset className="min-w-0 bg-transparent">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-outline-variant bg-surface/30 px-page backdrop-blur-xl md:h-12">
           <SidebarTrigger className="hidden text-on-surface-muted md:inline-flex" />
           <Link href={STUDENT_ROUTES.dashboard} aria-label="Dashboard" className="md:hidden">
             <Logo className="h-5" />
