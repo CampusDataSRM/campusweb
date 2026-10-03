@@ -30,7 +30,7 @@ import {
   type ThemePalette,
 } from "@/constants/theme";
 import { getCookie, setCookie } from "@/lib/cookies";
-import { applyThemeToDocument } from "@/lib/theme/apply-theme";
+import { applyThemeWithTransition } from "@/lib/theme/apply-theme";
 import {
   DEFAULT_THEME_PREFERENCE,
   parseThemePreference,
@@ -80,7 +80,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const commit = useCallback((next: ThemePreference) => {
-    applyThemeToDocument(next);
+    applyThemeWithTransition(next);
     persist(next);
     setPreference(next);
   }, []);

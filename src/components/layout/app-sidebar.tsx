@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
@@ -37,8 +38,16 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
                   isActive={active}
                   tooltip={itemLabel}
                   render={<Link href={href} aria-current={active ? "page" : undefined} />}
-                  className="h-10 rounded-xl font-semibold text-on-surface-muted data-active:bg-primary-container data-active:text-on-primary-container [&_svg]:size-[1.125rem]"
+                  className="relative isolate h-10 rounded-xl font-semibold text-on-surface-muted data-active:bg-transparent data-active:text-on-primary-container [&_svg]:size-[1.125rem]"
                 >
+                  {active && (
+                    <motion.span
+                      layoutId="sidebar-pill"
+                      aria-hidden
+                      className="absolute inset-0 -z-10 rounded-xl bg-primary-container"
+                      transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                    />
+                  )}
                   <Icon aria-hidden />
                   <span>{itemLabel}</span>
                 </SidebarMenuButton>

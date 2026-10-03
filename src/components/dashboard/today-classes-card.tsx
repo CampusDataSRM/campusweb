@@ -85,6 +85,7 @@ export function TodayClassesCard() {
                       isNow ? "bg-success text-on-success" : "bg-primary text-on-primary",
                     )}
                   >
+                    {isNow && <span aria-hidden className="live-dot mr-1.5 align-middle" />}
                     {isNow ? "Now" : "Next"}
                   </span>
                 )}

@@ -51,7 +51,7 @@ export function AttendanceOverviewCard() {
   const subjectsBelow = courses.filter((c) => courseAttendance(c).isBelowThreshold).length;
 
   return (
-    <Link href={STUDENT_ROUTES.attendance} className="flex flex-col gap-4 rounded-[1.25rem] border border-outline-variant bg-surface-container p-5 transition-colors hover:border-outline">
+    <Link href={STUDENT_ROUTES.attendance} className="flex flex-col gap-4 rounded-[1.25rem] border border-outline-variant bg-surface-container p-5 pressable hover:border-outline">
       <span className={cn("w-fit rounded-full px-3 py-1 text-xs font-bold", current ? "bg-success-container text-on-success-container" : "bg-primary-container text-on-primary-container")}>
         {chip}
       </span>

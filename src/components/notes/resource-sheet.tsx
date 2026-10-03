@@ -64,7 +64,7 @@ export function ResourceSheet({
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex min-h-12 items-center gap-3 rounded-xl bg-surface-high px-3 py-2.5 transition-colors hover:bg-surface-highest"
+                        className="flex min-h-12 items-center gap-3 rounded-xl bg-surface-high px-3 py-2.5 pressable hover:bg-surface-highest"
                       >
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-container text-xs font-extrabold text-on-primary-container">
                           {resource.unit !== null ? `U${resource.unit}` : <Icon aria-hidden className="size-4" />}

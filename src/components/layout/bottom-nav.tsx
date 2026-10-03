@@ -1,6 +1,7 @@
 "use client";
 
 import { Ellipsis } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import type { NavItem } from "@/constants/navigation";
 import { useNavigation } from "@/hooks/use-navigation";
+import { tapHaptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 function BarLink({ item, active }: { item: NavItem; active: boolean }) {
@@ -22,14 +24,23 @@ function BarLink({ item, active }: { item: NavItem; active: boolean }) {
     <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
+      onClick={tapHaptic}
       className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[0.6875rem] font-bold"
     >
       <span
         className={cn(
-          "flex h-8 w-14 items-center justify-center rounded-full transition-colors duration-(--duration-short)",
-          active ? "bg-primary-container text-on-primary-container" : "text-on-surface-muted group-hover:text-on-surface",
+          "relative isolate flex h-8 w-14 items-center justify-center rounded-full transition-[color,transform] duration-(--duration-short) group-active:scale-90",
+          active ? "text-on-primary-container" : "text-on-surface-muted group-hover:text-on-surface",
         )}
       >
+        {active && (
+          <motion.span
+            layoutId="bottom-nav-pill"
+            aria-hidden
+            className="absolute inset-0 -z-10 rounded-full bg-primary-container"
+            transition={{ type: "spring", stiffness: 520, damping: 38 }}
+          />
+        )}
         <Icon aria-hidden className="size-5" />
       </span>
       <span className={active ? "text-on-surface" : "text-on-surface-muted"}>
@@ -63,13 +74,16 @@ export function BottomNav() {
           {overflow.length > 0 && (
             <button
               type="button"
-              onClick={() => setMoreOpen(true)}
+              onClick={() => {
+                tapHaptic();
+                setMoreOpen(true);
+              }}
               aria-haspopup="dialog"
               aria-expanded={moreOpen}
               className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[0.6875rem] font-bold"
             >
               <span
-                className="flex size-11 -translate-y-1 items-center justify-center rounded-full bg-cta text-on-primary shadow-lg shadow-black/40"
+                className="flex size-11 -translate-y-1 items-center justify-center rounded-full bg-cta text-on-primary shadow-lg shadow-black/40 transition-transform duration-(--duration-short) group-active:scale-90"
               >
                 <Ellipsis aria-hidden className="size-5" />
               </span>
@@ -98,7 +112,7 @@ export function BottomNav() {
                     onClick={() => setMoreOpen(false)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center text-xs font-bold transition-colors",
+                      "pressable flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center text-xs font-bold",
                       active
                         ? "border-primary/50 bg-primary-container text-on-primary-container"
                         : "border-outline-variant bg-surface-high text-on-surface-muted hover:text-on-surface",

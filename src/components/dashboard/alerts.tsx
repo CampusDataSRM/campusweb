@@ -38,7 +38,7 @@ export function Alerts() {
         {below > 0 && (
           <Link
             href={STUDENT_ROUTES.attendance}
-            className="flex items-center gap-3 rounded-[1.25rem] border border-danger/40 bg-danger-container p-4 text-on-danger-container transition-colors hover:border-danger"
+            className="flex items-center gap-3 rounded-[1.25rem] border border-danger/40 bg-danger-container p-4 text-on-danger-container pressable hover:border-danger"
           >
             <TriangleAlert aria-hidden className="size-5 shrink-0 text-danger-accent" />
             <span className="text-sm font-bold">{plural(below, "subject")} {below === 1 ? "is" : "are"} below 75% attendance</span>
@@ -46,7 +46,7 @@ export function Alerts() {
         )}
         <Link
           href={STUDENT_ROUTES.planner}
-          className="flex items-center gap-3 rounded-[1.25rem] border border-primary/40 bg-primary-container p-4 text-on-primary-container transition-colors hover:border-primary"
+          className="flex items-center gap-3 rounded-[1.25rem] border border-primary/40 bg-primary-container p-4 text-on-primary-container pressable hover:border-primary"
         >
           <CalendarHeart aria-hidden className="size-5 shrink-0 text-primary-accent" />
           <span className="text-sm font-bold">

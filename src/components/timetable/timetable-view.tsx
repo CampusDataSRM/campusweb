@@ -88,6 +88,7 @@ export function TimetableView() {
                   </div>
                   {(isNow || isNext) && (
                     <span className={cn("rounded-full px-2.5 py-1 text-xs font-extrabold uppercase", isNow ? "bg-success text-on-success" : "bg-primary text-on-primary")}>
+                      {isNow && <span aria-hidden className="live-dot mr-1.5 align-middle" />}
                       {isNow ? "Now" : "Next"}
                     </span>
                   )}

@@ -33,7 +33,7 @@ function SubjectRow({ subject, onOpen }: { subject: StudiqueSubject; onOpen: (s:
       <button
         type="button"
         onClick={() => onOpen(subject)}
-        className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-outline-variant bg-surface-container px-4 py-3 text-left transition-colors hover:border-outline hover:bg-surface-high"
+        className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-outline-variant bg-surface-container px-4 py-3 text-left pressable hover:border-outline hover:bg-surface-high"
       >
         <span className="min-w-0 flex-1">
           <span className="block font-bold text-on-surface">{subject.name}</span>
