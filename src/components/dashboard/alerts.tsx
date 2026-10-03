@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarHeart, TriangleAlert } from "lucide-react";
+import { CalendarHeart } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -9,7 +9,6 @@ import { STUDENT_ROUTES } from "@/constants/routes";
 import { useSession } from "@/context/session-context";
 import { useNow } from "@/hooks/use-now";
 import { usePlanner, useProfile } from "@/hooks/use-student-data";
-import { countBelowThreshold, mergeTheoryPracticalCourses } from "@/lib/student/attendance";
 import { holidaysInMonth, plannerMonths } from "@/lib/student/planner";
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
@@ -21,30 +20,16 @@ export function Alerts() {
   const profile = useProfile();
   const planner = usePlanner();
 
-  const { below, holidays } = useMemo(() => {
-    const courses = mergeTheoryPracticalCourses(profile.data?.courses ?? [], profile.data?.attendanceSource);
-    return {
-      below: countBelowThreshold(courses),
-      holidays: now ? holidaysInMonth(plannerMonths(planner.data), now).length : 0,
-    };
-  }, [profile.data, planner.data, now]);
+  const holidays = useMemo(
+    () => (now ? holidaysInMonth(plannerMonths(planner.data), now).length : 0),
+    [planner.data, now],
+  );
 
   if (session?.kind === "demo" || !profile.data) return null;
 
   return (
-    <Section title="Alerts">
-      <div className="grid gap-3">
-        {below > 0 && (
-          <Link
-            href={STUDENT_ROUTES.attendance}
-            className="flex items-center gap-3 rounded-2xl border border-danger/40 bg-danger-container p-4 text-on-danger-container transition-colors hover:border-danger"
-          >
-            <TriangleAlert aria-hidden className="size-5 shrink-0 text-danger-accent" />
-            <span className="text-sm font-bold">
-              {plural(below, "subject")} {below === 1 ? "is" : "are"} below 75% attendance
-            </span>
-          </Link>
-        )}
+    <Section title="This month">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Link
           href={STUDENT_ROUTES.planner}
           className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary-container p-4 text-on-primary-container transition-colors hover:border-primary"

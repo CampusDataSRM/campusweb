@@ -21,7 +21,7 @@ export function SgpaSheet({ projection, program, semester }: { projection: SgpaP
         <SheetHeader>
           <SheetTitle className="font-heading text-h3 text-on-surface">Projected SGPA</SheetTitle>
           <SheetDescription className="text-on-surface-muted">
-            {[program, semester && `Semester ${semester}`].filter(Boolean).join(" · ")} - from internal marks so far, assuming full end-semester marks are scaled as the app does.
+            Worked out from your internal marks so far{semester ? `, semester ${semester}` : ""}. End-semester marks are projected the same way the app does it.
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-6">
@@ -46,7 +46,7 @@ export function SgpaSheet({ projection, program, semester }: { projection: SgpaP
                   <p className="text-xs text-on-surface-muted">
                     {subject.status === "pending"
                       ? "No marks yet"
-                      : `${subject.predictedFinal100}/100 · ${subject.credit} credits${subject.countedInSgpa ? "" : " · not counted"}`}
+                      : `${subject.predictedFinal100} out of 100, ${subject.credit} credits${subject.countedInSgpa ? "" : ", not counted"}`}
                   </p>
                 </div>
               </li>

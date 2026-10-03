@@ -27,7 +27,10 @@ export function MarksCard({ performance }: { performance: UserTestPerformance })
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="line-clamp-2 font-heading font-bold text-on-surface">{performance.courseName || performance.courseCode}</h3>
-          <p className="mt-1 text-xs text-on-surface-muted">{[performance.courseCode, performance.courseType].filter(Boolean).join(" · ")}</p>
+          <p className="mt-1 flex gap-3 text-xs text-on-surface-muted">
+            <span className="font-semibold">{performance.courseCode}</span>
+            {performance.courseType && <span>{performance.courseType}</span>}
+          </p>
         </div>
         <p className="shrink-0 font-heading text-2xl font-extrabold text-primary-accent tabular">
           {fmt(got)}<span className="text-base text-on-surface-muted">/{fmt(total)}</span>

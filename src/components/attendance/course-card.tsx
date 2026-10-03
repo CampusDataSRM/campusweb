@@ -29,8 +29,10 @@ export function CourseCard({ course, predicted }: { course: UserCourse; predicte
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="line-clamp-2 font-heading font-bold text-on-surface">{course.courseTitle}</h3>
-          <p className="mt-1 truncate text-xs text-on-surface-muted">
-            {[course.courseCode, course.category, Number.isFinite(credits) && `${fmt(credits)} credits`].filter(Boolean).join(" · ")}
+          <p className="mt-1 flex flex-wrap gap-x-3 text-xs text-on-surface-muted">
+            <span className="font-semibold">{course.courseCode}</span>
+            {course.category && <span>{course.category}</span>}
+            {Number.isFinite(credits) && <span>{fmt(credits)} credits</span>}
           </p>
           {course.facultyName && (
             <p className="mt-1.5 flex items-center gap-1.5 truncate text-xs text-on-surface-muted">

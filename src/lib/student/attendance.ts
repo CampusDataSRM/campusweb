@@ -364,3 +364,34 @@ export type AttendanceTier = "good" | "warn" | "bad";
 /** Green at 75%+, amber from 60%, red below - the app's colour bands. */
 export const attendanceTier = (percent: number): AttendanceTier =>
   percent >= ATTENDANCE_THRESHOLD ? "good" : percent >= 60 ? "warn" : "bad";
+
+export type BunkTone = "safe" | "edge" | "risk" | "pending";
+
+export interface BunkBudget {
+  tone: BunkTone;
+  /** The number to show big - classes to skip, or classes to attend. */
+  count: number;
+  /** One plain sentence for the number. */
+  label: string;
+}
+
+/**
+ * The 75% rule in students' words: how many more classes can be skipped, or
+ * how many must be attended to get back above 75%.
+ */
+export function bunkBudget(stats: CourseAttendance): BunkBudget {
+  if (stats.isPending) return { tone: "pending", count: 0, label: "No classes held yet" };
+  if (stats.required > 0) {
+    return {
+      tone: "risk",
+      count: stats.required,
+      label: `Go to the next ${stats.required} to get back to 75%`,
+    };
+  }
+  if (stats.margin === 0) return { tone: "edge", count: 0, label: "Right at 75% - don't skip the next one" };
+  return {
+    tone: "safe",
+    count: stats.margin,
+    label: `You can skip ${stats.margin} more and stay above 75%`,
+  };
+}

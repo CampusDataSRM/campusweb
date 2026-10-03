@@ -16,9 +16,8 @@ export default function ClubLoginPage() {
           <Link href="/club/forgot-password" className="font-semibold text-primary-accent hover:underline">Forgot password?</Link>
           <p className="text-on-surface-muted">
             New club? <Link href="/club/register" className="font-semibold text-primary-accent hover:underline">Register it</Link>
-            {" · "}
-            <Link href="/" className="font-semibold text-primary-accent hover:underline">Student sign in</Link>
           </p>
+          <Link href="/" className="text-on-surface-muted hover:text-on-surface">I&apos;m a student</Link>
         </>
       }
     >

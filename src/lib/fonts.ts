@@ -1,15 +1,19 @@
-import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Nunito } from "next/font/google";
 
-/** Body and UI text - the app's typeface, rounded and highly legible. */
+/** Body and UI text - Campus App's typeface, rounded and highly legible. */
 export const nunito = Nunito({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-nunito",
 });
 
-/** Headings and numbers - tighter, geometric, reads well at display sizes. */
-export const plusJakartaSans = Plus_Jakarta_Sans({
+/**
+ * Headings and big numbers. Bricolage Grotesque is expressive - quirky
+ * terminals, optical sizing - which gives the product a voice students
+ * recognise, while staying crisp at stat sizes.
+ */
+export const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-display",
 });

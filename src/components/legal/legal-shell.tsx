@@ -28,7 +28,7 @@ export function LegalShell({ children, back = true }: { children: ReactNode; bac
       </header>
       <main className="mx-auto w-full max-w-3xl flex-1 px-page py-8 sm:py-12">{children}</main>
       <footer className="border-t border-outline-variant py-6 text-center text-xs text-on-surface-subtle">
-        © {new Date().getFullYear()} {LEGAL_NAME} · {TRADE_NAME}
+        © {new Date().getFullYear()} {LEGAL_NAME}, trading as {TRADE_NAME}
       </footer>
     </div>
   );

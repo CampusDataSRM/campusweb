@@ -71,7 +71,7 @@ export function PredictionSheet({
       ? mode === "missed"
         ? "Pick the days you expect to miss."
         : "Pick days covered by OD or ML - they count as present."
-      : `${sorted.length} day${sorted.length === 1 ? "" : "s"} · ${rangeFormat.format(sorted[0])}${sorted.length > 1 ? ` - ${rangeFormat.format(sorted[sorted.length - 1])}` : ""}`;
+      : `${sorted.length} day${sorted.length === 1 ? "" : "s"}, ${sorted.length > 1 ? `${rangeFormat.format(sorted[0])} to ${rangeFormat.format(sorted[sorted.length - 1])}` : rangeFormat.format(sorted[0])}`;
 
   const apply = () => {
     const outcome = prediction.apply(missed, credited);

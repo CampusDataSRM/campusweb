@@ -58,7 +58,7 @@ export function MessView() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="What's in mess"
-        description={`${isAuto ? (auto.isTomorrow ? "Tomorrow" : "Today") : capitalize(day)} · ${shownMeal} · ${MEAL_TIMES[shownMeal]}`}
+        description={`${shownMeal} ${isAuto ? (auto.isTomorrow ? "tomorrow" : "today") : `on ${capitalize(day)}`}, served ${MEAL_TIMES[shownMeal]}`}
         actions={
           <Select value={mess} onValueChange={(value) => choose(value as MessId)}>
             <SelectTrigger aria-label="Mess" className="h-11 rounded-xl bg-surface-container">
@@ -103,14 +103,19 @@ export function MessView() {
       {dishes.length === 0 ? (
         <p className="rounded-2xl border border-outline-variant bg-surface-container p-6 text-on-surface-muted">No menu published for this meal.</p>
       ) : (
-        <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="flex flex-wrap gap-2" aria-label={`${shownMeal} menu`}>
           {dishes.map((dish, index) => (
-            <li key={`${dish}-${index}`} className={cn("flex items-center gap-3 rounded-2xl border border-outline-variant bg-surface-container px-4 py-3")}>
-              <span className="font-heading text-sm font-extrabold text-on-surface-brand tabular">{String(index + 1).padStart(2, "0")}</span>
-              <span className="font-semibold text-on-surface">{dish}</span>
+            <li
+              key={`${dish}-${index}`}
+              className={cn(
+                "rounded-full border px-4 py-2 font-semibold",
+                index === 0 ? "border-secondary/50 bg-secondary-container text-on-secondary-container" : "border-outline-variant bg-surface-container text-on-surface",
+              )}
+            >
+              {dish}
             </li>
           ))}
-        </ol>
+        </ul>
       )}
     </div>
   );

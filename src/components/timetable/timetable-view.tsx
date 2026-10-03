@@ -81,9 +81,9 @@ export function TimetableView() {
                   <span className={cn("w-1 self-stretch rounded-full", item.kind === "practical" ? "bg-secondary-accent" : "bg-primary-accent")} aria-hidden />
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-on-surface">{item.subject}</p>
-                    <p className="flex items-center gap-1.5 text-sm text-on-surface-muted">
-                      {item.kind === "practical" ? "Practical" : "Theory"}
-                      {item.room && (<><span aria-hidden>·</span><MapPin aria-hidden className="size-3.5" />{item.room}</>)}
+                    <p className="flex flex-wrap items-center gap-x-3 text-sm text-on-surface-muted">
+                      <span>{item.kind === "practical" ? "Practical" : "Theory"}</span>
+                      {item.room && <span className="inline-flex items-center gap-1"><MapPin aria-hidden className="size-3.5" />{item.room}</span>}
                     </p>
                   </div>
                   {(isNow || isNext) && (

@@ -33,12 +33,12 @@ export default function ContactPage() {
       </header>
       <dl className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 sm:col-span-2">
-          <dt className="text-xs font-bold tracking-widest text-on-surface-subtle uppercase">Operator</dt>
+          <dt className="text-sm font-semibold text-on-surface-subtle">Operator</dt>
           <dd className="mt-1 font-bold text-on-surface">{LEGAL_NAME}, trading as {TRADE_NAME}</dd>
         </div>
         {CONTACTS.map((contact) => (
           <div key={contact.label} className="rounded-2xl border border-outline-variant bg-surface-container p-5">
-            <dt className="text-xs font-bold tracking-widest text-on-surface-subtle uppercase">{contact.label}</dt>
+            <dt className="text-sm font-semibold text-on-surface-subtle">{contact.label}</dt>
             <dd className="mt-1">
               <a href={contact.href} className="font-semibold break-all text-primary-accent hover:underline">{contact.value}</a>
             </dd>

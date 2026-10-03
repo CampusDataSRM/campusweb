@@ -3,6 +3,7 @@
 import { CalendarDays, Clock3, ExternalLink, Heart, Sparkles, UtensilsCrossed } from "lucide-react";
 import Image from "next/image";
 
+import ClickSpark from "@/components/ClickSpark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cleanLabels, eventPhase, isLikedBy, parseEventDates } from "@/lib/student/events";
@@ -102,31 +103,33 @@ export function EventCard({ event, today, registrationNumber, canLike, onLike, c
           </div>
         )}
 
-        <div className="mt-auto flex items-center gap-2 pt-1">
-          {event.website_link && (
+        <ClickSpark className="mt-auto !h-auto text-secondary-accent" sparkColor="currentColor" sparkCount={10} sparkRadius={28} sparkSize={9}>
+          <div className="mt-auto flex items-center gap-2 pt-1">
+            {event.website_link && (
+              <Button
+                size="touch"
+                className="flex-1"
+                render={<a href={event.website_link} target="_blank" rel="noreferrer" />}
+                nativeButton={false}
+              >
+                Register <ExternalLink aria-hidden />
+              </Button>
+            )}
             <Button
+              variant={liked ? "tonal" : "outline"}
               size="touch"
-              className="flex-1"
-              render={<a href={event.website_link} target="_blank" rel="noreferrer" />}
-              nativeButton={false}
+              disabled={!canLike}
+              onClick={() => onLike?.(event.id, liked ? "unlike" : "like")}
+              aria-pressed={liked}
+              aria-label={`${liked ? "Unlike" : "Like"} ${event.title}, ${event.popularity ?? 0} likes`}
+              title={canLike ? undefined : "Sign in to like events"}
+              className={cn(!event.website_link && "flex-1")}
             >
-              Register <ExternalLink aria-hidden />
+              <Heart aria-hidden className={cn(liked && "fill-current")} />
+              <span className="tabular">{event.popularity ?? 0}</span>
             </Button>
-          )}
-          <Button
-            variant={liked ? "tonal" : "outline"}
-            size="touch"
-            disabled={!canLike}
-            onClick={() => onLike?.(event.id, liked ? "unlike" : "like")}
-            aria-pressed={liked}
-            aria-label={`${liked ? "Unlike" : "Like"} ${event.title}, ${event.popularity ?? 0} likes`}
-            title={canLike ? undefined : "Sign in to like events"}
-            className={cn(!event.website_link && "flex-1")}
-          >
-            <Heart aria-hidden className={cn(liked && "fill-current")} />
-            <span className="tabular">{event.popularity ?? 0}</span>
-          </Button>
-        </div>
+          </div>
+        </ClickSpark>
       </div>
     </article>
   );

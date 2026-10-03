@@ -1,57 +1,55 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { EventCard } from "@/components/events/event-card";
-import { Section } from "@/components/layout/page-header";
 import { STUDENT_ROUTES } from "@/constants/routes";
-import { useLikeActions } from "@/hooks/use-like-actions";
 import { useNow } from "@/hooks/use-now";
-import { useEvents, useProfile } from "@/hooks/use-student-data";
-import { visibleEvents } from "@/lib/student/events";
+import { useEvents } from "@/hooks/use-student-data";
+import { eventPhase, parseEventDates, visibleEvents } from "@/lib/student/events";
 
-const DASHBOARD_EVENT_COUNT = 6;
+const DASHBOARD_EVENT_COUNT = 4;
+const dayFormat = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" });
 
-/** The next few events: a swipeable row on phones, a grid on desktop. */
+/** The next few events as a compact list; the Events page has the full cards. */
 export function UpcomingEvents() {
   const now = useNow();
   const events = useEvents();
-  const profile = useProfile();
-  const reg = profile.data?.registrationNumber;
-  const { canLike, likeEvent } = useLikeActions(reg);
-
   const list = useMemo(
     () => (now ? visibleEvents(events.data ?? [], now).slice(0, DASHBOARD_EVENT_COUNT) : []),
     [events.data, now],
   );
-
   if (!now || list.length === 0) return null;
 
   return (
-    <Section
-      title="Events"
-      action={
-        <Link href={STUDENT_ROUTES.events} className="inline-flex items-center gap-1 text-sm font-semibold text-primary-accent hover:underline">
-          All events <ArrowRight aria-hidden className="size-4" />
-        </Link>
-      }
-    >
-      <div className="-mx-page flex snap-x snap-mandatory gap-3 overflow-x-auto px-page pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
-        {list.map((event) => (
-          <div key={event.id} className="w-[82%] shrink-0 snap-start sm:w-auto">
-            <EventCard
-              event={event}
-              today={now}
-              registrationNumber={reg}
-              canLike={canLike}
-              onLike={(id, action) => likeEvent({ id, action })}
-              compact
-            />
-          </div>
-        ))}
+    <section aria-label="Events" className="flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-lg font-bold text-on-surface">Coming up on campus</h2>
+        <Link href={STUDENT_ROUTES.events} className="text-sm font-semibold text-primary-accent hover:underline">All events</Link>
       </div>
-    </Section>
+      <ul className="flex flex-col divide-y divide-outline-variant border-y border-outline-variant">
+        {list.map((event) => {
+          const { start } = parseEventDates(event.dates);
+          const live = eventPhase(event, now) === "ongoing";
+          return (
+            <li key={event.id}>
+              <Link href={STUDENT_ROUTES.events} className="group flex items-center gap-3 py-3">
+                <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary-container font-heading font-extrabold text-on-primary-container">
+                  {event.banner_url ? <Image src={event.banner_url} alt="" fill unoptimized sizes="48px" className="object-cover" /> : event.club_name?.[0]}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-bold text-on-surface group-hover:underline">{event.title}</p>
+                  <p className="truncate text-sm text-on-surface-muted">{event.club_name}</p>
+                </div>
+                <span className={live ? "rounded-full bg-success-container px-2.5 py-1 text-xs font-bold text-on-success-container" : "text-sm font-semibold text-on-surface-muted tabular"}>
+                  {live ? "Live" : start ? dayFormat.format(start) : ""}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

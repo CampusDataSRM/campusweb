@@ -97,7 +97,7 @@
 
   /* ── Typography ── */
   --font-sans: var(--font-nunito);
-  --font-heading: var(--font-jakarta);
+  --font-heading: var(--font-display);
 
   /* ── Radius: 12px base. Controls 8, cards 12-16, sheets/dialogs 20-28. ── */
   --radius-sm: calc(var(--radius) - 6px);
@@ -229,5 +229,24 @@
   /* Stat numbers line up as they count. */
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Film grain: one static noise texture at very low opacity, fixed behind
+   content. Gives the dark surfaces depth without colour or motion; costs a
+   single tiny image. Hidden when the user asks for more contrast. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-contrast: more) {
+  body::before {
+    display: none;
   }
 }

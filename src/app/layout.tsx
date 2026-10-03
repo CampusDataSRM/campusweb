@@ -5,7 +5,7 @@ import { ThemeHead } from "@/components/theme/theme-head";
 import { GA_ID } from "@/constants";
 import { DEFAULT_PALETTE, PRESET_PALETTES } from "@/constants/theme";
 import { SITE } from "@/constants/site";
-import { nunito, plusJakartaSans } from "@/lib/fonts";
+import { bricolage, nunito } from "@/lib/fonts";
 import Providers from "./providers";
 import "./globals.css";
 
@@ -59,7 +59,7 @@ export default function RootLayout({
       // The pre-paint script may change data-palette and inline variables
       // before React hydrates; the DOM is authoritative for those.
       suppressHydrationWarning
-      className={`${nunito.variable} ${plusJakartaSans.variable} h-full`}
+      className={`${nunito.variable} ${bricolage.variable} h-full`}
     >
       <head>
         <ThemeHead />

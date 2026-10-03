@@ -150,7 +150,7 @@ export function PlannerView() {
                 )}
               >
                 <div className="w-11 text-center">
-                  <p className="text-[0.6875rem] font-semibold text-on-surface-muted uppercase">{cell.weekday}</p>
+                  <p className="text-xs font-semibold text-on-surface-muted">{cell.weekday}</p>
                   <p className={cn("font-heading text-lg font-extrabold tabular", cell.holiday ? "text-on-surface-subtle" : "text-on-surface")}>{cell.dayOfMonth}</p>
                 </div>
                 <p className={cn("min-w-0 flex-1 truncate text-sm", cell.event ? "font-semibold text-secondary-accent" : "text-on-surface-muted")}>

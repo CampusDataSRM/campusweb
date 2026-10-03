@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CalendarOff, MapPin, PartyPopper } from "lucide-react";
+import { CalendarOff, MapPin, PartyPopper } from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState, ErrorState, ShimmerBlock } from "@/components/feedback/data-states";
@@ -18,10 +18,10 @@ export function TodayClassesCard() {
   const { current, next } = today.moment;
 
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-outline-variant bg-surface-container p-5 sm:p-6">
+    <article className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <h2 className="font-heading text-h3 font-bold text-on-surface">{copy.overviewTitle}</h2>
+          <h2 className="font-heading text-lg font-bold text-on-surface">{copy.overviewTitle}</h2>
           {today.dayOrder && (
             <Badge className="rounded-full bg-primary-container px-2.5 text-on-primary-container">
               Day {today.dayOrder}
@@ -32,7 +32,7 @@ export function TodayClassesCard() {
           href={STUDENT_ROUTES.timetable}
           className="inline-flex items-center gap-1 text-sm font-semibold text-primary-accent hover:underline"
         >
-          Week <ArrowRight aria-hidden className="size-4" />
+          Whole week
         </Link>
       </div>
 
@@ -49,7 +49,7 @@ export function TodayClassesCard() {
       ) : today.classes.length === 0 ? (
         <EmptyState icon={PartyPopper} title="No classes today" description="Nothing on the timetable for this day order." />
       ) : (
-        <ol className="flex flex-col gap-2">
+        <ol className="flex flex-col divide-y divide-outline-variant border-y border-outline-variant">
           {today.classes.map((item) => {
             const isNow = current?.id === item.id;
             const isNext = !isNow && next?.id === item.id;
@@ -59,15 +59,11 @@ export function TodayClassesCard() {
                 key={item.id}
                 aria-current={isNow ? "time" : undefined}
                 className={cn(
-                  "relative flex items-center gap-3 overflow-hidden rounded-2xl border px-4 py-3",
-                  isNow
-                    ? "border-success/50 bg-success-container"
-                    : isNext
-                      ? "border-primary/50 bg-primary-container"
-                      : "border-outline-variant bg-surface-high",
+                  "relative flex items-center gap-3 px-1 py-3",
                   isPast && "opacity-55",
                 )}
               >
+                <span aria-hidden className={cn("h-8 w-1 shrink-0 rounded-full", isNow ? "bg-success-accent" : isNext ? "bg-primary-accent" : "bg-outline-variant")} />
                 <div className="w-16 shrink-0 tabular text-sm font-bold text-on-surface">
                   {formatMinutes(item.startMinutes).replace(" ", " ")}
                 </div>
@@ -75,13 +71,12 @@ export function TodayClassesCard() {
                   <p className="truncate text-sm font-bold text-on-surface">{item.subject}</p>
                   <p className="flex items-center gap-1 truncate text-xs text-on-surface-muted">
                     {item.room && (
-                      <>
+                      <span className="inline-flex items-center gap-1">
                         <MapPin aria-hidden className="size-3" />
                         {item.room}
-                        <span aria-hidden>·</span>
-                      </>
+                      </span>
                     )}
-                    {item.kind === "practical" ? "Practical" : "Theory"}
+                    <span className="ml-2">{item.kind === "practical" ? "Practical" : "Theory"}</span>
                   </p>
                 </div>
                 {(isNow || isNext) && (

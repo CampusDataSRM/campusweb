@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Eye, EyeOff, Loader2, LockKeyhole, UserRound } from "lucide-react";
+import { Eye, EyeOff, Loader2, LockKeyhole, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -134,18 +134,10 @@ export function SignInForm() {
             Signing in
           </>
         ) : (
-          <>
-            Sign in
-            <ArrowRight aria-hidden />
-          </>
+          "Sign in"
         )}
       </Button>
 
-      <div className="flex items-center gap-3 text-xs font-semibold tracking-widest text-on-surface-subtle uppercase">
-        <span className="h-px flex-1 bg-outline-variant" />
-        or
-        <span className="h-px flex-1 bg-outline-variant" />
-      </div>
 
       <Button
         type="button"
@@ -155,7 +147,7 @@ export function SignInForm() {
         onClick={() => void browseAsGuest()}
         className="h-12"
       >
-        Browse as guest
+        Just looking? Browse as a guest
       </Button>
 
       <div className="flex flex-col items-center gap-2 pt-1 text-sm">

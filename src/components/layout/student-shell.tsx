@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { CommandMenu } from "@/components/layout/command-menu";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -26,7 +27,10 @@ export function StudentShell({ children }: { children: ReactNode }) {
           <Link href={STUDENT_ROUTES.dashboard} aria-label="Dashboard" className="md:hidden">
             <Logo className="h-5" />
           </Link>
-          <div className="ml-auto md:hidden">
+          <div className="ml-auto flex items-center gap-1">
+            <CommandMenu />
+          </div>
+          <div className="md:hidden">
             <Button
               variant="ghost"
               size="icon-touch"

@@ -31,7 +31,7 @@ export default function PricingPage() {
           <li key={amount} className="flex items-end justify-between rounded-2xl border border-outline-variant bg-surface-container p-5">
             <div>
               <p className="font-bold text-on-surface">{ACCESS_DAYS} days full access</p>
-              <p className="text-sm text-on-surface-muted">{CURRENCY_CODE} · one-time · no renewal</p>
+              <p className="text-sm text-on-surface-muted">One-time payment, never renews</p>
             </div>
             <p className="font-heading text-h1 font-extrabold text-on-surface tabular">₹{amount}</p>
           </li>

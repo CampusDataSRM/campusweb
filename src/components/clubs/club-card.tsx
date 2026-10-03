@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import SpotlightCard from "@/components/SpotlightCard";
+import ClickSpark from "@/components/ClickSpark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { STUDENT_ROUTES } from "@/constants/routes";
@@ -49,23 +50,25 @@ export function ClubCard({
         </div>
       </div>
       <p className="line-clamp-3 flex-1 text-sm text-on-surface-muted">{club.description}</p>
-      <div className="flex items-center gap-2">
-        <Button variant="tonal" size="touch" className="flex-1" render={<Link href={`${STUDENT_ROUTES.clubs}/${encodeURIComponent(club.id)}`} />} nativeButton={false}>
-          Explore
-        </Button>
-        <Button
-          variant={liked ? "tonal" : "outline"}
-          size="touch"
-          disabled={!canLike}
-          onClick={() => onLike?.(club.id, liked ? "unlike" : "like")}
-          aria-pressed={liked}
-          aria-label={`${liked ? "Unlike" : "Like"} ${club.name}, ${club.popularity ?? 0} likes`}
-          title={canLike ? undefined : "Sign in to like clubs"}
-        >
-          <Heart aria-hidden className={cn(liked && "fill-current")} />
-          <span className="tabular">{club.popularity ?? 0}</span>
-        </Button>
-      </div>
+      <ClickSpark className="mt-auto !h-auto text-secondary-accent" sparkColor="currentColor" sparkCount={10} sparkRadius={28} sparkSize={9}>
+        <div className="flex items-center gap-2">
+          <Button variant="tonal" size="touch" className="flex-1" render={<Link href={`${STUDENT_ROUTES.clubs}/${encodeURIComponent(club.id)}`} />} nativeButton={false}>
+            Explore
+          </Button>
+          <Button
+            variant={liked ? "tonal" : "outline"}
+            size="touch"
+            disabled={!canLike}
+            onClick={() => onLike?.(club.id, liked ? "unlike" : "like")}
+            aria-pressed={liked}
+            aria-label={`${liked ? "Unlike" : "Like"} ${club.name}, ${club.popularity ?? 0} likes`}
+            title={canLike ? undefined : "Sign in to like clubs"}
+          >
+            <Heart aria-hidden className={cn(liked && "fill-current")} />
+            <span className="tabular">{club.popularity ?? 0}</span>
+          </Button>
+        </div>
+      </ClickSpark>
     </SpotlightCard>
   );
 }
