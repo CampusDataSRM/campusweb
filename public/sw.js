@@ -7,7 +7,7 @@
  *   page navigations       HTML                          network-first (4s), then cache, then /offline?from=
  *   images, public files,  icons, artwork, catalogue     stale-while-revalidate
  *   /data/*, /_next/image
- *   /api, /api-proxy, RSC  data and router payloads      never touched
+ *   /api, RSC payloads     data and router payloads      never touched
  *   other origins          the API, Drive, analytics     never touched
  *
  * Messages from the page (src/lib/pwa/sw-client.ts):
@@ -81,7 +81,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname === "/sw.js") return;
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/api-proxy/")) return;
+  if (url.pathname.startsWith("/api/")) return;
   // React Server Component payloads: left to Next. If one fails offline, the
   // router falls back to a full navigation, which the page handler serves.
   if (request.headers.get("RSC") === "1" || url.searchParams.has("_rsc")) return;

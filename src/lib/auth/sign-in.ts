@@ -10,13 +10,16 @@
  *    - Otherwise wait for the Student Portal. First-years (semester 1-2) are
  *      signed in on it alone - Academia's outcome is ignored. Everyone else
  *      needs Academia.
- *    - Both failed: the more useful of the two errors is reported.
+ *    - Both failed: Academia's error is reported, unless Academia doesn't
+ *      know the account (a first-year) - then the Student Portal's is. The
+ *      portal's "login failed" never overrides an Academia timeout or
+ *      outage, since it also fires for accounts that aren't on the portal.
  *
  * The Student Portal login runs with `withCredentials` so the browser keeps
  * the HttpOnly session cookie the API sets.
  */
 
-import { STUDENT_PORTAL_GRACE_MS } from "@/constants/auth";
+import { LOGIN_TIMEOUT_MS, STUDENT_PORTAL_GRACE_MS } from "@/constants/auth";
 import {
   isDemoIdentity,
   normalizeLoginIdentity,
@@ -24,7 +27,8 @@ import {
 } from "@/lib/auth/credentials";
 import { studentPortalSession, type StudentSession } from "@/lib/auth/session";
 import {
-  moreUseful,
+  combineFailures,
+  fromFailureBody,
   SignInError,
   toSignInError,
 } from "@/lib/auth/sign-in-error";
@@ -70,24 +74,22 @@ async function academiaLogin(
   identity: LoginIdentity,
   password: string,
 ): Promise<string> {
-  const response: LoginResponse & { cookies?: string } = await postLogin({
-    username: identity.loginId,
-    password,
-  });
+  const response: LoginResponse & { cookies?: string } = await postLogin(
+    { username: identity.loginId, password },
+    { timeout: LOGIN_TIMEOUT_MS },
+  );
   const cookies = response.Cookies ?? response.cookies;
   if (cookies) return cookies;
-  if (/old password/i.test(response.passResponse?.message ?? "")) {
-    throw new SignInError("old-password");
-  }
-  throw new SignInError("unavailable");
+  // A 200 that still failed: read the body the same way as an error response.
+  throw fromFailureBody(response);
 }
 
 async function studentPortalLogin(identity: LoginIdentity, password: string) {
   const response = await postStudentPortalLogin(
     { net_id: identity.netId, password },
-    { withCredentials: true },
+    { withCredentials: true, timeout: LOGIN_TIMEOUT_MS },
   );
-  if (response.status !== "success") throw new SignInError("unavailable");
+  if (response.status !== "success") throw fromFailureBody(response);
   return response;
 }
 
@@ -96,7 +98,10 @@ async function demoSignIn(
   password: string,
 ): Promise<StudentSession> {
   try {
-    const response = await postDemoLogin({ net_id: identity.netId, password });
+    const response = await postDemoLogin(
+      { net_id: identity.netId, password },
+      { timeout: LOGIN_TIMEOUT_MS },
+    );
     if (!response.demo_token) throw new SignInError("unavailable");
     return { kind: "demo", token: response.demo_token, netId: identity.netId };
   } catch (error) {
@@ -145,7 +150,15 @@ export async function signIn({
   const academiaResult = await academia;
   if (academiaResult.ok) return academiaSession(academiaResult.value);
 
-  throw portalResult.ok
+  // Portal signed in but says this isn't a first-year, and Academia failed:
+  // Academia is their login, so its error is the one that matters.
+  const error = portalResult.ok
     ? academiaResult.error
-    : moreUseful(academiaResult.error, portalResult.error);
+    : combineFailures(academiaResult.error, portalResult.error);
+  if (portalResult.ok)
+    error.legs = { academia: academiaResult.error.kind, portal: "ok" };
+  if (process.env.NODE_ENV !== "production") {
+    console.info("[sign-in] both logins failed", error.legs);
+  }
+  throw error;
 }

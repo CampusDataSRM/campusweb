@@ -26,9 +26,12 @@ export function CourseCard({
   course,
   predicted,
   index = 0,
+  unit = "classes",
 }: {
   course: UserCourse;
   predicted?: boolean;
+  /** "classes", or "sessions" for the evaluator account. */
+  unit?: string;
   /** Position in the list, for the staggered entrance. */
   index?: number;
 }) {
@@ -88,7 +91,7 @@ export function CourseCard({
             <p className="course-count-label">
               {needsClasses ? (
                 <>
-                  <b>classes</b> to reach 75%
+                  <b>{unit}</b> to reach 75%
                 </>
               ) : stats.margin === 0 ? (
                 <>
@@ -96,7 +99,7 @@ export function CourseCard({
                 </>
               ) : (
                 <>
-                  <b>classes</b> safe to miss
+                  <b>{unit}</b> safe to miss
                 </>
               )}
             </p>

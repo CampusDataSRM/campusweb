@@ -69,12 +69,15 @@ export function SignInForm() {
             aria-invalid={!!errors.username}
             className="h-12 rounded-xl bg-surface-highest/60 pl-11 text-base"
             {...register("username", {
-              validate: (value) => value.trim().length > 0 || "Enter your username.",
+              validate: (value) =>
+                value.trim().length > 0 || "Enter your username.",
             })}
           />
         </div>
         {errors.username && (
-          <p className="text-sm text-danger-accent">{errors.username.message}</p>
+          <p className="text-sm text-danger-accent">
+            {errors.username.message}
+          </p>
         )}
       </div>
 
@@ -112,7 +115,9 @@ export function SignInForm() {
           </Button>
         </div>
         {errors.password && (
-          <p className="text-sm text-danger-accent">{errors.password.message}</p>
+          <p className="text-sm text-danger-accent">
+            {errors.password.message}
+          </p>
         )}
       </div>
 
@@ -127,7 +132,12 @@ export function SignInForm() {
         )}
       </div>
 
-      <Button type="submit" size="touch" disabled={pending} className="h-12 text-base">
+      <Button
+        type="submit"
+        size="touch"
+        disabled={pending}
+        className="h-12 text-base"
+      >
         {pending ? (
           <>
             <Loader2 className="animate-spin" aria-hidden />
@@ -138,7 +148,6 @@ export function SignInForm() {
         )}
       </Button>
 
-
       <Button
         type="button"
         variant="outline"
@@ -147,7 +156,7 @@ export function SignInForm() {
         onClick={() => void browseAsGuest()}
         className="h-12"
       >
-        Just looking? Browse as a guest
+        Just looking? Browse events and clubs
       </Button>
 
       <div className="flex flex-col items-center gap-2 pt-1 text-sm">
@@ -162,7 +171,10 @@ export function SignInForm() {
         </Link>
         <p className="text-center text-xs text-on-surface-subtle">
           Your password is only used to sign you in - it is never saved.{" "}
-          <Link href={LEGAL_ROUTES.center} className="underline underline-offset-2 hover:text-on-surface-muted">
+          <Link
+            href={LEGAL_ROUTES.center}
+            className="underline underline-offset-2 hover:text-on-surface-muted"
+          >
             Legal &amp; policies
           </Link>
         </p>

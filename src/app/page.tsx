@@ -6,6 +6,8 @@ import { STORE_LINKS } from "@/constants/site";
 
 export const metadata: Metadata = {
   title: { absolute: "The Campus Web - Sign in" },
+  description:
+    "Every club and every event on campus, in one place. Sign in or browse as a guest.",
 };
 
 export default function SignInPage() {
@@ -18,36 +20,44 @@ export default function SignInPage() {
       <div className="sign-in-layout">
         <section className="sign-in-pitch" aria-labelledby="welcome-title">
           <div className="sign-in-eyebrow">
-            <span aria-hidden /> Made for campus life
+            <span aria-hidden /> Clubs and events, in one place
           </div>
           <h1 id="welcome-title">
             Your campus.
-            <br />A little less chaos.
+            <br />
+            What&apos;s on.
           </h1>
           <p>
-            Classes, attendance, notes and everything happening around you. One
-            place to keep up with your day.
+            Every club, every event and the people behind them. One place to see
+            what&apos;s happening around campus this week, and where to be.
           </p>
           <ol className="sign-in-features">
             <li>
               <span aria-hidden>01</span>
               <div>
-                <strong>Know where you need to be.</strong>
-                <p>Your timetable and day orders, always close.</p>
+                <strong>See what&apos;s on.</strong>
+                <p>
+                  Workshops, fests, talks and meetups across campus, in one
+                  planner.
+                </p>
               </div>
             </li>
             <li>
               <span aria-hidden>02</span>
               <div>
-                <strong>Keep your attendance in check.</strong>
-                <p>See your margins and plan ahead.</p>
+                <strong>Find your clubs.</strong>
+                <p>
+                  Browse every club, what they&apos;re up to and how to join.
+                </p>
               </div>
             </li>
             <li>
               <span aria-hidden>03</span>
               <div>
-                <strong>Find your people.</strong>
-                <p>Discover clubs, events and life beyond class.</p>
+                <strong>Never miss out.</strong>
+                <p>
+                  Like events, follow clubs and keep up with what&apos;s coming.
+                </p>
               </div>
             </li>
           </ol>
@@ -61,7 +71,7 @@ export default function SignInPage() {
         </section>
       </div>
       <footer className="sign-in-footer">
-        <span>Your campus. Your pace.</span>
+        <span>Your campus. Your people.</span>
         <span>
           Take it with you.{" "}
           <a href={STORE_LINKS.playStore} target="_blank" rel="noreferrer">

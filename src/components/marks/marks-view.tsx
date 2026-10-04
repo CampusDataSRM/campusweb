@@ -54,6 +54,9 @@ export function MarksView() {
     () => (profile.data ? projectSgpa(profile.data) : null),
     [profile.data],
   );
+  const isDemo = session?.kind === "demo";
+  // The evaluator account is an events programme: activities and results, not subjects and tests.
+  const noun = isDemo ? ["activity", "activities"] : ["subject", "subjects"];
   const showSgpa =
     session?.kind !== "demo" &&
     projection !== null &&
@@ -149,7 +152,7 @@ export function MarksView() {
             <dl className="campus-stat-strip">
               <div>
                 <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
-                  Marks so far
+                  {isDemo ? "Score so far" : "Marks so far"}
                 </dt>
                 <dd
                   className={cn(
@@ -160,19 +163,20 @@ export function MarksView() {
                   <CountUp to={Math.round(overall * 10) / 10} duration={0.8} />%
                 </dd>
                 <dd className="campus-stat-note">
-                  {fmt(totalGot)} of {fmt(totalMax)} marks
+                  {fmt(totalGot)} of {fmt(totalMax)}{" "}
+                  {isDemo ? "points" : "marks"}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
-                  Tests published
+                  {isDemo ? "Results published" : "Tests published"}
                 </dt>
                 <dd className="font-heading text-h2 font-extrabold text-on-surface tabular">
                   <CountUp to={testCount} duration={0.8} />
                 </dd>
                 <dd className="campus-stat-note">
                   {scored.length} of {sorted.length}{" "}
-                  {sorted.length === 1 ? "subject" : "subjects"}
+                  {sorted.length === 1 ? noun[0] : noun[1]}
                   {pending > 0 && ` · ${pending} waiting`}
                 </dd>
               </div>
@@ -198,7 +202,7 @@ export function MarksView() {
           )}
           <div className="campus-toolbar">
             <Segmented
-              label="Marks subjects"
+              label={`Filter ${noun[1]}`}
               value={filter}
               onChange={setFilter}
               options={[
@@ -206,7 +210,7 @@ export function MarksView() {
                   value: "all",
                   label: (
                     <>
-                      All subjects{" "}
+                      {isDemo ? "All activities" : "All subjects"}{" "}
                       <span className="campus-tab-count">{sorted.length}</span>
                     </>
                   ),
@@ -237,7 +241,7 @@ export function MarksView() {
                 key={row.courseCode}
                 performance={row}
                 credits={credits.get(row.courseCode)}
-                projection={projected.get(row.courseCode)}
+                projection={isDemo ? undefined : projected.get(row.courseCode)}
                 index={index}
               />
             ))}

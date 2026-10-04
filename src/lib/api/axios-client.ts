@@ -37,6 +37,15 @@ function createApiClient(): AxiosInstance {
     headers: {
       "Content-Type": "application/json",
     },
+    // Never let the browser's HTTP cache answer an API call. Per-account data
+    // lives at shared URLs (/auth/user, /auth/timetable/2 ...) told apart only
+    // by X-Net-ID / X-CSRF-Token, which the API doesn't list in Vary, while
+    // it sends `Cache-Control: private, max-age=60`. Left to the HTTP cache,
+    // the next account to sign in on this device is shown the previous one's
+    // profile for a minute. Freshness is React Query's job; offline copies
+    // live in IndexedDB, keyed by account.
+    adapter: "fetch",
+    fetchOptions: { cache: "no-store" },
   });
 
   // Normalize every failure into `ApiError` so consumers (TanStack Query,

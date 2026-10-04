@@ -44,7 +44,12 @@ export function MarksCard({
     name,
     got: test.got,
     total: test.total,
-    percent: test.total > 0 ? (test.got / test.total) * 100 : test.percentage,
+    percent:
+      test.total > 0
+        ? (test.got / test.total) * 100
+        : Number.isFinite(test.percentage)
+          ? test.percentage
+          : 0,
   }));
   const total =
     performance.totalMarks || tests.reduce((sum, t) => sum + t.total, 0);
@@ -117,7 +122,7 @@ export function MarksCard({
         </p>
       ) : (
         <ul className="marks-card-tests flex flex-col gap-3">
-          {tests.map((test, i) => {
+          {tests.map((test) => {
             const t = marksTone(test.percent);
             return (
               <li

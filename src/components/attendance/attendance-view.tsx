@@ -193,6 +193,7 @@ export function AttendanceView() {
                 course={course}
                 predicted={predicted}
                 index={index}
+                unit={copy.items}
               />
             ))}
           </div>

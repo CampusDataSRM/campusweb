@@ -14,6 +14,12 @@ export const DEMO_NET_ID = "campusdemo";
 export const STUDENT_PORTAL_GRACE_MS = 750;
 
 /**
+ * Sign-in requests get longer than the client's 15s default: Academia's
+ * login is a full portal scrape on the backend and takes 10-30s under load.
+ */
+export const LOGIN_TIMEOUT_MS = 45_000;
+
+/**
  * Stored in place of a token for Student Portal sessions: the real session is
  * an HttpOnly cookie on the API origin, sent with `withCredentials`.
  */

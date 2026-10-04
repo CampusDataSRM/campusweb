@@ -18,6 +18,7 @@ import {
   ShimmerBlock,
 } from "@/components/feedback/data-states";
 import { STUDENT_ROUTES } from "@/constants/routes";
+import { useSession } from "@/context/session-context";
 import { useStudentCopy } from "@/hooks/use-student-copy";
 import { usePlanner, useProfile } from "@/hooks/use-student-data";
 import { useToday, type Today } from "@/hooks/use-today";
@@ -154,6 +155,7 @@ function ClassProgress({
  */
 export function TodayHero() {
   const copy = useStudentCopy();
+  const isDemo = useSession().session?.kind === "demo";
   const profile = useProfile();
   const planner = usePlanner();
   const today = useToday();
@@ -348,32 +350,36 @@ export function TodayHero() {
           </Link>
         )}
       </div>
-      <nav className="home-shortcuts" aria-label="Quick access">
-        <Link href={STUDENT_ROUTES.notes}>
-          <BookOpen aria-hidden className="size-4" />
-          <span>
-            <strong>Study materials</strong>
-            <small>Notes and course resources</small>
-          </span>
-          <ArrowUpRight aria-hidden className="size-3.5" />
-        </Link>
-        <Link href={STUDENT_ROUTES.planner}>
-          <CalendarDays aria-hidden className="size-4" />
-          <span>
-            <strong>Academic planner</strong>
-            <small>See what’s coming up</small>
-          </span>
-          <ArrowUpRight aria-hidden className="size-3.5" />
-        </Link>
-        <Link href={STUDENT_ROUTES.mess}>
-          <Utensils aria-hidden className="size-4" />
-          <span>
-            <strong>What’s in mess</strong>
-            <small>Check today’s menu</small>
-          </span>
-          <ArrowUpRight aria-hidden className="size-3.5" />
-        </Link>
-      </nav>
+      {/* Notes, the planner and mess are student tools; the evaluator
+          account is an events programme and never sees them. */}
+      {!isDemo && (
+        <nav className="home-shortcuts" aria-label="Quick access">
+          <Link href={STUDENT_ROUTES.notes}>
+            <BookOpen aria-hidden className="size-4" />
+            <span>
+              <strong>Study materials</strong>
+              <small>Notes and course resources</small>
+            </span>
+            <ArrowUpRight aria-hidden className="size-3.5" />
+          </Link>
+          <Link href={STUDENT_ROUTES.planner}>
+            <CalendarDays aria-hidden className="size-4" />
+            <span>
+              <strong>Academic planner</strong>
+              <small>See what’s coming up</small>
+            </span>
+            <ArrowUpRight aria-hidden className="size-3.5" />
+          </Link>
+          <Link href={STUDENT_ROUTES.mess}>
+            <Utensils aria-hidden className="size-4" />
+            <span>
+              <strong>What’s in mess</strong>
+              <small>Check today’s menu</small>
+            </span>
+            <ArrowUpRight aria-hidden className="size-3.5" />
+          </Link>
+        </nav>
+      )}
     </section>
   );
 }

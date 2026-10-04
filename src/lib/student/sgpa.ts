@@ -33,7 +33,10 @@ export const GRADE_BANDS: readonly GradeBand[] = [
 
 export const FAIL_GRADE = "F";
 
-export function gradeFromScore(score: number): { grade: string; point: number } {
+export function gradeFromScore(score: number): {
+  grade: string;
+  point: number;
+} {
   for (const band of GRADE_BANDS) {
     if (score >= band.minScore) return { grade: band.grade, point: band.point };
   }
@@ -45,11 +48,15 @@ export function gradePointFor(grade: string): number {
   return GRADE_BANDS.find((band) => band.grade === grade)?.point ?? 0;
 }
 
-export const isLemCourse = (code: string) => code.includes("LEM");
+export const isLemCourse = (code: string | undefined) =>
+  (code ?? "").includes("LEM");
 
-export function isInternalOnlyCourse(code: string, title: string): boolean {
-  if (code.endsWith("P")) return true;
-  const normalized = title.trim().split(/\s+/).join(" ").toUpperCase();
+export function isInternalOnlyCourse(
+  code: string | undefined,
+  title: string | undefined,
+): boolean {
+  if ((code ?? "").endsWith("P")) return true;
+  const normalized = (title ?? "").trim().split(/\s+/).join(" ").toUpperCase();
   return (
     normalized === "PROJECT" ||
     normalized.includes("MOOC") ||
@@ -58,13 +65,19 @@ export function isInternalOnlyCourse(code: string, title: string): boolean {
   );
 }
 
-/** Credits that count toward SGPA: 0 for LEM and unparseable values. */
-export function effectiveCredit(code: string, credit: string | number): number {
+/**
+ * Credits that count toward SGPA: 0 for LEM, and for missing or unparseable
+ * values (the evaluator account's activities carry no credit at all).
+ */
+export function effectiveCredit(
+  code: string | undefined,
+  credit: string | number | null | undefined,
+): number {
   if (isLemCourse(code)) return 0;
   const value =
     typeof credit === "number"
       ? credit
-      : /^[+-]?\d+(\.\d+)?$/.test(credit.trim())
+      : typeof credit === "string" && /^[+-]?\d+(\.\d+)?$/.test(credit.trim())
         ? Number(credit)
         : Number.NaN;
   return Number.isFinite(value) && value > 0 ? value : 0;
@@ -107,6 +120,7 @@ export function projectSgpa(profile: StudentProfile): SgpaProjection {
   // First occurrence of each course code wins (as in the app).
   const courses = new Map<string, { title: string; credit: string }>();
   for (const course of profile.courses ?? []) {
+    if (!course?.courseCode) continue;
     if (!courses.has(course.courseCode)) {
       courses.set(course.courseCode, {
         title: course.courseTitle,
@@ -119,8 +133,14 @@ export function projectSgpa(profile: StudentProfile): SgpaProjection {
   const total = new Map<string, number>();
   for (const row of profile.testPerformances ?? []) {
     if (!(row.totalMarks > 0)) continue;
-    obtained.set(row.courseCode, (obtained.get(row.courseCode) ?? 0) + row.totalMarkGot);
-    total.set(row.courseCode, (total.get(row.courseCode) ?? 0) + row.totalMarks);
+    obtained.set(
+      row.courseCode,
+      (obtained.get(row.courseCode) ?? 0) + row.totalMarkGot,
+    );
+    total.set(
+      row.courseCode,
+      (total.get(row.courseCode) ?? 0) + row.totalMarks,
+    );
   }
 
   const subjects: SgpaSubject[] = [];
