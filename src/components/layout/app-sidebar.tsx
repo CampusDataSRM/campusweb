@@ -19,11 +19,14 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ROUTES } from "@/constants/auth";
 import type { NavItem } from "@/constants/navigation";
 import { LEGAL_ROUTES, STUDENT_ROUTES } from "@/constants/routes";
+import { useSession } from "@/context/session-context";
 import { useNavigation } from "@/hooks/use-navigation";
+import { CalendarDays, CalendarPlus, LogIn, UserRound } from "lucide-react";
 
-function NavGroup({
+export function NavGroup({
   label,
   items,
   utility = false,
@@ -102,6 +105,7 @@ const campusDestinations = new Set<string>([
 export function AppSidebar() {
   const { items, utility } = useNavigation();
   const { state } = useSidebar();
+  const { clubToken, hydrated } = useSession();
   const collapsed = state === "collapsed";
   const utilityItems = [
     ...utility,
@@ -117,6 +121,17 @@ export function AppSidebar() {
       item.href !== LEGAL_ROUTES.center &&
       !campusDestinations.has(item.href),
   );
+
+  const isClubLoggedIn = hydrated && !!clubToken;
+  const clubItems = isClubLoggedIn
+    ? [
+        { href: ROUTES.club, label: "My Club Events", icon: CalendarDays },
+        { href: `${ROUTES.club}/events/new`, label: "Publish Event", icon: CalendarPlus },
+        { href: `${ROUTES.club}/profile`, label: "Club Profile", icon: UserRound },
+      ]
+    : [
+        { href: ROUTES.clubLogin, label: "Club Login", icon: LogIn },
+      ];
 
   return (
     <Sidebar
@@ -150,6 +165,7 @@ export function AppSidebar() {
           items={studies}
         />
         <NavGroup label="Campus life" items={campus} />
+        <NavGroup label="Your Club" items={clubItems} />
       </SidebarContent>
       <SidebarFooter className="campus-sidebar-footer">
         <NavGroup items={utilityItems} utility />

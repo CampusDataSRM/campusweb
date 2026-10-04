@@ -5,7 +5,11 @@ import {
   BadgeCheck,
   CalendarDays,
   CalendarPlus,
+  LayoutDashboard,
+  LogIn,
   LogOut,
+  Scale,
+  Sparkles,
   UserRound,
 } from "lucide-react";
 import Image from "next/image";
@@ -15,12 +19,14 @@ import type { ReactNode } from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { ShimmerBlock } from "@/components/feedback/data-states";
+import { NavGroup } from "@/components/layout/app-sidebar";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -32,6 +38,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ROUTES } from "@/constants/auth";
+import { LEGAL_ROUTES, STUDENT_ROUTES } from "@/constants/routes";
+import { useSession } from "@/context/session-context";
+import { useNavigation } from "@/hooks/use-navigation";
 import { useClubEvents, useClubSignOut } from "@/hooks/use-club";
 import { tapHaptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
@@ -103,6 +112,17 @@ function ClubSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const signOut = useClubSignOut();
+  const { session, hydrated } = useSession();
+
+  const isStudentLoggedIn = hydrated && !!session;
+  const studentItems = isStudentLoggedIn
+    ? [
+        { href: STUDENT_ROUTES.dashboard, label: "Student Dashboard", icon: LayoutDashboard },
+        { href: STUDENT_ROUTES.events, label: "Campus Events", icon: Sparkles },
+      ]
+    : [
+        { href: ROUTES.home, label: "Student Login", icon: LogIn },
+      ];
 
   return (
     <Sidebar
@@ -127,6 +147,7 @@ function ClubSidebar() {
       </SidebarHeader>
       <SidebarContent className="campus-sidebar-content">
         <SidebarGroup className="campus-nav-group">
+          <SidebarGroupLabel className="campus-nav-label">Your Club</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV.map((item) => {
@@ -161,16 +182,30 @@ function ClubSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <NavGroup label="Campus Web" items={studentItems} />
       </SidebarContent>
       <SidebarFooter className="campus-sidebar-footer">
         <SidebarGroup className="campus-nav-group campus-nav-utility">
           <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
+            <SidebarMenu className="flex flex-row gap-2">
+              <SidebarMenuItem className="flex-1">
+                <SidebarMenuButton
+                  isActive={pathname === LEGAL_ROUTES.center}
+                  tooltip="Legal"
+                  render={<Link href={LEGAL_ROUTES.center} aria-label="Legal" />}
+                  className="campus-nav-link w-full group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0!"
+                >
+                  <span className="campus-nav-icon">
+                    <Scale aria-hidden />
+                  </span>
+                  <span className="campus-nav-text">Legal</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem className="flex-1">
                 <SidebarMenuButton
                   onClick={() => void signOut()}
                   tooltip="Sign out"
-                  className="campus-nav-link group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0! text-on-surface-muted hover:text-danger-accent focus-visible:text-danger-accent"
+                  className="campus-nav-link w-full group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0! text-on-surface-muted hover:text-danger-accent focus-visible:text-danger-accent"
                 >
                   <span className="campus-nav-icon">
                     <LogOut aria-hidden />
