@@ -40,13 +40,39 @@ export function eventPhase(event: ClubEvent, today: Date): EventPhase {
   return "ongoing";
 }
 
-/** Current and upcoming events, pinned club always, most popular first. */
-export function visibleEvents(events: readonly ClubEvent[], today: Date): ClubEvent[] {
-  return events
-    .filter(
-      (event) => event.club_name === PINNED_CLUB || eventPhase(event, today) !== "past",
-    )
-    .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+/** Sort events: active (ongoing/upcoming) first, then past. Within groups, sort by closest end date. */
+export function sortEvents(events: readonly ClubEvent[], today: Date): ClubEvent[] {
+  const nowMs = today.getTime();
+  return [...events].sort((a, b) => {
+    // 1. Prioritize active events over past events
+    const phaseA = eventPhase(a, today);
+    const phaseB = eventPhase(b, today);
+    const isPastA = phaseA === "past";
+    const isPastB = phaseB === "past";
+    
+    if (isPastA !== isPastB) {
+      return isPastA ? 1 : -1;
+    }
+    
+    // 2. Sort by absolute distance to today's date for end date
+    const datesA = parseEventDates(a.dates);
+    const datesB = parseEventDates(b.dates);
+    
+    const endA = datesA.end?.getTime() ?? 0;
+    const endB = datesB.end?.getTime() ?? 0;
+    const diffEndA = Math.abs(endA - nowMs);
+    const diffEndB = Math.abs(endB - nowMs);
+    
+    if (diffEndA !== diffEndB) return diffEndA - diffEndB;
+    
+    // 3. If end dates are equally close, sort by absolute distance for start date
+    const startA = datesA.start?.getTime() ?? 0;
+    const startB = datesB.start?.getTime() ?? 0;
+    const diffStartA = Math.abs(startA - nowMs);
+    const diffStartB = Math.abs(startB - nowMs);
+    
+    return diffStartA - diffStartB;
+  });
 }
 
 export function matchesEventQuery(event: ClubEvent, query: string): boolean {

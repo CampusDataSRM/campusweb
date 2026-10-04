@@ -92,6 +92,7 @@ export function useEvents(): PersistedQueryResult<ClubEvent[]> {
     cache: { scope: api.scope, resource: "events" },
     waiting: !api.ready,
     enabled: api.ready,
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 }
 
@@ -103,5 +104,6 @@ export function useClubs(): PersistedQueryResult<Club[]> {
     cache: { scope: api.scope, resource: "clubs" },
     waiting: !api.ready,
     enabled: api.ready,
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 }

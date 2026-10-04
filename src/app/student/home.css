@@ -568,6 +568,12 @@
   touch-action: pan-y;
   background: var(--surface-lowest);
 }
+
+@media (min-width: 1024px) {
+  .home-events-poster {
+    aspect-ratio: 21/9;
+  }
+}
 .home-events-info {
   display: flex;
   flex-direction: column;

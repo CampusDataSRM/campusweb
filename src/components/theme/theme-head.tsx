@@ -10,6 +10,7 @@ export function ThemeHead() {
     <>
       <style
         id="theme-palettes"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: themeStylesheet() }}
       />
       <InlineScript html={prePaintScript()} />

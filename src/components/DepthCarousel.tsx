@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useCallback,
@@ -7,12 +7,12 @@ import {
   useRef,
   useState,
   PointerEvent as ReactPointerEvent,
-  KeyboardEvent as ReactKeyboardEvent
-} from 'react';
-import gsap from 'gsap';
+  KeyboardEvent as ReactKeyboardEvent,
+} from "react";
+import gsap from "gsap";
 
 export type DepthCarouselItem = string | { image: string; alt?: string };
-type TiltDirection = 'left' | 'right';
+type TiltDirection = "left" | "right";
 
 export interface DepthCarouselProps {
   items?: DepthCarouselItem[];
@@ -66,42 +66,47 @@ interface DragState {
 }
 
 const DEFAULT_ITEMS: DepthCarouselItem[] = [
-  { image: 'https://picsum.photos/seed/depth1/800/1000', alt: 'Slide 1' },
-  { image: 'https://picsum.photos/seed/depth2/800/1000', alt: 'Slide 2' },
-  { image: 'https://picsum.photos/seed/depth3/800/1000', alt: 'Slide 3' },
-  { image: 'https://picsum.photos/seed/depth4/800/1000', alt: 'Slide 4' },
-  { image: 'https://picsum.photos/seed/depth5/800/1000', alt: 'Slide 5' },
-  { image: 'https://picsum.photos/seed/depth6/800/1000', alt: 'Slide 6' }
+  { image: "https://picsum.photos/seed/depth1/800/1000", alt: "Slide 1" },
+  { image: "https://picsum.photos/seed/depth2/800/1000", alt: "Slide 2" },
+  { image: "https://picsum.photos/seed/depth3/800/1000", alt: "Slide 3" },
+  { image: "https://picsum.photos/seed/depth4/800/1000", alt: "Slide 4" },
+  { image: "https://picsum.photos/seed/depth5/800/1000", alt: "Slide 5" },
+  { image: "https://picsum.photos/seed/depth6/800/1000", alt: "Slide 6" },
 ];
 
-const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
-const normalizeItem = (it: DepthCarouselItem) => (typeof it === 'string' ? { image: it, alt: '' } : it);
+const clamp = (v: number, min: number, max: number) =>
+  Math.min(Math.max(v, min), max);
+const normalizeItem = (it: DepthCarouselItem) =>
+  typeof it === "string" ? { image: it, alt: "" } : it;
 
 const DepthCarousel = ({
   items = DEFAULT_ITEMS,
   cardWidth = 300,
   cardHeight = 380,
   radius = 18,
-  tint = '#05060a',
+  tint = "#05060a",
   depth = 220,
   spread = 90,
   tilt = 22,
-  tiltDirection = 'right',
+  tiltDirection = "right",
   perspective = 1400,
   visibleCards = 4,
   falloff = 0.2,
   blur = 6,
   duration = 700,
-  ease = 'power3.out',
+  ease = "power3.out",
   autoplay = false,
   autoplayDelay = 3200,
   loop = true,
   showControls = true,
   showIndicators = true,
   onChange,
-  className = ''
+  className = "",
 }: DepthCarouselProps) => {
-  const data = useMemo(() => (Array.isArray(items) ? items : []).map(normalizeItem), [items]);
+  const data = useMemo(
+    () => (Array.isArray(items) ? items : []).map(normalizeItem),
+    [items],
+  );
   const count = data.length;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -137,14 +142,14 @@ const DepthCarousel = ({
     ease,
     loop,
     cardWidth,
-    autoplayDelay
+    autoplayDelay,
   };
 
   const layout = useCallback((pos: number) => {
     const cfg = cfgRef.current;
     const n = cfg.count;
     if (!n) return;
-    const dir = cfg.tiltDirection === 'left' ? -1 : 1;
+    const dir = cfg.tiltDirection === "left" ? -1 : 1;
     const sc = scaleRef.current;
 
     for (let i = 0; i < n; i++) {
@@ -169,17 +174,24 @@ const DepthCarousel = ({
       if (!shown) opacity = 0;
 
       const brightness = Math.max(0.15, 1 - back * cfg.falloff);
-      const blurPx = cfg.blur > 0 ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur) : 0;
+      const blurPx =
+        cfg.blur > 0
+          ? Math.min(
+              cfg.blur,
+              (back / Math.max(1, cfg.visibleCards)) * cfg.blur,
+            )
+          : 0;
       const zi = Math.round(2000 - d * 20);
 
       el.style.transform = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
       el.style.opacity = opacity.toFixed(3);
       el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
       el.style.zIndex = String(zi);
-      el.style.pointerEvents = shown && opacity > 0.05 ? 'auto' : 'none';
+      el.style.pointerEvents = shown && opacity > 0.05 ? "auto" : "none";
 
       const ov = overlayRefs.current[i];
-      if (ov) ov.style.opacity = clamp(back * cfg.falloff * 1.25, 0, 0.86).toFixed(3);
+      if (ov)
+        ov.style.opacity = clamp(back * cfg.falloff * 1.25, 0, 0.86).toFixed(3);
     }
   }, []);
 
@@ -188,7 +200,7 @@ const DepthCarousel = ({
       setActive(idx);
       onChangeRef.current?.(idx, data[idx]);
     },
-    [data]
+    [data],
   );
 
   const tweenTo = useCallback(
@@ -209,10 +221,10 @@ const DepthCarousel = ({
           const n = cfg.count;
           if (n > 0) posRef.current = ((posRef.current % n) + n) % n;
           layout(posRef.current);
-        }
+        },
       });
     },
-    [layout]
+    [layout],
   );
 
   const setFocus = useCallback(
@@ -220,7 +232,9 @@ const DepthCarousel = ({
       const cfg = cfgRef.current;
       const n = cfg.count;
       if (!n) return;
-      const idx = cfg.loop ? ((rawIndex % n) + n) % n : clamp(rawIndex, 0, n - 1);
+      const idx = cfg.loop
+        ? ((rawIndex % n) + n) % n
+        : clamp(rawIndex, 0, n - 1);
       let delta = idx - posRef.current;
       if (cfg.loop && n > 1) {
         delta = ((delta % n) + n) % n;
@@ -232,15 +246,18 @@ const DepthCarousel = ({
         notify(idx);
       }
     },
-    [tweenTo, notify]
+    [tweenTo, notify],
   );
 
-  const navigateBy = useCallback((step: number) => setFocus(focusRef.current + step, true), [setFocus]);
+  const navigateBy = useCallback(
+    (step: number) => setFocus(focusRef.current + step, true),
+    [setFocus],
+  );
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const ro = new ResizeObserver(entries => {
+    const ro = new ResizeObserver((entries) => {
       const w = entries[0].contentRect.width;
       const cfg = cfgRef.current;
       const needed = cfg.cardWidth + Math.abs(cfg.spread) * 2 + 120;
@@ -265,11 +282,14 @@ const DepthCarousel = ({
       posRef.current += step;
       layout(posRef.current);
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
-      wheelTimerRef.current = setTimeout(() => setFocus(Math.round(posRef.current), true), 130);
+      wheelTimerRef.current = setTimeout(
+        () => setFocus(Math.round(posRef.current), true),
+        130,
+      );
     };
-    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener("wheel", onWheel, { passive: false });
     return () => {
-      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener("wheel", onWheel);
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
     };
   }, [layout, setFocus]);
@@ -285,7 +305,7 @@ const DepthCarousel = ({
       lastT: performance.now(),
       v: 0,
       moved: false,
-      id: e.pointerId
+      id: e.pointerId,
     };
   }, []);
 
@@ -309,7 +329,7 @@ const DepthCarousel = ({
       posRef.current = drag.startPos - dx / stepPx;
       layout(posRef.current);
     },
-    [layout]
+    [layout],
   );
 
   const onPointerEnd = useCallback(() => {
@@ -325,15 +345,15 @@ const DepthCarousel = ({
 
   const onKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === "ArrowLeft") {
         e.preventDefault();
         navigateBy(-1);
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         e.preventDefault();
         navigateBy(1);
       }
     },
-    [navigateBy]
+    [navigateBy],
   );
 
   const onCardClick = useCallback(
@@ -341,11 +361,13 @@ const DepthCarousel = ({
       if (dragRef.current?.moved) return;
       setFocus(index, true);
     },
-    [setFocus]
+    [setFocus],
   );
 
   useEffect(() => {
-    reducedRef.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    reducedRef.current =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!autoplay || reducedRef.current || count < 2) return;
     const root = rootRef.current;
     let hovered = false;
@@ -360,7 +382,7 @@ const DepthCarousel = ({
         () => {
           if (!hovered && !focused) navigateBy(1);
         },
-        Math.max(cfgRef.current.autoplayDelay, 600)
+        Math.max(cfgRef.current.autoplayDelay, 600),
       );
     };
     const onEnter = () => {
@@ -375,23 +397,36 @@ const DepthCarousel = ({
     const onFocusOut = () => {
       focused = false;
     };
-    root?.addEventListener('mouseenter', onEnter);
-    root?.addEventListener('mouseleave', onLeave);
-    root?.addEventListener('focusin', onFocusIn);
-    root?.addEventListener('focusout', onFocusOut);
+    root?.addEventListener("mouseenter", onEnter);
+    root?.addEventListener("mouseleave", onLeave);
+    root?.addEventListener("focusin", onFocusIn);
+    root?.addEventListener("focusout", onFocusOut);
     start();
     return () => {
       stop();
-      root?.removeEventListener('mouseenter', onEnter);
-      root?.removeEventListener('mouseleave', onLeave);
-      root?.removeEventListener('focusin', onFocusIn);
-      root?.removeEventListener('focusout', onFocusOut);
+      root?.removeEventListener("mouseenter", onEnter);
+      root?.removeEventListener("mouseleave", onLeave);
+      root?.removeEventListener("focusin", onFocusIn);
+      root?.removeEventListener("focusout", onFocusOut);
     };
   }, [autoplay, autoplayDelay, count, navigateBy]);
 
   useEffect(() => {
     layout(posRef.current);
-  }, [layout, depth, spread, tilt, tiltDirection, visibleCards, falloff, blur, cardWidth, cardHeight, radius, count]);
+  }, [
+    layout,
+    depth,
+    spread,
+    tilt,
+    tiltDirection,
+    visibleCards,
+    falloff,
+    blur,
+    cardWidth,
+    cardHeight,
+    radius,
+    count,
+  ]);
 
   useEffect(
     () => () => {
@@ -399,7 +434,7 @@ const DepthCarousel = ({
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
       if (autoTimerRef.current) clearInterval(autoTimerRef.current);
     },
-    []
+    [],
   );
 
   return (
@@ -417,15 +452,22 @@ const DepthCarousel = ({
       onPointerCancel={onPointerEnd}
       onKeyDown={onKeyDown}
     >
-      <div className="absolute inset-0 [transform-style:preserve-3d]" ref={stageRef}>
+      <div
+        className="absolute inset-0 [transform-style:preserve-3d]"
+        ref={stageRef}
+      >
         {data.map((item, i) => (
           <div
             key={i}
             className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden bg-[#0b0d12] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_8px_20px_-10px_rgba(0,0,0,0.5)] [transform:translate(-50%,-50%)] [transform-origin:center] [will-change:transform,opacity,filter]"
-            ref={el => {
+            ref={(el) => {
               cardRefs.current[i] = el;
             }}
-            style={{ width: cardWidth, height: cardHeight, borderRadius: radius }}
+            style={{
+              width: cardWidth,
+              height: cardHeight,
+              borderRadius: radius,
+            }}
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${count}`}
             aria-hidden={active !== i}
@@ -434,12 +476,12 @@ const DepthCarousel = ({
             <img
               className="block h-full w-full select-none object-cover [pointer-events:none] [-webkit-user-drag:none]"
               src={item.image}
-              alt={item.alt || ''}
+              alt={item.alt || ""}
               draggable={false}
             />
             <span
               className="pointer-events-none absolute inset-0 opacity-0 mix-blend-multiply"
-              ref={el => {
+              ref={(el) => {
                 overlayRefs.current[i] = el;
               }}
               style={{ background: tint }}
@@ -501,7 +543,7 @@ const DepthCarousel = ({
               aria-selected={active === i}
               aria-label={`Go to slide ${i + 1}`}
               className={`h-[7px] cursor-pointer rounded-full transition-[width,background] duration-[250ms] ${
-                active === i ? 'w-5 bg-white' : 'w-[7px] bg-white/30'
+                active === i ? "w-5 bg-white" : "w-[7px] bg-white/30"
               }`}
               onClick={() => setFocus(i, true)}
             />

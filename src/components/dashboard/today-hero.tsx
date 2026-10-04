@@ -3,6 +3,7 @@
 import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import { WeekStrip } from "@/components/dashboard/week-strip";
+import { StackedSlider } from "@/components/dashboard/stacked-slider";
 import {
   ArrowUpRight,
   CalendarDays,
@@ -153,7 +154,7 @@ function ClassProgress({
  * The dashboard's hero: what's on now or next (or when you're back), next to
  * the attendance target and the next action.
  */
-export function TodayHero() {
+export function TodayHero({ secondarySlide }: { secondarySlide?: React.ReactNode } = {}) {
   const copy = useStudentCopy();
   const isDemo = useSession().session?.kind === "demo";
   const profile = useProfile();
@@ -231,44 +232,105 @@ export function TodayHero() {
         </span>
       </div>
       <div className="home-hero-grid">
-        <div className="home-hero-copy" data-free-day={freeDay || undefined}>
-          <div className="home-now-label">
-            <span
-              aria-hidden
-              className={today.moment.current ? "live-dot" : "home-status-dot"}
-            />
-            {freeDay ? `No ${copy.items} today` : line.kicker}
-          </div>
-          <h1 className="home-headline">
-            {freeDay ? (
-              <>
-                {weekday}.<br />
-                <span>On your terms.</span>
-              </>
-            ) : (
-              line.title
-            )}
-          </h1>
-          {line.detail && <p className="home-hero-detail">{line.detail}</p>}
-          {today.moment.current && (
-            <ClassProgress
-              start={today.moment.current.startMinutes}
-              end={today.moment.current.endMinutes}
-              now={minutesSinceMidnight(today.now)}
-            />
-          )}
-          <div className="home-hero-bottom">
-            <Link href={STUDENT_ROUTES.timetable} className="home-button">
-              Open timetable <ArrowRight aria-hidden className="size-4" />
-            </Link>
-            <div className="home-meta">
-              {chips.map((chip) => (
-                <span key={chip}>{chip}</span>
-              ))}
+        {secondarySlide ? (
+          <StackedSlider 
+            className="h-full min-h-[350px] overflow-visible"
+            items={[
+              {
+                label: "Around the Campus",
+                content: (
+                  <div key="secondary" className="panel h-full w-full overflow-hidden flex flex-col p-0 !bg-[#09142A] !backdrop-blur-none">
+                    <div className="flex-1 overflow-hidden relative">
+                      {secondarySlide}
+                    </div>
+                  </div>
+                )
+              },
+              {
+                label: "What's in for Today",
+                content: (
+                  <div key="copy" className="home-hero-copy h-full !bg-[#09142A] !backdrop-blur-none" data-free-day={freeDay || undefined}>
+                    <div className="home-now-label">
+                      <span
+                        aria-hidden
+                        className={today.moment.current ? "live-dot" : "home-status-dot"}
+                      />
+                      {freeDay ? `No ${copy.items} today` : line.kicker}
+                    </div>
+                    <h1 className="home-headline">
+                      {freeDay ? (
+                        <>
+                          {weekday}.<br />
+                          <span>On your terms.</span>
+                        </>
+                      ) : (
+                        line.title
+                      )}
+                    </h1>
+                    {line.detail && <p className="home-hero-detail">{line.detail}</p>}
+                    {today.moment.current && (
+                      <ClassProgress
+                        start={today.moment.current.startMinutes}
+                        end={today.moment.current.endMinutes}
+                        now={minutesSinceMidnight(today.now)}
+                      />
+                    )}
+                    <div className="home-hero-bottom">
+                      <Link href={STUDENT_ROUTES.timetable} className="home-button">
+                        Open timetable <ArrowRight aria-hidden className="size-4" />
+                      </Link>
+                      <div className="home-meta">
+                        {chips.map((chip) => (
+                          <span key={chip}>{chip}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <WeekStrip now={today.now} />
+                  </div>
+                )
+              }
+            ]}
+          />
+        ) : (
+          <div className="home-hero-copy" data-free-day={freeDay || undefined}>
+            <div className="home-now-label">
+              <span
+                aria-hidden
+                className={today.moment.current ? "live-dot" : "home-status-dot"}
+              />
+              {freeDay ? `No ${copy.items} today` : line.kicker}
             </div>
+            <h1 className="home-headline">
+              {freeDay ? (
+                <>
+                  {weekday}.<br />
+                  <span>On your terms.</span>
+                </>
+              ) : (
+                line.title
+              )}
+            </h1>
+            {line.detail && <p className="home-hero-detail">{line.detail}</p>}
+            {today.moment.current && (
+              <ClassProgress
+                start={today.moment.current.startMinutes}
+                end={today.moment.current.endMinutes}
+                now={minutesSinceMidnight(today.now)}
+              />
+            )}
+            <div className="home-hero-bottom">
+              <Link href={STUDENT_ROUTES.timetable} className="home-button">
+                Open timetable <ArrowRight aria-hidden className="size-4" />
+              </Link>
+              <div className="home-meta">
+                {chips.map((chip) => (
+                  <span key={chip}>{chip}</span>
+                ))}
+              </div>
+            </div>
+            <WeekStrip now={today.now} />
           </div>
-          <WeekStrip now={today.now} />
-        </div>
+        )}
         {stats.total > 0 && (
           <Link
             href={STUDENT_ROUTES.attendance}

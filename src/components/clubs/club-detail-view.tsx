@@ -24,7 +24,7 @@ import { STUDENT_ROUTES } from "@/constants/routes";
 import { useLikeActions } from "@/hooks/use-like-actions";
 import { useNow } from "@/hooks/use-now";
 import { useClubs, useEvents, useProfile } from "@/hooks/use-student-data";
-import { cleanLabels, visibleEvents } from "@/lib/student/events";
+import { cleanLabels, sortEvents } from "@/lib/student/events";
 
 /** One club: who they are, how to reach them, and their events. */
 export function ClubDetailView({ clubId }: { clubId: string }) {
@@ -42,7 +42,7 @@ export function ClubDetailView({ clubId }: { clubId: string }) {
   const clubEvents = useMemo(
     () =>
       now
-        ? visibleEvents(events.data ?? [], now).filter(
+        ? sortEvents(events.data ?? [], now).filter(
             (e) => e.club_id === clubId,
           )
         : [],

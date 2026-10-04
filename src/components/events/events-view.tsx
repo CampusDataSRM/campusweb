@@ -21,14 +21,14 @@ import {
   eventPhase,
   matchesEventQuery,
   PINNED_CLUB,
-  visibleEvents,
+  sortEvents,
 } from "@/lib/student/events";
 
 type Filter = "upcoming" | "ongoing" | "all";
 const FILTERS: ReadonlyArray<{ id: Filter; label: string }> = [
-  { id: "all", label: "All" },
   { id: "ongoing", label: "Happening now" },
   { id: "upcoming", label: "Upcoming" },
+  { id: "all", label: "All" },
 ];
 
 export function EventsView() {
@@ -43,7 +43,7 @@ export function EventsView() {
 
   const list = useMemo(() => {
     if (!now) return [];
-    return visibleEvents(events.data ?? [], now).filter(
+    return sortEvents(events.data ?? [], now).filter(
       (event) =>
         matchesEventQuery(event, deferredQuery) &&
         (filter === "all" ||
