@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import {
   CUSTOM_COLOR_SWATCHES,
   PALETTE_OPTIONS,
+  BACKDROP_EFFECT_OPTIONS,
   CUSTOM_EXTRAS,
   PRESET_EXTRAS,
   PRESET_PALETTES,
+  type BackdropEffectId,
   type PaletteId,
   type ThemePalette,
 } from "@/constants/theme";
@@ -84,7 +86,7 @@ const previewFor = (id: PaletteId, customColor: string): ThemePalette =>
 /** Palette choice and the custom colour - applied live, saved on this device. */
 export function ThemePicker() {
   const id = useId();
-  const { preference, hydrated, setPalette, setCustomColor, reset } =
+  const { preference, hydrated, setPalette, setCustomColor, setBackdropEffect, reset } =
     useTheme();
   // A draft only while typing; otherwise the field shows the saved colour.
   const [draft, setDraft] = useState<string | null>(null);
@@ -163,6 +165,63 @@ export function ThemePicker() {
           );
         })}
       </div>
+
+      {/* ── Backdrop effect selector ── */}
+      {hydrated && preference.palette === "campus-glow" && (
+        <div className="flex flex-col gap-3 rounded-2xl panel p-4">
+          <div className="flex items-center gap-2">
+            <svg
+              aria-hidden
+              className="size-5 text-primary-accent"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="2" />
+              <path d="M2 12 C 6 8, 10 16, 14 10 S 20 14, 22 12" />
+            </svg>
+            <p className="font-bold text-on-surface">Backdrop effect</p>
+          </div>
+          <div
+            role="radiogroup"
+            aria-label="Backdrop effect"
+            className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+          >
+            {BACKDROP_EFFECT_OPTIONS.map((option) => {
+              const selected = preference.backdropEffect === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => setBackdropEffect(option.id)}
+                  className={cn(
+                    "flex flex-col gap-1 rounded-xl border px-3 py-2.5 text-left transition-colors",
+                    selected
+                      ? "border-primary bg-primary-container/50"
+                      : "border-outline-variant bg-surface-container hover:border-outline",
+                  )}
+                >
+                  <p className="text-sm font-semibold text-on-surface">
+                    {option.label}
+                  </p>
+                  <p className="text-xs text-on-surface-muted">
+                    {option.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-on-surface-muted">
+            Choose a canvas backdrop or keep the palette&apos;s default.
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 rounded-2xl panel p-4">
         <div className="flex items-center gap-2">

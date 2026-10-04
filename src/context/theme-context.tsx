@@ -26,6 +26,10 @@ import {
 import {
   THEME_COOKIE,
   THEME_COOKIE_MAX_AGE,
+  PRESET_BACKDROP_COLORS,
+  customBackdropColors,
+  type BackdropEffectColors,
+  type BackdropEffectId,
   type PaletteId,
   type ThemePalette,
 } from "@/constants/theme";
@@ -44,10 +48,14 @@ export interface ThemeContextValue {
   preference: ThemePreference;
   /** Resolved hex values of the active palette. */
   palette: ThemePalette;
+  /** Resolved colours for backdrop effects, matched to the active palette. */
+  backdropColors: BackdropEffectColors;
   hydrated: boolean;
   setPalette(palette: PaletteId): void;
   /** Set the custom source colour and switch to the custom palette. */
   setCustomColor(color: string): void;
+  /** Set the active canvas backdrop effect. */
+  setBackdropEffect(effect: BackdropEffectId): void;
   reset(): void;
 }
 
@@ -93,9 +101,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setCustomColor = useCallback(
     (color: string) => {
       if (!isHexColor(color)) return;
-      commit({ palette: "custom", customColor: color.toUpperCase() });
+      commit({ ...preference, palette: "custom", customColor: color.toUpperCase() });
     },
-    [commit],
+    [commit, preference],
   );
 
   const reset = useCallback(
@@ -105,16 +113,31 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const palette = useMemo(() => resolvePalette(preference), [preference]);
 
+  const backdropColors = useMemo<BackdropEffectColors>(
+    () =>
+      preference.palette === "custom"
+        ? customBackdropColors(palette)
+        : PRESET_BACKDROP_COLORS[preference.palette],
+    [preference.palette, palette],
+  );
+
+  const setBackdropEffect = useCallback(
+    (effect: BackdropEffectId) => commit({ ...preference, backdropEffect: effect }),
+    [commit, preference],
+  );
+
   const value = useMemo<ThemeContextValue>(
     () => ({
       preference,
       palette,
+      backdropColors,
       hydrated,
       setPalette,
       setCustomColor,
+      setBackdropEffect,
       reset,
     }),
-    [preference, palette, hydrated, setPalette, setCustomColor, reset],
+    [preference, palette, backdropColors, hydrated, setPalette, setCustomColor, setBackdropEffect, reset],
   );
 
   return (

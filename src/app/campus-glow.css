@@ -6,7 +6,7 @@ html[data-palette="campus-glow"] {
   --font-dm-sans: var(--font-nunito);
 }
 html[data-palette="campus-glow"] body::before {
-  filter: blur(50px);
+  filter: blur(140px);
   background-color: #000;
 }
 html[data-palette="campus-glow"] body::after {

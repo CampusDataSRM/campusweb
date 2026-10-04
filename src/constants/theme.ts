@@ -478,6 +478,102 @@ export const CUSTOM_RECIPE = {
   secondaryHueOffset: 60,
 } as const;
 
+/* ── backdrop effect ── */
+
+/**
+ * Identifiers for the canvas-based backdrop effects.
+ * "none" keeps the CSS-only `--backdrop` variable (gradients / SVG artwork).
+ */
+export const BACKDROP_EFFECTS = [
+  "none",
+  "shape-waves",
+  "aero-shards",
+  "ferro-fluid",
+  "gradient-waves",
+  "molten-metal",
+] as const;
+
+export type BackdropEffectId = (typeof BACKDROP_EFFECTS)[number];
+
+export interface BackdropEffectOption {
+  id: BackdropEffectId;
+  label: string;
+  description: string;
+}
+
+export const BACKDROP_EFFECT_OPTIONS: readonly BackdropEffectOption[] = [
+  { id: "none", label: "Default", description: "The palette's built-in backdrop" },
+  { id: "shape-waves", label: "Shape Waves", description: "Animated dot grid with ripple interactions" },
+  { id: "aero-shards", label: "Aero Shards", description: "Flowing 3D crystalline particles" },
+  { id: "ferro-fluid", label: "Ferrofluid", description: "Organic metallic fluid simulation" },
+  { id: "gradient-waves", label: "Gradient Waves", description: "Raymarched ocean-like waves" },
+  { id: "molten-metal", label: "Molten Metal", description: "Swirling metallic fluid" },
+];
+
+/**
+ * Per-palette colour sets fed to each backdrop component so its look matches
+ * the active theme. Every palette supplies colours for every effect even though
+ * only one effect is active at a time.
+ */
+export interface BackdropEffectColors {
+  shapeWaves: { color: string; hoverColor: string; backgroundColor: string };
+  aeroShards: { backgroundColor: string; shardColor: string; accentColor: string };
+  ferroFluid: { colors: string[] };
+  gradientWaves: { horizonColor: string; waveColor: string; crestColor: string };
+  moltenMetal: { color1: string; color2: string; color3: string; backgroundColor: string };
+}
+
+export const PRESET_BACKDROP_COLORS: Record<PresetPaletteId, BackdropEffectColors> = {
+  "campus-glow": {
+    shapeWaves: { color: "#080314", hoverColor: "#2A115E", backgroundColor: "#020005" },
+    aeroShards: { backgroundColor: "#020005", shardColor: "#080314", accentColor: "#1E0942" },
+    ferroFluid: { colors: ["#080314", "#1E0942", "#2A115E", "#0B0418"] },
+    gradientWaves: { horizonColor: "#020005", waveColor: "#080314", crestColor: "#1E0942" },
+    moltenMetal: { color1: "#080314", color2: "#1E0942", color3: "#2A115E", backgroundColor: "#020005" },
+  },
+  dark: {
+    shapeWaves: { color: "#3F3F46", hoverColor: "#E4E4E7", backgroundColor: "#09090B" },
+    aeroShards: { backgroundColor: "#09090B", shardColor: "#52525B", accentColor: "#A1A1AA" },
+    ferroFluid: { colors: ["#52525B", "#71717A", "#A1A1AA", "#E4E4E7"] },
+    gradientWaves: { horizonColor: "#09090B", waveColor: "#27272A", crestColor: "#71717A" },
+    moltenMetal: { color1: "#52525B", color2: "#71717A", color3: "#A1A1AA", backgroundColor: "#09090B" },
+  },
+  monochrome: {
+    shapeWaves: { color: "#333333", hoverColor: "#FFFFFF", backgroundColor: "#000000" },
+    aeroShards: { backgroundColor: "#000000", shardColor: "#555555", accentColor: "#FFFFFF" },
+    ferroFluid: { colors: ["#333333", "#666666", "#999999", "#FFFFFF"] },
+    gradientWaves: { horizonColor: "#000000", waveColor: "#333333", crestColor: "#999999" },
+    moltenMetal: { color1: "#555555", color2: "#999999", color3: "#FFFFFF", backgroundColor: "#000000" },
+  },
+  "high-contrast": {
+    shapeWaves: { color: "#0B3B68", hoverColor: "#8BE9FF", backgroundColor: "#000000" },
+    aeroShards: { backgroundColor: "#000000", shardColor: "#0077B6", accentColor: "#8BE9FF" },
+    ferroFluid: { colors: ["#0077B6", "#8BE9FF", "#6846C7", "#C9B7FF"] },
+    gradientWaves: { horizonColor: "#000000", waveColor: "#0B3B68", crestColor: "#8BE9FF" },
+    moltenMetal: { color1: "#0077B6", color2: "#8BE9FF", color3: "#6846C7", backgroundColor: "#000000" },
+  },
+  midnight: {
+    shapeWaves: { color: "#103B68", hoverColor: "#7CCFFF", backgroundColor: "#01050D" },
+    aeroShards: { backgroundColor: "#01050D", shardColor: "#3877BA", accentColor: "#4DA3FF" },
+    ferroFluid: { colors: ["#3877BA", "#4DA3FF", "#5E6EC4", "#7CCFFF"] },
+    gradientWaves: { horizonColor: "#01050D", waveColor: "#103B68", crestColor: "#4DA3FF" },
+    moltenMetal: { color1: "#3877BA", color2: "#4DA3FF", color3: "#5E6EC4", backgroundColor: "#01050D" },
+  },
+};
+
+/** Derive backdrop colours for a custom palette from its resolved tokens. */
+export function customBackdropColors(palette: ThemePalette): BackdropEffectColors {
+  return {
+    shapeWaves: { color: palette.secondary, hoverColor: palette["secondary-accent"], backgroundColor: palette.surface },
+    aeroShards: { backgroundColor: palette.surface, shardColor: palette.secondary, accentColor: palette["secondary-accent"] },
+    ferroFluid: { colors: [palette.secondary, palette["secondary-accent"], palette.primary, palette["primary-accent"]] },
+    gradientWaves: { horizonColor: palette.surface, waveColor: palette.secondary, crestColor: palette["secondary-accent"] },
+    moltenMetal: { color1: palette.secondary, color2: palette["secondary-accent"], color3: palette.primary, backgroundColor: palette.surface },
+  };
+}
+
+export const DEFAULT_BACKDROP_EFFECT: BackdropEffectId = "none";
+
 /** Cookie the theme choice lives in - readable by the pre-paint script. */
 export const THEME_COOKIE = "cw-theme";
 /** One year: a theme is a preference, not a session. */

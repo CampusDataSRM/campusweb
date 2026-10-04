@@ -4,6 +4,7 @@ import { useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
 
+import { BackdropRenderer } from "@/components/backdrop/backdrop-renderer";
 import { RouteProgress } from "@/components/effects/route-progress";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { AppToaster } from "@/components/feedback/app-toaster";
@@ -21,6 +22,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <BackdropRenderer />
         <SessionProvider>
           {/* Honour the OS reduced-motion setting for every motion animation:
               transforms are dropped, opacity and colour fades remain. */}

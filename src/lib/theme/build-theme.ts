@@ -17,15 +17,18 @@
  */
 
 import {
+  BACKDROP_EFFECTS,
   CUSTOM_BASE,
   CUSTOM_EXTRAS,
   CUSTOM_RECIPE,
+  DEFAULT_BACKDROP_EFFECT,
   DEFAULT_CUSTOM_COLOR,
   DEFAULT_PALETTE,
   PRESET_EXTRAS,
   PRESET_PALETTES,
   THEME_COOKIE,
   THEME_TOKENS,
+  type BackdropEffectId,
   type PaletteExtras,
   type PaletteId,
   type PresetPaletteId,
@@ -38,11 +41,14 @@ export interface ThemePreference {
   palette: PaletteId;
   /** The colour a custom palette is derived from (kept for every palette). */
   customColor: string;
+  /** The active canvas backdrop effect ("none" uses the CSS-only backdrop). */
+  backdropEffect: BackdropEffectId;
 }
 
 export const DEFAULT_THEME_PREFERENCE: ThemePreference = {
   palette: DEFAULT_PALETTE,
   customColor: DEFAULT_CUSTOM_COLOR,
+  backdropEffect: DEFAULT_BACKDROP_EFFECT,
 };
 
 const isPresetPalette = (value: unknown): value is PresetPaletteId =>
@@ -139,16 +145,25 @@ interface StoredTheme {
   c: string;
   /** Resolved custom palette: hex digits of every token, THEME_TOKENS order. */
   v?: string;
+  /** Backdrop effect id. */
+  b?: BackdropEffectId;
 }
 
 export function serializeThemePreference(preference: ThemePreference): string {
-  const stored: StoredTheme = { p: preference.palette, c: preference.customColor };
+  const stored: StoredTheme = {
+    p: preference.palette,
+    c: preference.customColor,
+    ...(preference.backdropEffect !== DEFAULT_BACKDROP_EFFECT && { b: preference.backdropEffect }),
+  };
   if (preference.palette === "custom") {
     const palette = deriveCustomPalette(preference.customColor);
     stored.v = THEME_TOKENS.map((token) => palette[token].slice(1)).join("");
   }
   return JSON.stringify(stored);
 }
+
+const isBackdropEffect = (value: unknown): value is BackdropEffectId =>
+  typeof value === "string" && (BACKDROP_EFFECTS as readonly string[]).includes(value);
 
 /** Parse the cookie value; anything malformed falls back to the default. */
 export function parseThemePreference(
@@ -162,6 +177,9 @@ export function parseThemePreference(
       customColor: isHexColor(stored.c)
         ? stored.c.toUpperCase()
         : DEFAULT_CUSTOM_COLOR,
+      backdropEffect: isBackdropEffect(stored.b)
+        ? stored.b
+        : DEFAULT_BACKDROP_EFFECT,
     };
   } catch {
     return DEFAULT_THEME_PREFERENCE;
