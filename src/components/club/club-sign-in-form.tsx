@@ -5,6 +5,7 @@ import { useId } from "react";
 import { useForm } from "react-hook-form";
 
 import { FormField } from "@/components/club/form-field";
+import { ClubPasswordField } from "@/components/club/club-password-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useClubSignIn } from "@/hooks/use-club";
@@ -27,9 +28,13 @@ export function ClubSignInForm() {
         <Input id={`${id}-email`} type="email" autoComplete="email" className="h-12 rounded-xl" {...register("email", { required: "Enter your club's email." })} />
       </FormField>
       <FormField id={`${id}-password`} label="Password" error={errors.password?.message}>
-        <Input id={`${id}-password`} type="password" autoComplete="current-password" className="h-12 rounded-xl" {...register("password", { required: "Enter your password." })} />
+        <ClubPasswordField id={`${id}-password`} autoComplete="current-password" {...register("password", { required: "Enter your password." })} />
       </FormField>
-      {message && <p role="alert" className="rounded-xl bg-danger-container px-4 py-3 text-sm font-semibold text-on-danger-container">{message}</p>}
+      {message && (
+        <p role="alert" className="rounded-xl bg-danger-container px-4 py-3 text-sm font-semibold text-on-danger-container">
+          {message}
+        </p>
+      )}
       <Button type="submit" size="touch" className="h-12" disabled={signIn.isPending}>
         {signIn.isPending && <Loader2 className="animate-spin" aria-hidden />}
         Sign in

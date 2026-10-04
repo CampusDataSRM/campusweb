@@ -73,7 +73,7 @@ function when(event: ClubEvent, phase: EventPhase, now: Date): string {
   return monthDay(start);
 }
 
-const ROTATE_MS = 6500;
+const ROTATE_MS = 4000;
 
 interface Spot {
   event: ClubEvent;

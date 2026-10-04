@@ -23,6 +23,8 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   nextButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   backButtonText?: string;
   nextButtonText?: string;
+  /** Label for the final step's button (default "Complete"). */
+  completeButtonText?: string;
   disableStepIndicators?: boolean;
   renderStepIndicator?: (props: {
     step: number;
@@ -44,6 +46,7 @@ export default function Stepper({
   nextButtonProps = {},
   backButtonText = "Back",
   nextButtonText = "Continue",
+  completeButtonText = "Complete",
   disableStepIndicators = false,
   renderStepIndicator,
   ...rest
@@ -154,10 +157,10 @@ export default function Stepper({
               )}
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="duration-350 flex items-center justify-center rounded-full bg-primary py-1.5 px-3.5 font-semibold tracking-tight text-on-primary transition hover:bg-primary-hover"
+                className="duration-350 flex items-center justify-center rounded-lg bg-primary py-2 px-4 font-semibold tracking-tight text-on-primary transition hover:bg-primary-hover"
                 {...nextButtonProps}
               >
-                {isLastStep ? "Complete" : nextButtonText}
+                {isLastStep ? completeButtonText : nextButtonText}
               </button>
             </div>
           </div>
@@ -220,9 +223,25 @@ function SlideTransition({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    if (containerRef.current) {
-      onHeightReady(containerRef.current.offsetHeight);
-    }
+    const el = containerRef.current;
+    if (!el) return;
+    
+    // Report initial height
+    onHeightReady(el.offsetHeight);
+    
+    // Observe for layout changes (e.g. window resize, responsive grid changes)
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.borderBoxSize && entry.borderBoxSize.length > 0) {
+          onHeightReady(entry.borderBoxSize[0].blockSize);
+        } else {
+          onHeightReady(el.offsetHeight);
+        }
+      }
+    });
+    
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [children, onHeightReady]);
 
   return (
@@ -261,7 +280,7 @@ interface StepProps {
 }
 
 export function Step({ children }: StepProps) {
-  return <div className="px-8">{children}</div>;
+  return <>{children}</>;
 }
 
 interface StepIndicatorProps {

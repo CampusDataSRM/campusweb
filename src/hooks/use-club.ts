@@ -16,7 +16,6 @@ import { ApiError } from "@/lib/api/axios-client";
 import { clubRequestConfig } from "@/lib/api/request-config";
 import { notify } from "@/lib/toast";
 import {
-  fetchClubProfile,
   patchResetPassword,
   postClubRegister,
   postForgotPassword,
@@ -35,7 +34,7 @@ import type {
   UpdatePasswordRequest,
 } from "@/network-calls/types";
 
-const clubProfileKey = ["club", "profile"] as const;
+
 
 function useClubAuth() {
   const { clubToken, hydrated, endClubSession } = useSession();
@@ -68,16 +67,7 @@ export function useClubEvents() {
   return query;
 }
 
-export function useClubProfile() {
-  const auth = useClubAuth();
-  const query = useQuery({
-    queryKey: clubProfileKey,
-    queryFn: async () => (await fetchClubProfile(auth.config)).data,
-    enabled: auth.ready,
-  });
-  useSignOutOnUnauthorized(query.error, auth.signOut);
-  return query;
-}
+
 
 export function useClubSignIn() {
   const { startClubSession } = useSession();
@@ -132,7 +122,6 @@ export function useUpdateClubProfile() {
     mutationFn: (input: ClubProfileInput) => putClubProfile(input, auth.config),
     onSuccess: () => {
       notify.success("Profile saved");
-      void queryClient.invalidateQueries({ queryKey: clubProfileKey });
       return queryClient.invalidateQueries({ queryKey: queryKeys.clubEvents.all });
     },
     onError: (error) => notify.error(error),

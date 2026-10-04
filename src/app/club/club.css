@@ -1,0 +1,57 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   The club portal's design language.
+
+   The portal shares every token and surface with the student app (panel,
+   spotlight, aurora, cta) — its own identity comes from composition: the
+   club itself is the chrome (its logo and name lead the rail and the
+   dashboard), and every screen shows the student's-eye view of what the
+   club publishes.
+
+   Colours live in the theme system (src/constants/theme.ts); this file only
+   composes them. Most layout is Tailwind utilities in the components.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Canvas: opaque in the flat palettes so the page sits on one colour.
+   campus-glow.css re-transparentises this so the glow artwork shows. */
+.club-auth {
+  background: var(--surface);
+}
+
+/* The auth stage's statement block sits on the palette's aurora; keep the
+   copy readable by giving the blobs a calmer opacity inside it. */
+.club-auth-stage .aurora::before,
+.club-auth-stage .aurora::after {
+  opacity: 0.4;
+}
+
+/* ── Event cards ───────────────────────────────────────────────────────────
+   Poster-first cards in the dashboard and the composer preview. The lift on
+   hover mirrors the student event card's weight; transform-only, so it stays
+   on the compositor. */
+.club-event-card {
+  transition: transform var(--duration-medium) var(--ease-standard);
+}
+@media (hover: hover) and (pointer: fine) {
+  .club-event-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Poster areas the club hasn't filled yet: a quiet, dotted invitation. */
+.club-poster-empty {
+  background-image: radial-gradient(
+      color-mix(in oklab, var(--outline) 42%, transparent) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 50% 42%,
+      color-mix(in oklab, var(--primary-accent) 7%, transparent),
+      transparent 62%
+    );
+  background-size:
+    18px 18px,
+    auto;
+  background-position:
+    0 0,
+    center;
+}

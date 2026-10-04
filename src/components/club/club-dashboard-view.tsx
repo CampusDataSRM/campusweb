@@ -1,23 +1,17 @@
 "use client";
 
-import {
-  CalendarDays,
-  CalendarPlus,
-  Clock3,
-  Heart,
-  Trash2,
-} from "lucide-react";
+import { CalendarPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import CountUp from "@/components/CountUp";
 import {
   EmptyState,
   ErrorState,
   ShimmerBlock,
 } from "@/components/feedback/data-states";
-import { PageHeader } from "@/components/layout/page-header";
-import { Badge } from "@/components/ui/badge";
+import { ClubEventCard, type ClubEventPhase } from "@/components/club/club-event-card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,58 +24,161 @@ import {
 } from "@/components/ui/dialog";
 import { ROUTES } from "@/constants/auth";
 import { useClubEvents, useDeleteEvent } from "@/hooks/use-club";
-import { cleanLabels, parseEventDates } from "@/lib/student/events";
+import { parseEventDates } from "@/lib/student/events";
 import type { ClubEmbeddedEvent } from "@/network-calls/types";
 
-const dayFormat = new Intl.DateTimeFormat("en-IN", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-function when(dates: string) {
-  const { start, end } = parseEventDates(dates);
-  if (!start) return dates;
-  return end && end.getTime() !== start.getTime()
-    ? `${dayFormat.format(start)} - ${dayFormat.format(end)}`
-    : dayFormat.format(start);
+/** Phase of an embedded event - the same rule the student wall uses. */
+function embeddedPhase(event: ClubEmbeddedEvent, today: Date): ClubEventPhase {
+  const { start, end } = parseEventDates(event.dates);
+  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (end && end < day) return "past";
+  if (start && start > day) return "upcoming";
+  return "live";
 }
 
-/** The club's events, newest first, with delete behind a confirmation. */
+interface Group {
+  title: string;
+  items: ClubEmbeddedEvent[];
+}
+
+/** The club's events, grouped the way the club thinks about them. */
 export function ClubDashboardView() {
   const events = useClubEvents();
   const deleteEvent = useDeleteEvent();
   const [pending, setPending] = useState<ClubEmbeddedEvent | null>(null);
+
   const club = events.data?.club;
-  const list = [...(events.data?.events ?? [])].sort((a, b) =>
-    (b.CreatedAt ?? "").localeCompare(a.CreatedAt ?? ""),
-  );
+  const list = useMemo(() => events.data?.events ?? [], [events.data]);
+
+  const groups = useMemo<Group[]>(() => {
+    const today = new Date();
+    const live: ClubEmbeddedEvent[] = [];
+    const upcoming: ClubEmbeddedEvent[] = [];
+    const past: ClubEmbeddedEvent[] = [];
+    for (const event of list) {
+      switch (embeddedPhase(event, today)) {
+        case "live":
+          live.push(event);
+          break;
+        case "upcoming":
+          upcoming.push(event);
+          break;
+        case "past":
+          past.push(event);
+          break;
+      }
+    }
+    // Coming up: soonest first. Earlier: most recent first.
+    upcoming.sort(
+      (a, b) =>
+        (parseEventDates(a.dates).start?.getTime() ?? Infinity) -
+        (parseEventDates(b.dates).start?.getTime() ?? Infinity),
+    );
+    past.sort(
+      (a, b) =>
+        (parseEventDates(b.dates).start?.getTime() ?? 0) -
+        (parseEventDates(a.dates).start?.getTime() ?? 0),
+    );
+    return [
+      { title: "Live now", items: live },
+      { title: "Coming up", items: upcoming },
+      { title: "Earlier", items: past },
+    ].filter((group) => group.items.length > 0);
+  }, [list]);
+
+  const stats = [
+    {
+      label: "Live now",
+      value: groups.find((g) => g.title === "Live now")?.items.length ?? 0,
+    },
+    {
+      label: "Event Likes",
+      value: list.reduce((sum, event) => sum + (event.popularity ?? 0), 0),
+    },
+    {
+      label: "Club Followers",
+      value: club?.popularity ?? 0,
+    },
+    { label: "Published", value: list.length },
+  ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader
-        title={club?.name ?? "Your events"}
-        description={
-          club
-            ? club.verified
-              ? "Verified - students can see your club and events."
-              : "Awaiting verification - students will see you once verified."
-            : undefined
-        }
-        actions={
+    <div className="flex flex-col gap-8">
+      {/* The club itself leads the page. */}
+      <section className="relative overflow-hidden rounded-3xl panel panel-raised p-5 sm:p-7">
+        <div className="aurora" aria-hidden />
+        <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center">
+          <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-surface-container text-on-surface-muted sm:size-20">
+            {club?.logo ? (
+              <Image
+                src={club.logo}
+                alt=""
+                width={80}
+                height={80}
+                unoptimized
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="font-heading text-h2 font-extrabold text-primary-accent">
+                {club?.name?.trim()?.[0]?.toUpperCase() ?? "C"}
+              </span>
+            )}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-h2 font-bold text-on-surface">
+                {club?.name ?? "Your club"}
+              </h1>
+              {club &&
+                (club.verified ? (
+                  <span className="rounded-full bg-success-container px-2.5 py-1 text-xs font-extrabold text-on-success-container">
+                    Verified
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-warning-container px-2.5 py-1 text-xs font-extrabold text-on-warning-container">
+                    Awaiting verification
+                  </span>
+                ))}
+              {club?.isRecruiting && (
+                <span className="rounded-full bg-secondary-container px-2.5 py-1 text-xs font-extrabold text-on-secondary-container">
+                  Recruiting
+                </span>
+              )}
+            </div>
+            {club?.description && (
+              <p className="mt-1.5 line-clamp-2 max-w-prose text-sm text-on-surface-muted">
+                {club.description}
+              </p>
+            )}
+          </div>
           <Button
             size="touch"
             render={<Link href={`${ROUTES.club}/events/new`} />}
             nativeButton={false}
+            className="shrink-0"
           >
             <CalendarPlus aria-hidden /> New event
           </Button>
-        }
-      />
-      {events.isLoading ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        </div>
+
+        <dl className="relative z-10 mt-6 grid grid-cols-2 gap-4 border-t border-outline-variant pt-5 sm:grid-cols-4">
+          {stats.map(({ label, value }) => (
+            <div key={label} className="flex flex-col gap-1">
+              <dt className="text-xs font-bold text-on-surface-muted">
+                {label}
+              </dt>
+              <dd className="text-stat font-bold text-on-surface">
+                <CountUp to={value} duration={1.2} className="tabular" />
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {events.isPending ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 4 }, (_, i) => (
-            <ShimmerBlock key={i} className="h-32" />
+            <ShimmerBlock key={i} className="h-72" />
           ))}
         </div>
       ) : events.error ? (
@@ -95,71 +192,48 @@ export function ClubDashboardView() {
           icon={CalendarPlus}
           title="No events yet"
           description="Post your first event - it shows up for every student on campus."
+          action={
+            <Button
+              size="touch"
+              render={<Link href={`${ROUTES.club}/events/new`} />}
+              nativeButton={false}
+            >
+              <CalendarPlus aria-hidden /> Post an event
+            </Button>
+          }
         />
       ) : (
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {list.map((event) => (
-            <li
-              key={event.ID}
-              className="campus-organizer-event flex gap-4 rounded-3xl panel p-4"
-            >
-              <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-surface-highest">
-                {event.banner_url && (
-                  <Image
-                    src={event.banner_url}
-                    alt=""
-                    fill
-                    unoptimized
-                    sizes="96px"
-                    className="object-cover"
+        groups.map((group) => (
+          <section key={group.title} aria-label={group.title} className="flex flex-col gap-3">
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-h3 font-bold text-on-surface">
+                {group.title}
+              </h2>
+              <span className="rounded-full bg-surface-highest px-2 py-0.5 text-xs font-bold text-on-surface-muted">
+                {group.items.length}
+              </span>
+            </div>
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {group.items.map((event) => (
+                <li key={event.ID}>
+                  <ClubEventCard
+                    title={event.title}
+                    bannerUrl={event.banner_url}
+                    dates={event.dates}
+                    timing={event.timing}
+                    labels={event.labels}
+                    odsProvided={event.ods_provided}
+                    refreshmentsProvided={event.refreshments_provided}
+                    popularity={event.popularity}
+                    websiteLink={event.website_link}
+                    phase={embeddedPhase(event, new Date())}
+                    onDelete={() => setPending(event)}
                   />
-                )}
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <h3 className="line-clamp-2 font-heading font-bold text-on-surface">
-                  {event.title}
-                </h3>
-                <p className="flex items-center gap-1.5 text-sm text-on-surface-muted">
-                  <CalendarDays aria-hidden className="size-4" />
-                  {when(event.dates)}
-                </p>
-                {event.timing && (
-                  <p className="flex items-center gap-1.5 text-sm text-on-surface-muted">
-                    <Clock3 aria-hidden className="size-4" />
-                    {event.timing.replace(/\s+to\s+/i, " - ")}
-                  </p>
-                )}
-                <div className="mt-auto flex flex-wrap items-center gap-1.5">
-                  <Badge
-                    variant="outline"
-                    className="rounded-full border-outline-variant text-on-surface-muted"
-                  >
-                    <Heart aria-hidden className="size-3" />{" "}
-                    {event.popularity ?? 0}
-                  </Badge>
-                  {cleanLabels(event.labels).map((label) => (
-                    <Badge
-                      key={label}
-                      variant="outline"
-                      className="h-auto max-w-full whitespace-normal break-words rounded-md border-outline-variant text-on-surface-muted"
-                    >
-                      #{label}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon-touch"
-                aria-label={`Delete ${event.title}`}
-                onClick={() => setPending(event)}
-                className="text-on-surface-muted hover:text-danger-accent"
-              >
-                <Trash2 />
-              </Button>
-            </li>
-          ))}
-        </ul>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
       )}
 
       <Dialog
@@ -191,7 +265,7 @@ export function ClubDashboardView() {
                 })
               }
             >
-              <Trash2 aria-hidden /> Delete
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>

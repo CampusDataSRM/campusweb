@@ -1658,22 +1658,6 @@ a.planner-cell:hover {
 .cgpa-page > ul > li + li {
   border-top: 1px solid var(--outline-variant);
 }
-.club-shell main {
-  padding-top: 36px;
-}
-.club-auth {
-  background: var(--surface);
-}
-.club-auth > section {
-  border-radius: 18px;
-}
-.club-auth h1 {
-  font-size: 32px;
-  font-weight: 500;
-}
-.club-shell [aria-label="Club portal"] a {
-  border-radius: 8px;
-}
 .legal-shell > header > div {
   max-width: 1080px;
   height: 72px;
@@ -2139,64 +2123,6 @@ a.planner-cell:hover {
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 180ms;
-}
-@media (max-width: 767px) {
-  .campus-organizer-event {
-    gap: 10px;
-  }
-  .campus-organizer-event > div:first-child {
-    width: 64px;
-    height: 64px;
-  }
-  .campus-organizer-event h3 {
-    font-size: 14px;
-  }
-}
-
-.club-profile-sections {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 40px;
-}
-.club-profile-sections > section + section {
-  border-left: 1px solid var(--outline-variant);
-  padding-left: 32px;
-}
-.club-profile-page > section {
-  max-width: 720px;
-}
-@media (max-width: 767px) {
-  .club-profile-sections {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-  .club-profile-sections > section + section {
-    border-left: 0;
-    border-top: 1px solid var(--outline-variant);
-    padding: 24px 0 0;
-  }
-  .club-shell > header > div {
-    height: auto;
-    flex-wrap: wrap;
-    padding-top: 16px;
-    padding-bottom: 10px;
-  }
-  .club-shell nav {
-    width: 100%;
-    margin-left: 0;
-  }
-  .club-shell nav a {
-    flex: 1;
-    padding: 0 8px;
-    font-size: 12px;
-    justify-content: center;
-  }
-  .club-shell nav a span {
-    display: inline;
-  }
-}
-
-@media (max-width: 767px) {
 }
 
 /* Segmented attendance track; the target is a marker rather than a second value. */
