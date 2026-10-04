@@ -1,218 +1,268 @@
 "use client";
 
 import {
+  ArrowUpRight,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Pause,
-  Play,
-  Clock,
-  ExternalLink,
   CheckCircle,
+  Clock,
   Coffee,
+  ExternalLink,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-
 import { STUDENT_ROUTES } from "@/constants/routes";
 import { useNow } from "@/hooks/use-now";
+import { AttendanceCard } from "@/components/dashboard/today-hero";
 import { useEvents } from "@/hooks/use-student-data";
 import {
-  parseEventDates,
-  sortEvents,
-  eventPhase,
   PINNED_CLUB,
+  eventPhase,
+  parseEventDates,
+  type EventPhase,
 } from "@/lib/student/events";
-import { cn } from "@/lib/utils";
+import type { ClubEvent } from "@/network-calls/types";
 
-const AUTOPLAY_MS = 3000;
-const SWIPE_PX = 40;
-const dateFormat = new Intl.DateTimeFormat("en-IN", {
-  day: "numeric",
-  month: "short",
-});
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const monthDay = (d: Date) => `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+const sameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
 
-/**
- * Event posters, one at a time and never cropped: the poster sits whole on a
- * blurred copy of itself. Crossfades on its own; pauses on hover/focus,
- * swipes on touch, and never auto-plays under reduced motion.
- */
-export function EventsCarousel() {
+/** "Today", "Until 10 Oct", "Tomorrow", "9-10 Oct", "20 Sep - 10 Oct". */
+function when(event: ClubEvent, phase: EventPhase, now: Date): string {
+  const { start, end } = parseEventDates(event.dates);
+  if (!start) return "";
+  if (phase === "ongoing") {
+    if (!end || sameDay(end, now) || sameDay(start, end)) return "Today";
+    return `Until ${monthDay(end)}`;
+  }
+  const tomorrow = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+  );
+  if (sameDay(start, tomorrow)) return "Tomorrow";
+  if (end && !sameDay(start, end)) {
+    return start.getMonth() === end.getMonth()
+      ? `${start.getDate()}-${end.getDate()} ${MONTHS[start.getMonth()]}`
+      : `${monthDay(start)} - ${monthDay(end)}`;
+  }
+  return monthDay(start);
+}
+
+const ROTATE_MS = 6500;
+
+interface Spot {
+  event: ClubEvent;
+  phase: EventPhase;
+}
+
+/** On now first, then coming up; the pinned bulletin last; nothing ended. */
+function useSpotlight(): {
+  spots: Spot[];
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+  now: Date | null;
+} {
   const now = useNow();
   const events = useEvents();
+  const spots = useMemo<Spot[]>(() => {
+    if (!now || !events.data) return [];
+    const rank = (e: ClubEvent) =>
+      e.club_name === PINNED_CLUB
+        ? 2
+        : eventPhase(e, now) === "ongoing"
+          ? 0
+          : 1;
+    return events.data
+      .filter(
+        (e) => e.club_name === PINNED_CLUB || eventPhase(e, now) !== "past",
+      )
+      .sort(
+        (a, b) =>
+          rank(a) - rank(b) ||
+          (parseEventDates(a.dates).start?.getTime() ?? 0) -
+            (parseEventDates(b.dates).start?.getTime() ?? 0),
+      )
+      .map((event) => ({ event, phase: eventPhase(event, now) }));
+  }, [events.data, now]);
+  return {
+    spots,
+    loading: events.isLoading || !now,
+    error: events.error,
+    refetch: () => void events.refetch(),
+    now,
+  };
+}
+
+/** The attendance card, only when the spotlight has taken its place in the hero. */
+export function AttendanceCardWhenEvents() {
+  const { spots, loading } = useSpotlight();
+  if (loading || spots.length === 0) return null;
+  return <AttendanceCard />;
+}
+
+/**
+ * The hero's right tile when clubs have posted something: one event at a
+ * time, poster edge to edge, title and date at the foot, quietly turning
+ * through what's on. Tap for the details. With nothing on, the attendance
+ * card keeps its place.
+ */
+export function EventSpotlight() {
+  const { spots, loading, now } = useSpotlight();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<(typeof slides)[0] | null>(
-    null,
-  );
-  const swipeStart = useRef<number | null>(null);
-  const slides = useMemo(() => {
-    if (!now) return [];
-    return sortEvents(events.data ?? [], now).filter(
-      (e) => e.club_name === PINNED_CLUB || eventPhase(e, now) !== "past",
-    );
-  }, [events.data, now]);
-  const count = slides.length;
+  const [selectedEvent, setSelectedEvent] = useState<ClubEvent | null>(null);
+  const count = spots.length;
+  const active = count ? spots[index % count] : null;
 
   useEffect(() => {
-    if (
-      paused ||
-      userPaused ||
-      count < 2 ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const timer = setInterval(
+    if (count < 2 || paused || selectedEvent) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(
       () => setIndex((i) => (i + 1) % count),
-      AUTOPLAY_MS,
+      ROTATE_MS,
     );
-    return () => clearInterval(timer);
-  }, [paused, userPaused, count]);
+    return () => window.clearInterval(timer);
+  }, [count, paused, selectedEvent]);
 
-  if (count === 0) return null;
-  const go = (step: number) => setIndex((i) => (i + step + count) % count);
-  const activeIndex = index % count;
-  const active = slides[activeIndex];
-  const dates = parseEventDates(active.dates);
+  if (loading)
+    return (
+      <div className="home-spotlight panel" data-skeleton="" aria-busy="true" />
+    );
+  if (!active || !now) return <AttendanceCard />;
+
+  const pinned = active.event.club_name === PINNED_CLUB;
+  const onNow = spots.filter(
+    (s) => s.phase === "ongoing" && s.event.club_name !== PINNED_CLUB,
+  ).length;
 
   return (
     <section
-      aria-label="Events"
-      aria-roledescription="carousel"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      className="home-events h-full flex flex-col"
+      className="home-spotlight panel"
+      aria-label="Campus events"
+      onPointerEnter={() => setPaused(true)}
+      onPointerLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
-      <div className="home-events-header shrink-0">
-        <h2>Around campus</h2>
-        <span>
-          {count} {count === 1 ? "event" : "events"}
-        </span>
-      </div>
-      <div
-        className="home-events-poster flex-1 !aspect-auto"
-        onPointerDown={(e) => (swipeStart.current = e.clientX)}
-        onPointerUp={(e) => {
-          if (swipeStart.current === null) return;
-          const dx = e.clientX - swipeStart.current;
-          swipeStart.current = null;
-          if (Math.abs(dx) > SWIPE_PX) {
-            go(dx < 0 ? 1 : -1);
-          } else {
-            setSelectedEvent(slides[activeIndex]);
-          }
-        }}
-      >
-        {slides.map((event, i) => (
-          <div
-            key={event.id}
-            aria-hidden={i !== activeIndex}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-(--duration-long)",
-              i === activeIndex
-                ? "opacity-100"
-                : "pointer-events-none opacity-0",
-            )}
-          >
-            {event.banner_url ? (
+      <div className="home-spotlight-top">
+        <span className="home-widget-heading">
+          <span>
+            On campus
+            {onNow > 0 && (
               <>
-                <img
-                  src={event.banner_url}
-                  alt=""
-                  className="absolute inset-0 w-full h-full scale-125 object-cover opacity-50 blur-2xl"
-                />
-                <img
-                  src={event.banner_url}
-                  alt={event.title}
-                  className="absolute inset-0 w-full h-full object-contain"
-                />
+                {" · "}
+                <i aria-hidden className="live-dot" /> {onNow} on now
               </>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-cta">
-                <span className="px-6 text-center text-h2 font-black text-on-primary">
-                  {event.title}
-                </span>
-              </div>
             )}
-          </div>
-        ))}
-      </div>
-
-      <Link
-        href={STUDENT_ROUTES.events}
-        className="home-events-info shrink-0"
-        aria-live={userPaused || paused ? "polite" : "off"}
-      >
-        <span className="text-xs font-bold text-secondary-accent">
-          {active.club_name}
-        </span>
-        <strong>{active.title}</strong>
-        {dates.start && (
-          <span className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-muted">
-            <CalendarDays aria-hidden className="size-4" />
-            {dateFormat.format(dates.start)}
-            {dates.end &&
-              dates.end.getTime() !== dates.start.getTime() &&
-              ` to ${dateFormat.format(dates.end)}`}
           </span>
-        )}
-      </Link>
-
-      <div className="home-events-controls shrink-0 mt-auto">
-        {count > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={() => go(-1)}
-              aria-label="Previous event"
-            >
-              <ChevronLeft aria-hidden className="size-4" />
-            </button>
-            <span>
-              {activeIndex + 1} / {count}
-            </span>
-            <button type="button" onClick={() => go(1)} aria-label="Next event">
-              <ChevronRight aria-hidden className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserPaused(!userPaused)}
-              aria-label={
-                userPaused ? "Resume event slideshow" : "Pause event slideshow"
-              }
-            >
-              {userPaused ? (
-                <Play aria-hidden className="size-4" />
-              ) : (
-                <Pause aria-hidden className="size-4" />
-              )}
-            </button>
-          </>
-        )}
-        <Link
-          href={STUDENT_ROUTES.events}
-          className="ml-auto text-sm font-bold text-primary-accent hover:underline"
-        >
-          All events
+        </span>
+        <Link href={STUDENT_ROUTES.events} aria-label="Explore all events">
+          <ArrowUpRight aria-hidden className="size-4" />
         </Link>
       </div>
 
+      <button
+        type="button"
+        className="home-spotlight-body"
+        onClick={() => setSelectedEvent(active.event)}
+        aria-label={`${active.event.title}. View details`}
+      >
+        {/* The banner window is the 2:1 template clubs are given; any shape
+            fits inside it whole, on a blurred copy of itself. */}
+        <span
+          key={`art-${active.event.id}`}
+          className="home-spotlight-art"
+          aria-hidden
+        >
+          {active.event.banner_url ? (
+            <>
+              <Image
+                src={active.event.banner_url}
+                alt=""
+                fill
+                unoptimized
+                sizes="40vw"
+                className="home-spotlight-backdrop"
+              />
+              <Image
+                src={active.event.banner_url}
+                alt=""
+                fill
+                unoptimized
+                sizes="40vw"
+                className="home-spotlight-poster"
+              />
+            </>
+          ) : (
+            <CalendarDays className="size-8" />
+          )}
+        </span>
+        <span className="home-spotlight-kicker">
+          {pinned
+            ? "Campus bulletin"
+            : active.phase === "ongoing"
+              ? "Happening now"
+              : "Coming up"}
+        </span>
+        <strong key={`title-${active.event.id}`}>{active.event.title}</strong>
+        <span className="home-spotlight-when">
+          {pinned
+            ? "From The Campus Web"
+            : when(active.event, active.phase, now)}
+          {active.event.timing &&
+            !pinned &&
+            ` · ${active.event.timing.replace(/\s+to\s+/i, " - ")}`}
+        </span>
+      </button>
+
+      {count > 1 && (
+        <div className="home-spotlight-dots" role="tablist" aria-label="Events">
+          {spots.map((spot, i) => (
+            <button
+              key={spot.event.id}
+              type="button"
+              role="tab"
+              aria-selected={i === index % count}
+              aria-label={spot.event.title}
+              onClick={() => setIndex(i)}
+            >
+              <i style={{ animationDuration: `${ROTATE_MS}ms` }} />
+            </button>
+          ))}
+        </div>
+      )}
       <Dialog
         open={!!selectedEvent}
         onOpenChange={(open) => !open && setSelectedEvent(null)}
       >
         {selectedEvent && (
-          <DialogContent className="w-[95vw] sm:max-w-2xl lg:max-w-5xl panel !bg-[#09142A] !p-0 overflow-hidden flex flex-col lg:flex-row max-h-[90vh] lg:h-[75vh] gap-0 border border-outline-variant/20 shadow-2xl sm:rounded-[24px]">
+          <DialogContent className="discovery-event-dialog w-[95vw] sm:max-w-2xl lg:max-w-5xl panel bg-surface-low !p-0 overflow-hidden flex flex-col lg:flex-row max-h-[90vh] lg:h-[min(600px,85dvh)] gap-0 border border-outline-variant/20 shadow-2xl sm:rounded-[24px]">
             <DialogHeader className="sr-only">
               <DialogTitle>{selectedEvent.title}</DialogTitle>
               <DialogDescription>
@@ -222,8 +272,11 @@ export function EventsCarousel() {
 
             <div className="relative w-full aspect-video sm:aspect-[21/9] lg:aspect-auto lg:w-1/2 lg:h-full shrink-0 bg-surface-lowest border-b lg:border-b-0 lg:border-r border-outline-variant/20 flex items-center justify-center">
               {selectedEvent.banner_url ? (
-                <img
+                <Image
                   src={selectedEvent.banner_url}
+                  unoptimized
+                  width={1000}
+                  height={1000}
                   alt={selectedEvent.title}
                   className="absolute inset-0 w-full h-full object-contain"
                 />
@@ -240,8 +293,9 @@ export function EventsCarousel() {
               <div className="flex items-start gap-4">
                 {selectedEvent.logo && (
                   <div className="shrink-0 size-12 sm:size-16 rounded-full bg-surface-lowest flex items-center justify-center p-2 shadow-inner border border-outline-variant/30 mt-1">
-                    <img
+                    <Image
                       src={selectedEvent.logo}
+                      unoptimized
                       alt={selectedEvent.club_name}
                       width={48}
                       height={48}
@@ -290,12 +344,12 @@ export function EventsCarousel() {
 
               <div className="flex flex-wrap gap-2">
                 {selectedEvent.ods_provided && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold border border-emerald-500/20">
-                    <CheckCircle className="size-3.5" /> ODS Provided
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-success-accent text-xs font-bold border border-emerald-500/20">
+                    <CheckCircle className="size-3.5" /> OD provided
                   </span>
                 )}
                 {selectedEvent.refreshments_provided && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-500 text-xs font-bold border border-amber-500/20">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-warning-accent text-xs font-bold border border-amber-500/20">
                     <Coffee className="size-3.5" /> Refreshments
                   </span>
                 )}
