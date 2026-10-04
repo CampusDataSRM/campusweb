@@ -1,6 +1,7 @@
 "use client";
 
-import { CalendarX2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarX2, ChevronLeft, ChevronRight, Flag } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import {
@@ -11,15 +12,21 @@ import {
 } from "@/components/feedback/data-states";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { STUDENT_ROUTES } from "@/constants/routes";
 import { useNow } from "@/hooks/use-now";
-import { usePlanner } from "@/hooks/use-student-data";
+import { usePlanner, useTimetable } from "@/hooks/use-student-data";
 import {
   parseDayOrder,
   plannerEntryDate,
   plannerMonths,
   type PlannerMonth,
 } from "@/lib/student/planner";
-import { cn } from "@/lib/utils";
+import {
+  classesForDay,
+  formatMinutes,
+  mergeConsecutive,
+} from "@/lib/student/timetable";
+import type { Timetable } from "@/network-calls/types";
 
 const MONTH_NAMES = [
   "January",
@@ -36,6 +43,11 @@ const MONTH_NAMES = [
   "December",
 ];
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const longDate = new Intl.DateTimeFormat("en-IN", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+});
 
 interface DayCell {
   key: string;
@@ -45,30 +57,55 @@ interface DayCell {
   event: string;
   dayOrder: number | null;
   holiday: boolean;
+  weekend: boolean;
   today: boolean;
+  past: boolean;
+  /** Sittings that day, from the timetable. */
+  classes: number;
+  firstStart: number | null;
 }
 
-function cellsFor(month: PlannerMonth, now: Date): DayCell[] {
+function cellsFor(
+  month: PlannerMonth,
+  now: Date,
+  timetable: Timetable | undefined,
+): DayCell[] {
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   return month.days.map((day) => {
     const date = plannerEntryDate(month, day);
     const dayOfMonth = Number.parseInt(day.Date, 10);
+    const dayOrder = parseDayOrder(day.Dayorder);
+    const blocks = dayOrder
+      ? mergeConsecutive(classesForDay(timetable, dayOrder))
+      : [];
+    const weekday =
+      day.Day?.trim() || (date ? WEEKDAYS[(date.getDay() + 6) % 7] : "");
     return {
       key: `${month.key}-${day.Date}`,
       date,
       dayOfMonth,
-      weekday: day.Day,
+      weekday,
       event: day.Event?.trim() ?? "",
-      dayOrder: parseDayOrder(day.Dayorder),
+      dayOrder,
       holiday: month.holidays.has(dayOfMonth),
+      weekend: /^(sat|sun)/i.test(weekday),
       today: !!date && date.toDateString() === now.toDateString(),
+      past: !!date && date < todayStart,
+      classes: blocks.length,
+      firstStart: blocks[0]?.startMinutes ?? null,
     };
   });
 }
 
-/** The academic planner, a month at a time: grid on desktop, list on phones. */
+/**
+ * The academic planner, a month at a time. Class days say what the day
+ * holds and open that day's timetable; weekends stay quiet so hatching
+ * means a real holiday; the month's events and holidays are listed below.
+ */
 export function PlannerView() {
   const now = useNow();
   const planner = usePlanner();
+  const timetable = useTimetable();
   const months = useMemo(() => plannerMonths(planner.data), [planner.data]);
   const currentIndex = useMemo(() => {
     if (!now) return 0;
@@ -86,27 +123,15 @@ export function PlannerView() {
   );
   const month = months[index];
   const cells = useMemo(
-    () => (month && now ? cellsFor(month, now) : []),
-    [month, now],
+    () => (month && now ? cellsFor(month, now, timetable.data?.timetable) : []),
+    [month, now, timetable.data],
   );
 
-  const stats = useMemo(() => {
-    const holidays = cells.filter((cell) => cell.holiday).length;
-    const left = now
-      ? cells.filter(
-          (cell) =>
-            cell.date &&
-            cell.date >=
-              new Date(now.getFullYear(), now.getMonth(), now.getDate()) &&
-            cell.dayOrder,
-        ).length
-      : 0;
-    return [
-      ["Days", cells.length],
-      ["Holidays", holidays],
-      ["Class days left", left],
-    ] as const;
-  }, [cells, now]);
+  const classDays = cells.filter((c) => c.dayOrder !== null);
+  const classDaysLeft = classDays.filter((c) => !c.past).length;
+  const holidays = cells.filter((c) => c.holiday && !c.weekend);
+  const events = cells.filter((c) => c.event || (c.holiday && !c.weekend));
+  const nextEvent = events.find((c) => !c.past);
 
   const leadingBlanks =
     month?.year !== null && month
@@ -143,184 +168,204 @@ export function PlannerView() {
       ) : (
         <>
           <div className="campus-toolbar">
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon-touch"
-                  aria-label="Previous month"
-                  disabled={index === 0}
-                  onClick={() => setPicked(index - 1)}
-                >
-                  <ChevronLeft />
-                </Button>
-                <h2
-                  className="min-w-44 text-center font-heading text-h3 font-bold text-on-surface"
-                  aria-live="polite"
-                >
-                  {MONTH_NAMES[month.month]} {month.year ?? ""}
-                </h2>
-                <Button
-                  variant="outline"
-                  size="icon-touch"
-                  aria-label="Next month"
-                  disabled={index >= months.length - 1}
-                  onClick={() => setPicked(index + 1)}
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon-touch"
+                aria-label="Previous month"
+                disabled={index === 0}
+                onClick={() => setPicked(index - 1)}
+              >
+                <ChevronLeft />
+              </Button>
+              <h2
+                className="min-w-44 text-center font-heading text-h3 font-bold text-on-surface"
+                aria-live="polite"
+              >
+                {MONTH_NAMES[month.month]} {month.year ?? ""}
+              </h2>
+              <Button
+                variant="outline"
+                size="icon-touch"
+                aria-label="Next month"
+                disabled={index >= months.length - 1}
+                onClick={() => setPicked(index + 1)}
+              >
+                <ChevronRight />
+              </Button>
               <Button
                 variant="outline"
                 size="touch"
+                className="ml-1"
                 onClick={() => setPicked(null)}
                 disabled={index === currentIndex}
               >
                 Today
               </Button>
-              <dl className="flex gap-2">
-                {stats.map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="rounded-xl panel px-3 py-2 text-center"
-                  >
-                    <dt className="text-[0.6875rem] font-semibold text-on-surface-muted">
-                      {label}
-                    </dt>
-                    <dd className="font-heading font-extrabold text-on-surface tabular">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
             </div>
+            <dl className="planner-stats">
+              <div>
+                <dt>Class days</dt>
+                <dd className="tabular">
+                  {index === currentIndex ? (
+                    <>
+                      {classDaysLeft}
+                      <small> left of {classDays.length}</small>
+                    </>
+                  ) : (
+                    classDays.length
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>Holidays</dt>
+                <dd className="tabular">{holidays.length}</dd>
+              </div>
+              {nextEvent && nextEvent.date && (
+                <div className="planner-stat-next">
+                  <dt>{nextEvent.today ? "Today" : "Next up"}</dt>
+                  <dd>
+                    {nextEvent.event || "Holiday"}
+                    <small> · {longDate.format(nextEvent.date)}</small>
+                  </dd>
+                </div>
+              )}
+            </dl>
           </div>
 
           <div className="planner-legend">
             <span>
-              <i aria-hidden />
+              <i aria-hidden data-tone="today" />
               Today
             </span>
-            <span>DO = day order</span>
             <span>
-              <i aria-hidden />
-              Holiday / no classes
+              <i aria-hidden data-tone="holiday" />
+              Holiday
+            </span>
+            <span>
+              <i aria-hidden data-tone="event" />
+              Event
+            </span>
+            <span className="planner-legend-hint">
+              Tap a class day to open its timetable
             </span>
           </div>
-          {/* Desktop: month grid */}
-          <div className="planner-calendar panel hidden overflow-hidden md:block">
-            <div className="grid grid-cols-7 border-b border-outline-variant">
+
+          <div className="planner-calendar panel overflow-hidden">
+            <div className="planner-weekdays">
               {WEEKDAYS.map((day) => (
-                <div
-                  key={day}
-                  className="px-3 py-2 text-xs font-bold text-on-surface-muted"
-                >
-                  {day}
-                </div>
+                <div key={day}>{day}</div>
               ))}
             </div>
-            <div className="grid grid-cols-7 [&>*]:shadow-[inset_-1px_-1px_0_var(--outline-variant)] [&>*:nth-child(7n)]:shadow-[inset_0_-1px_0_var(--outline-variant)]">
+            <div className="planner-grid">
               {Array.from({ length: leadingBlanks }, (_, i) => (
-                <div key={`blank-${i}`} />
-              ))}
-              {cells.map((cell) => (
                 <div
-                  key={cell.key}
-                  aria-current={cell.today ? "date" : undefined}
-                  className={cn(
-                    "flex min-h-24 flex-col gap-1 p-2.5 transition-colors hover:bg-surface-high",
-                    cell.today
-                      ? "bg-primary-container"
-                      : cell.holiday &&
-                          "bg-[repeating-linear-gradient(135deg,transparent_0_7px,color-mix(in_oklab,var(--on-surface)_4%,transparent)_7px_8px)]",
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={cn(
-                        "text-sm font-bold tabular",
-                        cell.today
-                          ? "text-on-primary-container"
-                          : cell.holiday
-                            ? "text-on-surface-subtle"
-                            : "text-on-surface",
-                      )}
-                    >
-                      {cell.dayOfMonth}
-                    </span>
-                    {cell.dayOrder && (
-                      <span className="rounded-md bg-surface-highest px-1.5 text-[0.6875rem] font-extrabold text-on-surface-brand">
-                        DO {cell.dayOrder}
-                      </span>
-                    )}
-                  </div>
-                  {cell.event && (
-                    <p className="line-clamp-2 text-xs font-semibold text-secondary-accent">
-                      {cell.event}
-                    </p>
-                  )}
-                  {cell.holiday && !cell.event && (
-                    <p className="text-xs text-on-surface-subtle">Holiday</p>
-                  )}
-                </div>
+                  key={`blank-${i}`}
+                  className="planner-cell"
+                  data-blank=""
+                />
               ))}
+              {cells.map((cell) => {
+                const named = cell.holiday && !cell.weekend;
+                const body = (
+                  <>
+                    <div className="planner-cell-top">
+                      <span className="planner-cell-date tabular">
+                        {cell.dayOfMonth}
+                      </span>
+                      {cell.dayOrder && (
+                        <span className="planner-cell-order">
+                          Day {cell.dayOrder}
+                        </span>
+                      )}
+                    </div>
+                    {cell.event ? (
+                      <p className="planner-cell-event">{cell.event}</p>
+                    ) : named ? (
+                      <p className="planner-cell-note">Holiday</p>
+                    ) : cell.classes > 0 ? (
+                      <p className="planner-cell-note">
+                        {cell.classes}{" "}
+                        {cell.classes === 1 ? "class" : "classes"}
+                        {cell.firstStart !== null && (
+                          <span> · {formatMinutes(cell.firstStart)}</span>
+                        )}
+                      </p>
+                    ) : null}
+                  </>
+                );
+                const attrs = {
+                  className: "planner-cell",
+                  "aria-current": cell.today ? ("date" as const) : undefined,
+                  "data-today": cell.today || undefined,
+                  "data-holiday": named || undefined,
+                  "data-weekend": (cell.weekend && !cell.dayOrder) || undefined,
+                  "data-past": (cell.past && !cell.today) || undefined,
+                  "data-event": !!cell.event || undefined,
+                };
+                return cell.dayOrder ? (
+                  <Link
+                    key={cell.key}
+                    href={`${STUDENT_ROUTES.timetable}?day=${cell.dayOrder}`}
+                    aria-label={`${cell.date ? longDate.format(cell.date) : cell.dayOfMonth}, Day ${cell.dayOrder}${cell.classes ? `, ${cell.classes} classes` : ""}. Open timetable`}
+                    {...attrs}
+                  >
+                    {body}
+                  </Link>
+                ) : (
+                  <div key={cell.key} {...attrs}>
+                    {body}
+                  </div>
+                );
+              })}
               {Array.from(
                 { length: (7 - ((leadingBlanks + cells.length) % 7)) % 7 },
                 (_, i) => (
-                  <div key={`trail-${i}`} />
+                  <div
+                    key={`trail-${i}`}
+                    className="planner-cell"
+                    data-blank=""
+                  />
                 ),
               )}
             </div>
           </div>
 
-          {/* Phones: day list */}
-          <ol className="flex flex-col gap-1.5 md:hidden">
-            {cells.map((cell) => (
-              <li
-                key={cell.key}
-                aria-current={cell.today ? "date" : undefined}
-                className={cn(
-                  "flex items-center gap-3 rounded-2xl border px-3 py-2.5",
-                  cell.today
-                    ? "border-primary/50 bg-primary-container"
-                    : cell.holiday
-                      ? "border-transparent bg-surface-low"
-                      : "border-outline-variant bg-surface-container",
-                )}
-              >
-                <div className="w-11 text-center">
-                  <p className="text-xs font-semibold text-on-surface-muted">
-                    {cell.weekday}
-                  </p>
-                  <p
-                    className={cn(
-                      "font-heading text-lg font-extrabold tabular",
-                      cell.holiday
-                        ? "text-on-surface-subtle"
-                        : "text-on-surface",
-                    )}
+          {events.length > 0 && (
+            <section
+              aria-label="Events and holidays this month"
+              className="planner-events"
+            >
+              <h3>Coming up in {MONTH_NAMES[month.month]}</h3>
+              <ol>
+                {events.map((cell) => (
+                  <li
+                    key={cell.key}
+                    data-past={(cell.past && !cell.today) || undefined}
+                    data-today={cell.today || undefined}
                   >
-                    {cell.dayOfMonth}
-                  </p>
-                </div>
-                <p
-                  className={cn(
-                    "min-w-0 flex-1 text-sm",
-                    cell.event
-                      ? "font-semibold text-secondary-accent"
-                      : "text-on-surface-muted",
-                  )}
-                >
-                  {cell.event || (cell.holiday ? "Holiday" : "Regular classes")}
-                </p>
-                <span className="rounded-lg bg-surface-highest px-2 py-1 text-xs font-extrabold text-on-surface-brand">
-                  {cell.dayOrder ? `DO ${cell.dayOrder}` : "-"}
-                </span>
-              </li>
-            ))}
-          </ol>
+                    <span className="planner-event-date">
+                      <span>{cell.weekday.slice(0, 3)}</span>
+                      <strong className="tabular">{cell.dayOfMonth}</strong>
+                    </span>
+                    <span className="planner-event-body">
+                      <span className="planner-event-title">
+                        {cell.event ? (
+                          <Flag aria-hidden className="size-3.5" />
+                        ) : null}
+                        {cell.event || "Holiday"}
+                      </span>
+                      <span className="planner-event-sub">
+                        {cell.dayOrder
+                          ? `Day ${cell.dayOrder} · classes as usual`
+                          : "No classes"}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
         </>
       )}
     </div>

@@ -38,7 +38,14 @@ export function TodayClassesCard() {
     >
       <header className="home-widget-heading">
         <h2>{title}</h2>
-        <Link href={STUDENT_ROUTES.timetable} aria-label="Open timetable">
+        <Link
+          href={
+            day
+              ? `${STUDENT_ROUTES.timetable}?day=${day}`
+              : STUDENT_ROUTES.timetable
+          }
+          aria-label="Open timetable"
+        >
           <ArrowUpRight aria-hidden className="size-4" />
         </Link>
       </header>

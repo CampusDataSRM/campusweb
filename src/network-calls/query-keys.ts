@@ -36,6 +36,8 @@ export const queryKeys = {
   },
   notes: {
     catalogue: ["notes", "catalogue"] as const,
+    /** Per-account shelf: recently opened files and pinned subjects. */
+    shelf: (scope: string) => ["notes", "shelf", scope] as const,
   },
   clubEvents: {
     all: ["clubEvents"] as const,

@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { AccountSummary } from "@/components/layout/account-summary";
 import { PageHeader, Section } from "@/components/layout/page-header";
+import { AppInstall } from "@/components/pwa/app-install";
 import { ThemePicker } from "@/components/theme/theme-picker";
 import { LEGAL_ROUTES } from "@/constants/routes";
 import { SOCIAL_LINKS, STORE_LINKS } from "@/constants/site";
@@ -28,6 +29,9 @@ export function SettingsView() {
           <ThemePicker />
         </Section>
         <aside className="settings-side" aria-label="Account and links">
+          <Section title="App">
+            <AppInstall />
+          </Section>
           <Section title="Account">
             <div className="rounded-2xl panel p-4">
               <AccountSummary />

@@ -863,8 +863,19 @@
 .home-week-day[data-today] strong {
   color: inherit;
 }
-.home-week:hover .home-week-heading {
+.home-week-heading:hover {
   color: var(--primary-accent);
+}
+.home-week-day {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.home-week-day:not([data-today]):hover {
+  border-color: var(--outline-variant);
+  background: var(--surface-high);
+  color: var(--on-surface);
 }
 .home-attendance-summary {
   padding: 28px;

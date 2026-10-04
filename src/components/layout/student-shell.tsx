@@ -8,6 +8,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { CommandMenu } from "@/components/layout/command-menu";
+import { OfflinePill } from "@/components/pwa/offline-pill";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,7 +63,8 @@ export function StudentShell({ children }: { children: ReactNode }) {
             <span aria-hidden>/</span>
             <span>{current}</span>
           </span>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-2">
+            <OfflinePill />
             <CommandMenu />
           </div>
           <div className="md:hidden">

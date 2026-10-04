@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpenCheck, Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AttendanceSummary } from "@/components/attendance/attendance-summary";
 import { CourseCard } from "@/components/attendance/course-card";
@@ -19,8 +19,20 @@ import { useSession } from "@/context/session-context";
 import { useAttendancePrediction } from "@/hooks/use-attendance-prediction";
 import { useStudentCopy } from "@/hooks/use-student-copy";
 import { useProfile } from "@/hooks/use-student-data";
-import { courseAttendance } from "@/lib/student/attendance";
+import {
+  bunkBudget,
+  courseAttendance,
+  type BunkTone,
+} from "@/lib/student/attendance";
 import { Segmented } from "@/components/ui/segmented";
+
+/** Most urgent first: classes to make up, then on the line, then safe (least room first), then not started. */
+const TONE_ORDER: Record<BunkTone, number> = {
+  risk: 0,
+  edge: 1,
+  safe: 2,
+  pending: 3,
+};
 
 export function AttendanceView() {
   const copy = useStudentCopy();
@@ -29,9 +41,27 @@ export function AttendanceView() {
   const prediction = useAttendancePrediction();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "risk">("all");
-  const shownCourses = prediction.courses.filter(
-    (course) => filter === "all" || courseAttendance(course).required > 0,
+  const sorted = useMemo(
+    () =>
+      [...prediction.courses]
+        .map((course) => ({
+          course,
+          budget: bunkBudget(courseAttendance(course)),
+        }))
+        .sort(
+          (a, b) =>
+            TONE_ORDER[a.budget.tone] - TONE_ORDER[b.budget.tone] ||
+            (a.budget.tone === "safe"
+              ? a.budget.count - b.budget.count
+              : b.budget.count - a.budget.count),
+        )
+        .map(({ course }) => course),
+    [prediction.courses],
   );
+  const atRisk = sorted.filter(
+    (course) => courseAttendance(course).required > 0,
+  );
+  const shownCourses = filter === "all" ? sorted : atRisk;
   const canPredict = session?.kind !== "demo";
   const predicted = prediction.result !== null;
 
@@ -127,14 +157,27 @@ export function AttendanceView() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "All subjects" },
-                { value: "risk", label: "Below 75%" },
+                {
+                  value: "all",
+                  label: (
+                    <>
+                      All subjects{" "}
+                      <span className="campus-tab-count">{sorted.length}</span>
+                    </>
+                  ),
+                },
+                {
+                  value: "risk",
+                  label: (
+                    <>
+                      Below 75%{" "}
+                      <span className="campus-tab-count">{atRisk.length}</span>
+                    </>
+                  ),
+                },
               ]}
             />
-            <p className="campus-caption">
-              {shownCourses.length}{" "}
-              {shownCourses.length === 1 ? "subject" : "subjects"} · Target 75%
-            </p>
+            <p className="campus-caption">Most urgent first · Target 75%</p>
           </div>
           {shownCourses.length === 0 && (
             <EmptyState
@@ -144,11 +187,12 @@ export function AttendanceView() {
             />
           )}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {shownCourses.map((course) => (
+            {shownCourses.map((course, index) => (
               <CourseCard
                 key={`${course.courseCode}-${course.courseTitle}`}
                 course={course}
                 predicted={predicted}
+                index={index}
               />
             ))}
           </div>

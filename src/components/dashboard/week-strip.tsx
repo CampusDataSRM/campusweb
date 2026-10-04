@@ -12,20 +12,29 @@ import {
 } from "@/lib/student/planner";
 
 const weekday = new Intl.DateTimeFormat("en-IN", { weekday: "short" });
+const longDate = new Intl.DateTimeFormat("en-IN", {
+  weekday: "long",
+  day: "numeric",
+  month: "short",
+});
 
-/** Only published planner entries get a day order or an off-day label. */
+/**
+ * The next seven days. Each class day opens its day order in the timetable;
+ * off days and the heading open the planner. Only published planner entries
+ * get a day order or an off-day label.
+ */
 export function WeekStrip({ now }: { now: Date }) {
   const planner = usePlanner();
   const months = plannerMonths(planner.data);
   return (
-    <Link
-      href={STUDENT_ROUTES.planner}
-      className="home-week"
-      aria-label="Next seven days. Open academic planner"
-    >
-      <span className="home-week-heading">
+    <div className="home-week">
+      <Link
+        href={STUDENT_ROUTES.planner}
+        className="home-week-heading"
+        aria-label="Next seven days. Open academic planner"
+      >
         Next 7 days <ArrowUpRight aria-hidden size={14} />
-      </span>
+      </Link>
       <span className="home-week-days">
         {Array.from({ length: 7 }, (_, offset) => {
           const date = new Date(
@@ -37,19 +46,26 @@ export function WeekStrip({ now }: { now: Date }) {
           const published =
             isPlannerHoliday(months, date) ||
             Boolean(plannerDayFor(months, date));
+          const label = order ? `Day ${order}` : published ? "Off" : "—";
           return (
-            <span
+            <Link
               key={date.toISOString()}
+              href={
+                order
+                  ? `${STUDENT_ROUTES.timetable}?day=${order}`
+                  : STUDENT_ROUTES.planner
+              }
               className="home-week-day"
               data-today={offset === 0 || undefined}
+              aria-label={`${longDate.format(date)}, ${label}. ${order ? "Open timetable" : "Open planner"}`}
             >
               <span>{weekday.format(date)}</span>
               <strong>{date.getDate().toString().padStart(2, "0")}</strong>
-              <small>{order ? `Day ${order}` : published ? "Off" : "—"}</small>
-            </span>
+              <small>{label}</small>
+            </Link>
           );
         })}
       </span>
-    </Link>
+    </div>
   );
 }

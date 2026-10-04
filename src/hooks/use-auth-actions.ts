@@ -22,9 +22,14 @@ import { notify } from "@/lib/toast";
 import { postDemoLogout } from "@/network-calls/demo";
 import { logoutUser } from "@/network-calls/logoutUser";
 import { queryKeys } from "@/network-calls/query-keys";
+import { clearCachedPages } from "@/lib/pwa/sw-client";
 
 const scopeOf = (session: StudentSession) =>
-  session.kind === "demo" ? "demo" : session.kind === "guest" ? "guest" : session.netId;
+  session.kind === "demo"
+    ? "demo"
+    : session.kind === "guest"
+      ? "guest"
+      : session.netId;
 
 export function useSignIn() {
   const router = useRouter();
@@ -36,7 +41,9 @@ export function useSignIn() {
     onSuccess: async (session) => {
       await startSession(session);
       // Fresh data for this account; a saved copy still paints meanwhile.
-      await queryClient.invalidateQueries({ queryKey: queryKeys.student.all(scopeOf(session)) });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.student.all(scopeOf(session)),
+      });
       notify.success("Signed in", { id: "auth" });
       router.replace(ROUTES.student);
     },
@@ -61,11 +68,14 @@ export function useSignOut() {
     if (session) {
       const config = studentRequestConfig(session);
       // Best effort: the server session ends on its own if this fails.
-      if (session.kind === "demo") void postDemoLogout(config).catch(() => undefined);
-      else if (session.kind !== "guest") void logoutUser(config).catch(() => undefined);
+      if (session.kind === "demo")
+        void postDemoLogout(config).catch(() => undefined);
+      else if (session.kind !== "guest")
+        void logoutUser(config).catch(() => undefined);
       const scope = scopeOf(session);
       queryClient.removeQueries({ queryKey: queryKeys.student.all(scope) });
       await clearCacheScope(scope);
+      await clearCachedPages();
     }
     await endSession();
     router.replace(ROUTES.home);

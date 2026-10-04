@@ -1,13 +1,12 @@
 "use client";
 
-import {
-  ExternalLink,
-  FileText,
-  GraduationCap,
-  ScrollText,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Check, ExternalLink, Pin, PinOff } from "lucide-react";
+import { useState, type CSSProperties } from "react";
 
+import { timeAgo } from "@/components/feedback/data-states";
+import { KIND_ICON } from "@/components/notes/file-chip";
+import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
 import {
   Sheet,
   SheetContent,
@@ -21,14 +20,12 @@ import {
   RESOURCE_KIND_LABEL,
   compareResources,
   type ResourceKind,
+  type StudiqueResource,
   type StudiqueSubject,
 } from "@/lib/student/notes";
+import type { RecentNote } from "@/lib/student/notes-store";
 
-const KIND_ICON: Record<ResourceKind, LucideIcon> = {
-  notes: FileText,
-  papers: GraduationCap,
-  syllabus: ScrollText,
-};
+export { KIND_ICON };
 
 export function StudiqueCredit() {
   return (
@@ -38,82 +35,158 @@ export function StudiqueCredit() {
   );
 }
 
-/** Every file published for one subject, grouped notes / past papers / syllabus. */
+/** The files in one group, in reading order. */
+export function groupOf(
+  subject: StudiqueSubject,
+  kind: ResourceKind,
+): StudiqueResource[] {
+  return subject.resources
+    .filter((r) => r.kind === kind)
+    .sort(compareResources);
+}
+
+/**
+ * Every file published for one subject as a full list - for subjects with
+ * more files than fit on their card. Each opens in the reader; files opened
+ * before say when.
+ */
 export function ResourceSheet({
   subject,
+  recents,
+  pinned,
+  onTogglePin,
+  onOpen,
   onOpenChange,
 }: {
   subject: StudiqueSubject | null;
+  recents: RecentNote[];
+  pinned: boolean;
+  onTogglePin: (subject: string) => void;
+  onOpen: (subject: StudiqueSubject, resource: StudiqueResource) => void;
   onOpenChange: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const groups = subject
-    ? RESOURCE_KINDS.map((kind) => ({
-        kind,
-        items: subject.resources
-          .filter((r) => r.kind === kind)
-          .sort(compareResources),
-      })).filter((group) => group.items.length > 0)
+  const kinds = subject
+    ? RESOURCE_KINDS.filter((k) => subject.counts[k] > 0)
     : [];
+  // The tab picked for this subject; a fresh subject opens on its first group with files.
+  const [picked, setPicked] = useState<{
+    subject: string;
+    kind: ResourceKind;
+  } | null>(null);
+  const kind: ResourceKind =
+    picked && picked.subject === subject?.name && kinds.includes(picked.kind)
+      ? picked.kind
+      : (kinds[0] ?? "notes");
+  const setKind = (next: ResourceKind) =>
+    subject && setPicked({ subject: subject.name, kind: next });
+
+  const items = subject ? groupOf(subject, kind) : [];
+  const opened = new Map(recents.map((r) => [r.url, r.at]));
+  const Icon = KIND_ICON[kind];
+  const total = subject ? subject.resources.length : 0;
 
   return (
     <Sheet open={subject !== null} onOpenChange={onOpenChange}>
       <SheetContent
         side={isMobile ? "bottom" : "right"}
-        className="flex max-h-[85dvh] flex-col gap-0 border-outline-variant bg-surface-modal data-[side=bottom]:rounded-t-3xl sm:max-w-md"
+        className="flex max-h-[88dvh] flex-col gap-0 border-outline-variant bg-surface-modal data-[side=bottom]:rounded-t-3xl sm:max-w-md"
       >
-        <SheetHeader>
+        <SheetHeader className="gap-1">
           <SheetTitle className="pr-8 text-h3 font-extrabold text-on-surface">
             {subject?.name}
           </SheetTitle>
-          <SheetDescription render={<div />}>
+          <SheetDescription
+            render={<div />}
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-on-surface-muted"
+          >
+            {subject?.semester && <span>Semester {subject.semester}</span>}
+            <span>
+              {total} {total === 1 ? "file" : "files"}
+            </span>
             <StudiqueCredit />
           </SheetDescription>
+          {subject && (
+            <Button
+              variant={pinned ? "tonal" : "outline"}
+              size="sm"
+              className="mt-2 w-fit"
+              aria-pressed={pinned}
+              onClick={() => onTogglePin(subject.name)}
+            >
+              {pinned ? <PinOff aria-hidden /> : <Pin aria-hidden />}
+              {pinned ? "Unpin" : "Pin to top"}
+            </Button>
+          )}
         </SheetHeader>
-        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-4 pb-6">
-          {groups.map(({ kind, items }) => {
-            const Icon = KIND_ICON[kind];
+
+        {kinds.length > 1 && subject && (
+          <div className="px-4 pb-3">
+            <Segmented
+              label="Material"
+              size="sm"
+              stretch
+              value={kind}
+              onChange={setKind}
+              options={kinds.map((k) => ({
+                value: k,
+                label: (
+                  <>
+                    {RESOURCE_KIND_LABEL[k]}{" "}
+                    <span className="campus-tab-count">
+                      {subject.counts[k]}
+                    </span>
+                  </>
+                ),
+              }))}
+            />
+          </div>
+        )}
+
+        <ul className="notes-files flex flex-1 flex-col gap-1.5 overflow-y-auto px-4 pb-6">
+          {items.map((resource, i) => {
+            const at = opened.get(resource.url);
             return (
-              <section
-                key={kind}
-                aria-label={RESOURCE_KIND_LABEL[kind]}
-                className="flex flex-col gap-2"
-              >
-                <h3 className="text-sm font-bold text-on-surface-muted">
-                  {RESOURCE_KIND_LABEL[kind]}
-                </h3>
-                <ul className="flex flex-col gap-1.5">
-                  {items.map((resource) => (
-                    <li key={resource.url}>
-                      <a
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex min-h-12 items-center gap-3 rounded-xl bg-surface-high px-3 py-2.5 pressable hover:bg-surface-highest"
-                      >
-                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-container text-xs font-extrabold text-on-primary-container">
-                          {resource.unit !== null ? (
-                            `U${resource.unit}`
-                          ) : (
-                            <Icon aria-hidden className="size-4" />
-                          )}
-                        </span>
-                        <span className="min-w-0 flex-1 text-sm font-semibold text-on-surface">
-                          {resource.title}
-                        </span>
-                        <ExternalLink
-                          aria-hidden
-                          className="size-4 shrink-0 text-on-surface-subtle"
-                        />
-                        <span className="sr-only">(opens in a new tab)</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <li key={resource.url} style={{ "--i": i } as CSSProperties}>
+                <button
+                  type="button"
+                  onClick={() => subject && onOpen(subject, resource)}
+                  className="notes-file pressable"
+                  data-opened={at ? "" : undefined}
+                >
+                  <span className="notes-file-badge" aria-hidden>
+                    {resource.unit !== null ? (
+                      `U${resource.unit}`
+                    ) : (
+                      <Icon className="size-4" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-on-surface">
+                      {resource.title}
+                    </span>
+                    {at && (
+                      <span className="notes-file-opened">
+                        <Check aria-hidden className="size-3" />
+                        Opened {timeAgo(at)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="notes-file-open">Read</span>
+                </button>
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="notes-file-external"
+                  aria-label={`Open ${resource.title} in Drive`}
+                >
+                  <ExternalLink aria-hidden className="size-4" />
+                </a>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </SheetContent>
     </Sheet>
   );

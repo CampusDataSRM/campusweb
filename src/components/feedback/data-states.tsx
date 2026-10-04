@@ -86,7 +86,7 @@ export function EmptyState({
 
 const relativeTime = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-function timeAgo(savedAt: number): string {
+export function timeAgo(savedAt: number): string {
   const minutes = Math.round((savedAt - Date.now()) / 60_000);
   if (Math.abs(minutes) < 60) return relativeTime.format(minutes, "minute");
   const hours = Math.round(minutes / 60);

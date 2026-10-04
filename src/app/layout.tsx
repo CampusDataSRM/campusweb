@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.shortName,
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
     description: SITE.description,
     images: [SITE.ogImage],
   },
-  icons: { icon: "/logo_png.png", apple: "/logo_png.png" },
+  icons: { icon: "/logo_png.png", apple: "/manifest/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

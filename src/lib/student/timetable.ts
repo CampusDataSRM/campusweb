@@ -71,7 +71,8 @@ export function classesForDay(
       const [start = "", end = ""] = timeRange
         .split(/\s*[-–]\s*/)
         .map((part) => part.trim());
-      const searchable = `${slot.subject_name} ${slot.subject_type}`.toLowerCase();
+      const searchable =
+        `${slot.subject_name} ${slot.subject_type}`.toLowerCase();
       return {
         id: [
           `day${dayOrder}`,
@@ -107,11 +108,15 @@ export interface ClassMoment {
 }
 
 /** The class in progress and the next one to start, at `minutesNow`. */
-export function classMoment(classes: TimetableClass[], minutesNow: number): ClassMoment {
+export function classMoment(
+  classes: TimetableClass[],
+  minutesNow: number,
+): ClassMoment {
   let current: TimetableClass | null = null;
   let next: TimetableClass | null = null;
   for (const item of classes) {
-    if (item.startMinutes <= minutesNow && minutesNow < item.endMinutes) current = item;
+    if (item.startMinutes <= minutesNow && minutesNow < item.endMinutes)
+      current = item;
     else if (item.startMinutes > minutesNow && next === null) next = item;
   }
   return { current, next };
@@ -124,4 +129,82 @@ export const minutesSinceMidnight = (date: Date) =>
 export function batchFromCombo(comboBatch: string | undefined): number | null {
   const digit = /(\d)\s*$/.exec(comboBatch ?? "")?.[1];
   return digit ? Number(digit) : null;
+}
+
+/* ── Blocks and gaps: the day as a student reads it ── */
+
+export interface ClassBlock {
+  id: string;
+  subject: string;
+  type: string;
+  room: string;
+  kind: ClassKind;
+  startMinutes: number;
+  endMinutes: number;
+  /** The consecutive periods this block covers, in order. */
+  periods: TimetableClass[];
+}
+
+/**
+ * Back-to-back periods of the same subject, type and room read as one class
+ * ("8:00 to 10:35, 3 periods") - a lab is three slots in the data but one
+ * sitting in the day. A short break between periods still counts as consecutive.
+ */
+export function mergeConsecutive(
+  classes: TimetableClass[],
+  maxBreak = 10,
+): ClassBlock[] {
+  const blocks: ClassBlock[] = [];
+  for (const item of classes) {
+    const last = blocks.at(-1);
+    if (
+      last &&
+      last.subject === item.subject &&
+      last.kind === item.kind &&
+      last.room === item.room &&
+      item.startMinutes - last.endMinutes <= maxBreak
+    ) {
+      last.endMinutes = Math.max(last.endMinutes, item.endMinutes);
+      last.periods.push(item);
+      continue;
+    }
+    blocks.push({
+      id: item.id,
+      subject: item.subject,
+      type: item.type,
+      room: item.room,
+      kind: item.kind,
+      startMinutes: item.startMinutes,
+      endMinutes: item.endMinutes,
+      periods: [item],
+    });
+  }
+  return blocks;
+}
+
+export interface FreeGap {
+  startMinutes: number;
+  endMinutes: number;
+  /** Index of the block the gap follows. */
+  after: number;
+}
+
+/** Free stretches between blocks of at least `min` minutes. */
+export function freeGaps(blocks: ClassBlock[], min = 20): FreeGap[] {
+  const gaps: FreeGap[] = [];
+  for (let i = 1; i < blocks.length; i++) {
+    const start = blocks[i - 1].endMinutes;
+    const end = blocks[i].startMinutes;
+    if (end - start >= min)
+      gaps.push({ startMinutes: start, endMinutes: end, after: i - 1 });
+  }
+  return gaps;
+}
+
+/** "1 h 55 min", "45 min", "2 h". */
+export function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m ? `${h} h ${m} min` : `${h} h`;
 }
