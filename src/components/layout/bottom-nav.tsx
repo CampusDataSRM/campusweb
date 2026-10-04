@@ -30,7 +30,9 @@ function BarLink({ item, active }: { item: NavItem; active: boolean }) {
       <span
         className={cn(
           "relative isolate flex h-8 w-14 items-center justify-center rounded-full transition-[color,transform] duration-(--duration-short) group-active:scale-90",
-          active ? "text-on-primary-container" : "text-on-surface-muted group-hover:text-on-surface",
+          active
+            ? "text-on-primary-container"
+            : "text-on-surface-muted group-hover:text-on-surface",
         )}
       >
         {active && (
@@ -58,14 +60,17 @@ function BarLink({ item, active }: { item: NavItem; active: boolean }) {
 export function BottomNav() {
   const { items, primary, utility, isActive } = useNavigation();
   const [moreOpen, setMoreOpen] = useState(false);
-  const overflow = [...items.filter((item) => !primary.includes(item)), ...utility];
+  const overflow = [
+    ...items.filter((item) => !primary.includes(item)),
+    ...utility,
+  ];
   const overflowActive = overflow.some((item) => isActive(item.href));
 
   return (
     <>
       <nav
         aria-label="Main"
-        className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-[1.75rem] border border-outline-variant bg-surface-modal/75 px-1.5 py-1 shadow-[0_20px_50px_-12px_color-mix(in_oklab,var(--surface-lowest)_90%,transparent),inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)] backdrop-blur-2xl backdrop-saturate-150 md:hidden"
+        className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-2xl border border-outline-variant bg-surface-modal/95 px-1.5 py-1 shadow-[0_20px_50px_-12px_color-mix(in_oklab,var(--surface-lowest)_90%,transparent),inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)] backdrop-blur-2xl backdrop-saturate-150 md:hidden"
       >
         <div className="mx-auto flex max-w-lg items-stretch">
           {primary.slice(0, Math.ceil(primary.length / 2)).map((item) => (
@@ -82,12 +87,16 @@ export function BottomNav() {
               aria-expanded={moreOpen}
               className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[0.6875rem] font-bold"
             >
-              <span
-                className="flex size-11 -translate-y-2.5 items-center justify-center rounded-full bg-cta text-on-primary shadow-[0_8px_24px_-6px_var(--primary)] ring-4 ring-surface transition-transform duration-(--duration-short) group-active:scale-90"
-              >
+              <span className="flex h-8 w-14 items-center justify-center rounded-full bg-surface-high text-on-surface-muted transition-transform duration-(--duration-short) group-active:scale-90">
                 <Ellipsis aria-hidden className="size-5" />
               </span>
-              <span className={overflowActive ? "text-on-surface" : "text-on-surface-muted"}>More</span>
+              <span
+                className={
+                  overflowActive ? "text-on-surface" : "text-on-surface-muted"
+                }
+              >
+                More
+              </span>
             </button>
           )}
           {primary.slice(Math.ceil(primary.length / 2)).map((item) => (
@@ -97,10 +106,17 @@ export function BottomNav() {
       </nav>
 
       <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl border-outline-variant bg-surface-modal pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <SheetContent
+          side="bottom"
+          className="rounded-t-3xl border-outline-variant bg-surface-modal pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        >
           <SheetHeader className="pb-2">
-            <SheetTitle className="font-heading text-h3 text-on-surface">More</SheetTitle>
-            <SheetDescription className="text-on-surface-muted">Everything else on Campus Web.</SheetDescription>
+            <SheetTitle className="font-heading text-h3 text-on-surface">
+              More
+            </SheetTitle>
+            <SheetDescription className="text-on-surface-muted">
+              Everything else on Campus Web.
+            </SheetDescription>
           </SheetHeader>
           <ul className="grid grid-cols-3 gap-2 px-4">
             {overflow.map(({ href, label, icon: Icon }) => {

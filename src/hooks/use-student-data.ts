@@ -48,6 +48,7 @@ export function useProfile(): PersistedQueryResult<StudentProfile> {
     queryKey: queryKeys.student.profile(api.scope),
     queryFn: () => api.profile(),
     cache: { scope: api.scope, resource: "profile" },
+    waiting: !api.ready,
     enabled: api.ready && api.hasStudentData,
     isUsable: isUsableProfile,
     staleTime: STUDENT_STALE_MS,
@@ -63,6 +64,7 @@ export function useTimetable(): PersistedQueryResult<TimetableResponse> {
     queryKey: queryKeys.student.timetable(api.scope, batch),
     queryFn: () => api.timetable(batch),
     cache: { scope: api.scope, resource: `timetable-${batch}` },
+    waiting: !api.ready || (api.hasStudentData && profile.isLoading),
     enabled: api.ready && api.hasStudentData && hasBatch,
     isUsable: (value) => !!value?.timetable,
     staleTime: STUDENT_STALE_MS,
@@ -75,6 +77,7 @@ export function usePlanner(): PersistedQueryResult<Planner> {
     queryKey: queryKeys.student.planner(api.scope),
     queryFn: () => api.planner(),
     cache: { scope: api.scope, resource: "planner" },
+    waiting: !api.ready,
     enabled: api.ready && api.hasStudentData,
     isUsable: (value) => typeof value === "object" && value !== null,
     staleTime: 30 * 60 * 1000,
@@ -87,6 +90,7 @@ export function useEvents(): PersistedQueryResult<ClubEvent[]> {
     queryKey: queryKeys.events.list(api.scope),
     queryFn: () => api.events(),
     cache: { scope: api.scope, resource: "events" },
+    waiting: !api.ready,
     enabled: api.ready,
   });
 }
@@ -97,6 +101,7 @@ export function useClubs(): PersistedQueryResult<Club[]> {
     queryKey: queryKeys.clubs.list(api.scope),
     queryFn: () => api.clubs(),
     cache: { scope: api.scope, resource: "clubs" },
+    waiting: !api.ready,
     enabled: api.ready,
   });
 }

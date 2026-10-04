@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./home.css";
 
 import { EventsCarousel } from "@/components/dashboard/events-carousel";
 import { SkipMeter } from "@/components/dashboard/skip-meter";
@@ -14,14 +15,21 @@ export const metadata: Metadata = { title: "Dashboard" };
  */
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="home-dashboard">
       <TodayHero />
-      <SkipMeter />
-      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <TodayClassesCard />
-        <EventsCarousel />
+      <div className="home-content-grid">
+        <div className="home-primary-column">
+          <SkipMeter />
+          <Standings />
+        </div>
+        <aside
+          className="home-secondary-column"
+          aria-label="Schedule and campus events"
+        >
+          <TodayClassesCard />
+          <EventsCarousel />
+        </aside>
       </div>
-      <Standings />
     </div>
   );
 }

@@ -42,15 +42,22 @@ export function Segmented<T extends string>({
       role="radiogroup"
       aria-label={label}
       onKeyDown={(event) => {
-        const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+        const step =
+          event.key === "ArrowRight" || event.key === "ArrowDown"
+            ? 1
+            : event.key === "ArrowLeft" || event.key === "ArrowUp"
+              ? -1
+              : 0;
         if (!step) return;
         event.preventDefault();
         const next = options[(index + step + options.length) % options.length];
         onChange(next.value);
-        (event.currentTarget.querySelector<HTMLElement>(`[data-value="${next.value}"]`))?.focus();
+        event.currentTarget
+          .querySelector<HTMLElement>(`[data-value="${next.value}"]`)
+          ?.focus();
       }}
       className={cn(
-        "relative flex max-w-full gap-1 overflow-x-auto rounded-full border border-outline-variant bg-surface-container p-1 [scrollbar-width:none]",
+        "relative flex max-w-full gap-1 overflow-x-auto rounded-lg border border-outline-variant bg-surface-container p-1 [scrollbar-width:none]",
         stretch ? "w-full" : "w-fit",
         className,
       )}
@@ -67,24 +74,36 @@ export function Segmented<T extends string>({
             data-value={option.value}
             onClick={() => onChange(option.value)}
             className={cn(
-              "relative isolate flex shrink-0 items-center justify-center gap-1.5 rounded-full font-bold whitespace-nowrap transition-colors duration-(--duration-short)",
-              size === "sm" ? "h-8 px-3.5 text-[0.8125rem]" : "h-10 px-4 text-sm",
+              "relative isolate flex shrink-0 items-center justify-center gap-1.5 rounded-lg font-bold whitespace-nowrap transition-colors duration-(--duration-short)",
+              size === "sm"
+                ? "h-8 px-3.5 text-[0.8125rem]"
+                : "h-10 px-4 text-sm",
               // Stretched: options share the width and may shrink, so five
               // fit on a phone without scrolling.
               stretch && "min-w-0 flex-1 shrink px-1.5",
-              selected ? "text-on-primary" : "text-on-surface-muted hover:text-on-surface",
+              selected
+                ? "text-on-primary-container"
+                : "text-on-surface-muted hover:text-on-surface",
             )}
           >
             {selected && (
               <motion.span
                 layoutId={`segmented-${id}`}
                 aria-hidden
-                className="absolute inset-0 -z-10 rounded-full bg-cta shadow-[0_4px_16px_-4px_var(--primary)]"
+                className="absolute inset-0 -z-10 rounded-lg bg-primary-container"
                 transition={{ type: "spring", stiffness: 480, damping: 36 }}
               />
             )}
             {option.label}
-            {option.marker && <span aria-hidden className={cn("size-1.5 rounded-full", selected ? "bg-on-primary" : "bg-success-accent")} />}
+            {option.marker && (
+              <span
+                aria-hidden
+                className={cn(
+                  "size-1.5 rounded-lg",
+                  selected ? "bg-on-primary-container" : "bg-success-accent",
+                )}
+              />
+            )}
           </button>
         );
       })}

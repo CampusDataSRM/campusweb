@@ -20,16 +20,33 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { NavItem } from "@/constants/navigation";
-import { STUDENT_ROUTES } from "@/constants/routes";
+import { LEGAL_ROUTES, STUDENT_ROUTES } from "@/constants/routes";
 import { useNavigation } from "@/hooks/use-navigation";
 
-function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
+function NavGroup({
+  label,
+  items,
+  utility = false,
+}: {
+  label?: string;
+  items: NavItem[];
+  utility?: boolean;
+}) {
   const { isActive } = useNavigation();
+  if (!items.length) return null;
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="text-on-surface-subtle">{label}</SidebarGroupLabel>
+    <SidebarGroup
+      className={
+        utility ? "campus-nav-group campus-nav-utility" : "campus-nav-group"
+      }
+    >
+      {label && (
+        <SidebarGroupLabel className="campus-nav-label">
+          {label}
+        </SidebarGroupLabel>
+      )}
       <SidebarGroupContent>
-        <SidebarMenu className="gap-1">
+        <SidebarMenu className="campus-nav-list">
           {items.map(({ href, label: itemLabel, icon: Icon }) => {
             const active = isActive(href);
             return (
@@ -37,19 +54,34 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
                 <SidebarMenuButton
                   isActive={active}
                   tooltip={itemLabel}
-                  render={<Link href={href} aria-current={active ? "page" : undefined} />}
-                  className="relative isolate h-10 rounded-xl font-bold text-on-surface-muted transition-colors hover:bg-transparent hover:text-on-surface data-active:bg-transparent data-active:text-on-surface [&_svg]:size-[1.125rem] data-active:[&_svg]:text-primary-accent"
+                  render={
+                    <Link
+                      href={href}
+                      aria-label={itemLabel}
+                      aria-current={active ? "page" : undefined}
+                    />
+                  }
+                  className="campus-nav-link group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0!"
                 >
                   {active && (
                     <motion.span
                       layoutId="sidebar-pill"
                       aria-hidden
-                      className="absolute inset-0 -z-10 rounded-xl border border-outline-variant bg-[linear-gradient(90deg,color-mix(in_oklab,var(--primary)_32%,transparent),color-mix(in_oklab,var(--secondary)_14%,transparent))] shadow-[inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)]"
-                      transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                      className="campus-nav-selection"
+                      transition={{
+                        type: "spring",
+                        stiffness: 480,
+                        damping: 38,
+                      }}
                     />
                   )}
-                  <Icon aria-hidden />
-                  <span>{itemLabel}</span>
+                  <span className="campus-nav-icon">
+                    <Icon aria-hidden />
+                  </span>
+                  <span className="campus-nav-text">{itemLabel}</span>
+                  {active && (
+                    <span className="campus-nav-indicator" aria-hidden />
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
@@ -60,29 +92,70 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
   );
 }
 
-/** Desktop navigation: every destination, collapsible to icons. */
+const campusDestinations = new Set<string>([
+  STUDENT_ROUTES.events,
+  STUDENT_ROUTES.mess,
+  STUDENT_ROUTES.clubs,
+]);
+
+/** Session-aware destinations, grouped for scanning; tooltips remain in icon mode. */
 export function AppSidebar() {
   const { items, utility } = useNavigation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const utilityItems = [
+    ...utility,
+    ...items.filter((item) => item.href === LEGAL_ROUTES.center),
+  ];
+  const dashboard = items.filter(
+    (item) => item.href === STUDENT_ROUTES.dashboard,
+  );
+  const campus = items.filter((item) => campusDestinations.has(item.href));
+  const studies = items.filter(
+    (item) =>
+      item.href !== STUDENT_ROUTES.dashboard &&
+      item.href !== LEGAL_ROUTES.center &&
+      !campusDestinations.has(item.href),
+  );
 
   return (
-    <Sidebar collapsible="icon" variant="floating" className="p-3 pr-0">
-      <SidebarHeader className="px-4 pt-5 pb-4">
-        <Link href={STUDENT_ROUTES.dashboard} aria-label="Dashboard" className="flex items-center rounded-lg px-1">
+    <Sidebar
+      collapsible="icon"
+      variant="floating"
+      className="campus-sidebar p-3 pr-0"
+    >
+      <SidebarHeader className="campus-sidebar-brand">
+        <Link
+          href={STUDENT_ROUTES.dashboard}
+          aria-label="Dashboard"
+          className="campus-brand-link"
+        >
           {collapsed ? (
-            <Logo variant="stacked" className="w-8" />
+            <span className="campus-brand-symbol">
+              <Logo />
+            </span>
           ) : (
-            <Logo className="h-6" />
+            <Logo className="campus-brand-wordmark" />
           )}
         </Link>
       </SidebarHeader>
-      <SidebarContent>
-        <NavGroup label="Campus" items={items} />
-        <NavGroup label="More" items={utility} />
+      <SidebarContent className="campus-sidebar-content">
+        <NavGroup items={dashboard} />
+        <NavGroup
+          label={
+            items.some((item) => item.href === STUDENT_ROUTES.cgpa)
+              ? "Your studies"
+              : "Your programme"
+          }
+          items={studies}
+        />
+        <NavGroup label="Campus life" items={campus} />
       </SidebarContent>
-      <SidebarFooter className="m-2 rounded-2xl bg-surface-container p-2">
-        <AccountSummary compact={collapsed} />
+      <SidebarFooter className="campus-sidebar-footer">
+        <NavGroup items={utilityItems} utility />
+        <div className="campus-sidebar-account">
+          <AccountSummary compact={collapsed} variant="sidebar" />
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -17,19 +17,27 @@ export function ClubAuthCard({
   wide?: boolean;
 }) {
   return (
-    <main className="relative isolate flex min-h-dvh flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-page py-10">
+    <main className="club-auth relative isolate flex min-h-dvh flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-page py-10">
       <div className="relative flex flex-col items-center gap-2 text-center">
         <Logo className="h-6" />
         <p className="text-sm font-bold text-on-surface-brand">Club portal</p>
       </div>
-      <section className={`relative w-full ${wide ? "max-w-xl" : "max-w-md"} rounded-3xl panel panel-raised p-6 sm:p-8`}>
+      <section
+        className={`relative w-full ${wide ? "max-w-xl" : "max-w-md"} rounded-3xl panel panel-raised p-6 sm:p-8`}
+      >
         <div className="mb-6 flex flex-col gap-1.5">
           <h1 className="text-h2 font-bold text-on-surface">{title}</h1>
-          {description && <p className="text-sm text-on-surface-muted">{description}</p>}
+          {description && (
+            <p className="text-sm text-on-surface-muted">{description}</p>
+          )}
         </div>
         {children}
       </section>
-      {footer && <div className="relative flex flex-col items-center gap-2 text-sm">{footer}</div>}
+      {footer && (
+        <div className="relative flex flex-col items-center gap-2 text-sm">
+          {footer}
+        </div>
+      )}
     </main>
   );
 }

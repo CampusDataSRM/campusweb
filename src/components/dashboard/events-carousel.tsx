@@ -1,6 +1,12 @@
 "use client";
 
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -14,7 +20,10 @@ import { cn } from "@/lib/utils";
 const AUTOPLAY_MS = 5000;
 const MAX_SLIDES = 6;
 const SWIPE_PX = 40;
-const dateFormat = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" });
+const dateFormat = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "short",
+});
 
 /**
  * Event posters, one at a time and never cropped: the poster sits whole on a
@@ -26,19 +35,34 @@ export function EventsCarousel() {
   const events = useEvents();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [userPaused, setUserPaused] = useState(false);
   const swipeStart = useRef<number | null>(null);
-  const slides = useMemo(() => (now ? visibleEvents(events.data ?? [], now).slice(0, MAX_SLIDES) : []), [events.data, now]);
+  const slides = useMemo(
+    () =>
+      now ? visibleEvents(events.data ?? [], now).slice(0, MAX_SLIDES) : [],
+    [events.data, now],
+  );
   const count = slides.length;
 
   useEffect(() => {
-    if (paused || count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    if (
+      paused ||
+      userPaused ||
+      count < 2 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const timer = setInterval(
+      () => setIndex((i) => (i + 1) % count),
+      AUTOPLAY_MS,
+    );
     return () => clearInterval(timer);
-  }, [paused, count]);
+  }, [paused, userPaused, count]);
 
   if (count === 0) return null;
   const go = (step: number) => setIndex((i) => (i + step + count) % count);
-  const active = slides[index % count];
+  const activeIndex = index % count;
+  const active = slides[activeIndex];
   const dates = parseEventDates(active.dates);
 
   return (
@@ -49,10 +73,16 @@ export function EventsCarousel() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="panel spotlight flex h-full flex-col overflow-hidden rounded-[1.5rem]"
+      className="home-events panel"
     >
+      <div className="home-events-header">
+        <h2>Around campus</h2>
+        <span>
+          {count} {count === 1 ? "event" : "events"}
+        </span>
+      </div>
       <div
-        className="relative aspect-[16/10] w-full touch-pan-y overflow-hidden bg-surface-lowest lg:aspect-auto lg:min-h-64 lg:flex-1"
+        className="home-events-poster"
         onPointerDown={(e) => (swipeStart.current = e.clientX)}
         onPointerUp={(e) => {
           if (swipeStart.current === null) return;
@@ -64,58 +94,100 @@ export function EventsCarousel() {
         {slides.map((event, i) => (
           <div
             key={event.id}
-            aria-hidden={i !== index}
-            className={cn("absolute inset-0 transition-opacity duration-(--duration-long)", i === index ? "opacity-100" : "pointer-events-none opacity-0")}
+            aria-hidden={i !== activeIndex}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-(--duration-long)",
+              i === activeIndex
+                ? "opacity-100"
+                : "pointer-events-none opacity-0",
+            )}
           >
             {event.banner_url ? (
               <>
-                <Image src={event.banner_url} alt="" fill unoptimized sizes="40vw" className="scale-125 object-cover opacity-50 blur-2xl" />
-                <Image src={event.banner_url} alt={event.title} fill unoptimized sizes="(min-width: 1024px) 40vw, 100vw" className="object-contain" priority={i === 0} />
+                <Image
+                  src={event.banner_url}
+                  alt=""
+                  fill
+                  unoptimized
+                  sizes="40vw"
+                  className="scale-125 object-cover opacity-50 blur-2xl"
+                />
+                <Image
+                  src={event.banner_url}
+                  alt={event.title}
+                  fill
+                  unoptimized
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-contain"
+                  priority={i === 0}
+                />
               </>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-cta">
-                <span className="px-6 text-center text-h2 font-black text-on-primary">{event.title}</span>
+                <span className="px-6 text-center text-h2 font-black text-on-primary">
+                  {event.title}
+                </span>
               </div>
             )}
           </div>
         ))}
-        {count > 1 && (
-          <>
-            <button type="button" onClick={() => go(-1)} aria-label="Previous event" className="glass absolute top-1/2 left-3 hidden size-9 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant text-on-surface sm:flex">
-              <ChevronLeft className="size-5" />
-            </button>
-            <button type="button" onClick={() => go(1)} aria-label="Next event" className="glass absolute top-1/2 right-3 hidden size-9 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant text-on-surface sm:flex">
-              <ChevronRight className="size-5" />
-            </button>
-          </>
-        )}
       </div>
 
-      <Link href={STUDENT_ROUTES.events} className="flex flex-col gap-1 p-5 pb-3" aria-live="polite">
-        <span className="text-xs font-bold text-secondary-accent">{active.club_name}</span>
-        <span className="line-clamp-1 text-lg font-extrabold text-on-surface">{active.title}</span>
+      <Link
+        href={STUDENT_ROUTES.events}
+        className="home-events-info"
+        aria-live={userPaused || paused ? "polite" : "off"}
+      >
+        <span className="text-xs font-bold text-secondary-accent">
+          {active.club_name}
+        </span>
+        <strong>{active.title}</strong>
         {dates.start && (
           <span className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-muted">
             <CalendarDays aria-hidden className="size-4" />
             {dateFormat.format(dates.start)}
-            {dates.end && dates.end.getTime() !== dates.start.getTime() && ` to ${dateFormat.format(dates.end)}`}
+            {dates.end &&
+              dates.end.getTime() !== dates.start.getTime() &&
+              ` to ${dateFormat.format(dates.end)}`}
           </span>
         )}
       </Link>
 
-      <div className="flex items-center gap-1.5 px-5 pb-5">
-        {count > 1 &&
-          slides.map((event, i) => (
+      <div className="home-events-controls">
+        {count > 1 && (
+          <>
             <button
-              key={event.id}
               type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Show event ${i + 1} of ${count}`}
-              aria-current={i === index}
-              className={cn("h-1.5 rounded-full transition-all duration-(--duration-medium)", i === index ? "w-6 bg-primary-accent" : "w-1.5 bg-surface-bright hover:bg-outline")}
-            />
-          ))}
-        <Link href={STUDENT_ROUTES.events} className="ml-auto text-sm font-bold text-primary-accent hover:underline">
+              onClick={() => go(-1)}
+              aria-label="Previous event"
+            >
+              <ChevronLeft aria-hidden className="size-4" />
+            </button>
+            <span>
+              {activeIndex + 1} / {count}
+            </span>
+            <button type="button" onClick={() => go(1)} aria-label="Next event">
+              <ChevronRight aria-hidden className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserPaused(!userPaused)}
+              aria-label={
+                userPaused ? "Resume event slideshow" : "Pause event slideshow"
+              }
+            >
+              {userPaused ? (
+                <Play aria-hidden className="size-4" />
+              ) : (
+                <Pause aria-hidden className="size-4" />
+              )}
+            </button>
+          </>
+        )}
+        <Link
+          href={STUDENT_ROUTES.events}
+          className="ml-auto text-sm font-bold text-primary-accent hover:underline"
+        >
           All events
         </Link>
       </div>

@@ -1,0 +1,41 @@
+/* Campus Glow's identity comes from the original mobile Figma design.
+   Only this preset gets Nunito, the original glow artwork and blue glass.
+   Layout and interaction rules remain shared with the other presets. */
+html[data-palette="campus-glow"] {
+  --font-home: var(--font-nunito);
+  --font-dm-sans: var(--font-nunito);
+}
+html[data-palette="campus-glow"] body::before {
+  filter: blur(50px);
+  background-color: #000;
+}
+html[data-palette="campus-glow"] body::after {
+  opacity: 0;
+}
+html[data-palette="campus-glow"] :is(.campus-shell, .sign-in-page, .club-auth) {
+  background: transparent;
+}
+html[data-palette="campus-glow"]
+  :is(
+    .panel,
+    .sign-in-card,
+    .meal-menu,
+    .home-hero-copy,
+    .home-subject-tile,
+    .notes-page > div:has([role="radiogroup"]),
+    [data-slot="sidebar-inner"]
+  ) {
+  background: var(--surface-container);
+  -webkit-backdrop-filter: blur(17.5px);
+  backdrop-filter: blur(17.5px);
+  border-color: var(--outline-variant);
+}
+html[data-palette="campus-glow"] :is(h1, h2, h3, h4) {
+  letter-spacing: -0.025em;
+}
+html[data-palette="campus-glow"] .app-header {
+  background: rgb(0 0 0 / 0.35);
+}
+html[data-palette="campus-glow"] .planner-calendar > div:first-child {
+  background: rgb(12 77 162 / 0.2);
+}

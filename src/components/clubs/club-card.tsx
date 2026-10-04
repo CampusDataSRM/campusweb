@@ -4,7 +4,6 @@ import { BadgeCheck, Heart, UsersRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import ClickSpark from "@/components/ClickSpark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { STUDENT_ROUTES } from "@/constants/routes";
@@ -26,10 +25,17 @@ export function ClubCard({
 }) {
   const liked = isLikedBy(club.likedby, registrationNumber);
   return (
-    <article className="panel spotlight flex h-full min-w-0 flex-col gap-4 overflow-hidden rounded-3xl p-5">
+    <article className="campus-club-card panel flex h-full min-w-0 flex-col gap-4 overflow-hidden rounded-3xl p-5">
       <div className="flex items-start gap-3">
         {club.logo ? (
-          <Image src={club.logo} alt="" width={48} height={48} unoptimized className="size-12 shrink-0 rounded-2xl object-cover" />
+          <Image
+            src={club.logo}
+            alt=""
+            width={48}
+            height={48}
+            unoptimized
+            className="size-12 shrink-0 rounded-2xl object-cover"
+          />
         ) : (
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
             <UsersRound aria-hidden className="size-6" />
@@ -37,21 +43,51 @@ export function ClubCard({
         )}
         <div className="min-w-0 flex-1">
           <h3 className="flex items-center gap-1.5 font-heading font-bold text-on-surface">
-            <span className="truncate">{club.name}</span>
-            {club.verified && <BadgeCheck aria-label="Verified" className="size-4 shrink-0 text-primary-accent" />}
+            <span className="min-w-0 break-words">{club.name}</span>
+            {club.verified && (
+              <BadgeCheck
+                aria-label="Verified"
+                className="size-4 shrink-0 text-primary-accent"
+              />
+            )}
           </h3>
           <div className="mt-1 flex flex-wrap gap-1.5">
-            {club.isRecruiting && <Badge className="rounded-full bg-success-container text-on-success-container">Recruiting</Badge>}
-            {cleanLabels(club.labels).slice(0, 3).map((label) => (
-              <Badge key={label} variant="outline" className="rounded-full border-outline-variant text-on-surface-muted">#{label}</Badge>
-            ))}
+            {club.isRecruiting && (
+              <Badge className="rounded-full bg-success-container text-on-success-container">
+                Recruiting
+              </Badge>
+            )}
+            {cleanLabels(club.labels)
+              .filter((label) => label.length <= 42)
+              .slice(0, 3)
+              .map((label) => (
+                <Badge
+                  key={label}
+                  variant="outline"
+                  className="h-auto max-w-full whitespace-normal rounded-md border-outline-variant text-on-surface-muted"
+                >
+                  #{label}
+                </Badge>
+              ))}
           </div>
         </div>
       </div>
-      <p className="line-clamp-3 flex-1 text-sm text-on-surface-muted">{club.description}</p>
-      <ClickSpark className="mt-auto !h-auto text-secondary-accent" sparkColor="currentColor" sparkCount={10} sparkRadius={28} sparkSize={9}>
+      <p className="line-clamp-3 flex-1 text-sm text-on-surface-muted">
+        {club.description}
+      </p>
+      <div className="mt-auto">
         <div className="flex items-center gap-2">
-          <Button variant="tonal" size="touch" className="flex-1" render={<Link href={`${STUDENT_ROUTES.clubs}/${encodeURIComponent(club.id)}`} />} nativeButton={false}>
+          <Button
+            variant="tonal"
+            size="touch"
+            className="flex-1"
+            render={
+              <Link
+                href={`${STUDENT_ROUTES.clubs}/${encodeURIComponent(club.id)}`}
+              />
+            }
+            nativeButton={false}
+          >
             Explore
           </Button>
           <Button
@@ -67,7 +103,7 @@ export function ClubCard({
             <span className="tabular">{club.popularity ?? 0}</span>
           </Button>
         </div>
-      </ClickSpark>
+      </div>
     </article>
   );
 }

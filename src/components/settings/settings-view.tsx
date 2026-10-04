@@ -13,40 +13,61 @@ const LINKS = [
   { label: "Campus App on Android", href: STORE_LINKS.playStore },
   { label: "Campus App on iPhone", href: STORE_LINKS.appStore },
   { label: "Instagram @thecampusweb", href: SOCIAL_LINKS.instagram },
-  { label: "Student community on WhatsApp", href: SOCIAL_LINKS.whatsappCommunity },
+  {
+    label: "Student community on WhatsApp",
+    href: SOCIAL_LINKS.whatsappCommunity,
+  },
 ];
 
 export function SettingsView() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="campus-view settings-page flex flex-col gap-8">
       <PageHeader title="Settings" description="Make Campus Web yours." />
-      <Section title="Appearance">
-        <ThemePicker />
-      </Section>
-      <Section title="Account">
-        <div className="rounded-2xl panel p-4">
-          <AccountSummary />
-        </div>
-      </Section>
-      <Section title="More">
-        <ul className="divide-y divide-outline-variant overflow-hidden rounded-2xl panel">
-          <li>
-            <Link href={LEGAL_ROUTES.center} className="flex min-h-14 items-center gap-3 px-4 font-semibold text-on-surface hover:bg-surface-high">
-              <Scale aria-hidden className="size-5 text-primary-accent" />
-              Legal &amp; policies
-              <ChevronRight aria-hidden className="ml-auto size-5 text-on-surface-subtle" />
-            </Link>
-          </li>
-          {LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={link.href} target="_blank" rel="noreferrer" className="flex min-h-14 items-center gap-3 px-4 font-semibold text-on-surface hover:bg-surface-high">
-                {link.label}
-                <ExternalLink aria-hidden className="ml-auto size-4 text-on-surface-subtle" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </Section>
+      <div className="settings-layout">
+        <Section title="Appearance">
+          <ThemePicker />
+        </Section>
+        <aside className="settings-side" aria-label="Account and links">
+          <Section title="Account">
+            <div className="rounded-2xl panel p-4">
+              <AccountSummary />
+            </div>
+          </Section>
+          <Section title="More">
+            <ul className="divide-y divide-outline-variant overflow-hidden rounded-2xl panel">
+              <li>
+                <Link
+                  href={LEGAL_ROUTES.center}
+                  className="flex min-h-14 items-center gap-3 px-4 font-semibold text-on-surface hover:bg-surface-high"
+                >
+                  <Scale aria-hidden className="size-5 text-primary-accent" />
+                  Legal &amp; policies
+                  <ChevronRight
+                    aria-hidden
+                    className="ml-auto size-5 text-on-surface-subtle"
+                  />
+                </Link>
+              </li>
+              {LINKS.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex min-h-14 items-center gap-3 px-4 font-semibold text-on-surface hover:bg-surface-high"
+                  >
+                    {link.label}
+                    <ExternalLink
+                      aria-hidden
+                      className="ml-auto size-4 text-on-surface-subtle"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        </aside>
+      </div>
     </div>
   );
 }

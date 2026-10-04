@@ -3,7 +3,11 @@
 import CountUp from "@/components/CountUp";
 import { TIER_STYLE } from "@/constants/attendance-tiers";
 import { useStudentCopy } from "@/hooks/use-student-copy";
-import { attendanceTier, countBelowThreshold, overallAttendance } from "@/lib/student/attendance";
+import {
+  attendanceTier,
+  countBelowThreshold,
+  overallAttendance,
+} from "@/lib/student/attendance";
 import { cn } from "@/lib/utils";
 import type { UserCourse } from "@/network-calls/types";
 
@@ -13,16 +17,41 @@ export function AttendanceSummary({ courses }: { courses: UserCourse[] }) {
   const overall = overallAttendance(courses);
   const below = countBelowThreshold(courses);
   const tiles = [
-    { label: copy.overallRate, value: <><CountUp to={Math.round(overall * 10) / 10} duration={0.8} />%</>, tone: TIER_STYLE[attendanceTier(overall)].text },
-    { label: copy.subjects, value: <CountUp to={courses.length} duration={0.8} />, tone: "text-on-surface" },
-    { label: copy.belowThreshold, value: <CountUp to={below} duration={0.8} />, tone: below > 0 ? "text-danger-accent" : "text-on-surface" },
+    {
+      label: copy.overallRate,
+      value: (
+        <>
+          <CountUp to={Math.round(overall * 10) / 10} duration={0.8} />%
+        </>
+      ),
+      tone: TIER_STYLE[attendanceTier(overall)].text,
+    },
+    {
+      label: copy.subjects,
+      value: <CountUp to={courses.length} duration={0.8} />,
+      tone: "text-on-surface",
+    },
+    {
+      label: copy.belowThreshold,
+      value: <CountUp to={below} duration={0.8} />,
+      tone: below > 0 ? "text-danger-accent" : "text-on-surface",
+    },
   ];
   return (
-    <dl className="grid grid-cols-3 gap-2 rounded-3xl panel p-2 sm:gap-3 sm:p-3">
+    <dl className="campus-stat-strip">
       {tiles.map((tile) => (
-        <div key={tile.label} className="flex flex-col gap-1 rounded-2xl bg-surface-high px-3 py-3 sm:px-4 sm:py-4">
-          <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">{tile.label}</dt>
-          <dd className={cn("font-heading text-h2 font-extrabold tabular", tile.tone)}>{tile.value}</dd>
+        <div key={tile.label} className="">
+          <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
+            {tile.label}
+          </dt>
+          <dd
+            className={cn(
+              "font-heading text-h2 font-extrabold tabular",
+              tile.tone,
+            )}
+          >
+            {tile.value}
+          </dd>
         </div>
       ))}
     </dl>

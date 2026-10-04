@@ -13,17 +13,21 @@ export function PageHeader({
   status?: ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+    <header className="campus-page-header">
       <div className="flex min-w-0 flex-col gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-h1 font-extrabold text-on-surface">{title}</h1>
+          <h1 className="text-h1 font-semibold text-on-surface">{title}</h1>
           {status}
         </div>
         {description && (
-          <p className="text-sm text-on-surface-muted sm:text-base">{description}</p>
+          <p className="text-sm text-on-surface-muted sm:text-base">
+            {description}
+          </p>
         )}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      {actions && (
+        <div className="flex shrink-0 items-center gap-2">{actions}</div>
+      )}
     </header>
   );
 }

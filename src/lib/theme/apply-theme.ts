@@ -29,18 +29,24 @@ export function applyThemeToDocument(preference: ThemePreference): void {
   for (const token of THEME_TOKENS) root.style.removeProperty(`--${token}`);
 }
 
+let themeChangeRevision = 0;
+
 /**
  * Apply a theme the user just picked with a short crossfade (View
  * Transitions), so the whole page eases into the new palette. Falls back to
  * an instant switch where unsupported or when reduced motion is on.
  */
 export function applyThemeWithTransition(preference: ThemePreference): void {
+  const revision = ++themeChangeRevision;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduce || typeof document.startViewTransition !== "function") {
     applyThemeToDocument(preference);
     return;
   }
-  document.startViewTransition(() => applyThemeToDocument(preference));
+  document.startViewTransition(() => {
+    // Rapid choices must not let an older deferred transition win.
+    if (revision === themeChangeRevision) applyThemeToDocument(preference);
+  });
 }
 
 /** Current value of a token as the browser resolved it - for canvas/WebGL. */

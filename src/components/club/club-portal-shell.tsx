@@ -22,24 +22,36 @@ export function ClubPortalShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const signOut = useClubSignOut();
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="club-shell flex min-h-dvh flex-col">
       <header className="sticky top-0 z-30 border-b border-outline-variant bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-content items-center gap-3 px-page">
-          <Link href={ROUTES.club} className="flex items-center gap-2" aria-label="Club portal home">
+          <Link
+            href={ROUTES.club}
+            className="flex items-center gap-2"
+            aria-label="Club portal home"
+          >
             <Logo className="h-5" />
-            <span className="hidden rounded-full bg-secondary-container px-2 py-0.5 text-xs font-bold text-on-secondary-container sm:inline">Club portal</span>
+            <span className="hidden rounded-full bg-secondary-container px-2 py-0.5 text-xs font-bold text-on-secondary-container sm:inline">
+              Club portal
+            </span>
           </Link>
-          <nav aria-label="Club portal" className="ml-auto flex items-center gap-1">
+          <nav
+            aria-label="Club portal"
+            className="ml-auto flex items-center gap-1"
+          >
             {NAV.map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
+                  aria-label={label}
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition-colors",
-                    active ? "bg-primary-container text-on-primary-container" : "text-on-surface-muted hover:bg-surface-high hover:text-on-surface",
+                    active
+                      ? "bg-primary-container text-on-primary-container"
+                      : "text-on-surface-muted hover:bg-surface-high hover:text-on-surface",
                   )}
                 >
                   <Icon aria-hidden className="size-4" />
@@ -47,13 +59,21 @@ export function ClubPortalShell({ children }: { children: ReactNode }) {
                 </Link>
               );
             })}
-            <Button variant="ghost" size="icon-touch" aria-label="Sign out" onClick={() => void signOut()} className="text-on-surface-muted hover:text-danger-accent">
+            <Button
+              variant="ghost"
+              size="icon-touch"
+              aria-label="Sign out"
+              onClick={() => void signOut()}
+              className="text-on-surface-muted hover:text-danger-accent"
+            >
               <LogOut />
             </Button>
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-content flex-1 px-page py-8">{children}</main>
+      <main className="mx-auto w-full max-w-content flex-1 px-page py-8">
+        {children}
+      </main>
     </div>
   );
 }

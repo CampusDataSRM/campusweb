@@ -5,9 +5,11 @@ import { ThemeHead } from "@/components/theme/theme-head";
 import { GA_ID } from "@/constants";
 import { DEFAULT_PALETTE, PRESET_PALETTES } from "@/constants/theme";
 import { SITE } from "@/constants/site";
-import { nunito } from "@/lib/fonts";
+import { dmSans, nunito, spaceGrotesk } from "@/lib/fonts";
 import Providers from "./providers";
 import "./globals.css";
+import "./product.css";
+import "./campus-glow.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -59,7 +61,7 @@ export default function RootLayout({
       // The pre-paint script may change data-palette and inline variables
       // before React hydrates; the DOM is authoritative for those.
       suppressHydrationWarning
-      className={`${nunito.variable} h-full`}
+      className={`${nunito.variable} ${dmSans.variable} ${spaceGrotesk.variable} h-full`}
     >
       <head>
         <ThemeHead />

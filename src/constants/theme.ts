@@ -9,8 +9,7 @@
  *   app's translucent "pseudo-glass" (`surface-container`), sheets and menus
  *   on an opaque `surface-modal`;
  * - fills that carry white text are darkened toward black until white reads
- *   at 4.5:1 - the app's own `deepenForWhite` rule - so Campus Glow's blue
- *   button is #007BBA where its accent stays #00A8FF.
+ *   at 4.5:1 - the app's own `deepenForWhite` rule - so buttons stay readable independently of their lighter accent.
  *
  * Components never name a colour; they use semantic utilities
  * (`bg-surface-container`, `text-on-surface-muted`, `bg-cta`...).
@@ -72,7 +71,7 @@ export type ThemePalette = Record<ThemeToken, string>;
 export interface PaletteExtras {
   /** The full-page backdrop (the app's background asset / gradient). */
   backdrop: string;
-  /** Primary call-to-action fill - Campus Glow's blue-to-violet gradient. */
+  /** Primary call-to-action fill - Campus Glow's solid campus blue. */
   cta: string;
 }
 
@@ -80,13 +79,13 @@ export interface PaletteExtras {
 const CAMPUS_GLOW: ThemePalette = {
   "surface-lowest": "#000000",
   surface: "#000000",
-  "surface-low": "rgb(13 71 161 / 0.2)",
-  "surface-container": "rgb(13 71 161 / 0.16)",
+  "surface-low": "rgb(12 77 162 / 0.2)",
+  "surface-container": "rgb(12 77 162 / 0.2)",
   "surface-high": "rgb(21 101 192 / 0.22)",
   "surface-highest": "rgb(255 255 255 / 0.1)",
   "surface-bright": "rgb(255 255 255 / 0.16)",
   "surface-modal": "#0D1F3C",
-  "on-surface": "#FFFFFF",
+  "on-surface": "#EEF5FF",
   "on-surface-brand": "#91C3E7",
   "on-surface-muted": "rgb(255 255 255 / 0.71)",
   "on-surface-subtle": "rgb(255 255 255 / 0.47)",
@@ -95,8 +94,8 @@ const CAMPUS_GLOW: ThemePalette = {
   primary: "#007BBA",
   "on-primary": "#FFFFFF",
   "primary-hover": "#006BA3",
-  "primary-accent": "#00A8FF",
-  "primary-container": "rgb(0 168 255 / 0.16)",
+  "primary-accent": "#0094FF",
+  "primary-container": "rgb(0 148 255 / 0.16)",
   "on-primary-container": "#BDEBFF",
   secondary: "#7C4DFF",
   "on-secondary": "#FFFFFF",
@@ -119,7 +118,7 @@ const CAMPUS_GLOW: ThemePalette = {
   "danger-container": "rgb(255 68 68 / 0.14)",
   "on-danger-container": "#FFC9C9",
   ring: "#00E5FF",
-  "chart-1": "#00A8FF",
+  "chart-1": "#0094FF",
   "chart-2": "#7C4DFF",
   "chart-3": "#00E5FF",
   "chart-4": "#FFB800",
@@ -340,14 +339,13 @@ export type PaletteId = PresetPaletteId | "custom";
 /** Backdrop and call-to-action paint per preset (the app's background + gradients). */
 export const PRESET_EXTRAS: Record<PresetPaletteId, PaletteExtras> = {
   "campus-glow": {
-    // The app's background1.png - black with violet and blue glows at the
-    // edges - drawn in CSS so it scales to any screen without distortion.
+    // Original Figma background vectors, anchored to the right edge.
+    // The mobile design uses x=-141.3 at a 390px viewport.
     backdrop:
-      "radial-gradient(55% 45% at 100% 0%, rgb(48 22 130 / 0.85) 0%, transparent 70%), " +
-      "radial-gradient(45% 60% at 100% 55%, rgb(42 16 100 / 0.7) 0%, transparent 70%), " +
-      "radial-gradient(70% 40% at 0% 100%, rgb(28 44 140 / 0.85) 0%, transparent 70%), " +
-      "radial-gradient(40% 30% at 100% 100%, rgb(52 18 110 / 0.7) 0%, transparent 70%), #000000",
-    cta: "linear-gradient(135deg, #007BBA 0%, #7C4DFF 100%)",
+      "url('/themes/campus-glow/backdrop.svg') right -556px top -345px / 1087.3px 2570.31px no-repeat, " +
+      "url('/themes/campus-glow/glow.svg') right -556px top -345px / 1087.3px 1285.31px no-repeat, " +
+      "url('/themes/campus-glow/glow.svg') right -556px top 940px / 1087.3px 1285.31px no-repeat, #000000",
+    cta: "#007BBA",
   },
   dark: {
     backdrop: "linear-gradient(135deg, #09090B 0%, #0C0C0E 50%, #111113 100%)",
@@ -359,11 +357,11 @@ export const PRESET_EXTRAS: Record<PresetPaletteId, PaletteExtras> = {
   },
   "high-contrast": {
     backdrop: "linear-gradient(135deg, #000000 0%, #06152A 50%, #111B43 100%)",
-    cta: "linear-gradient(135deg, #0077B6 0%, #6846C7 100%)",
+    cta: "#0077B6",
   },
   midnight: {
     backdrop: "linear-gradient(135deg, #01050D 0%, #07142A 50%, #111B41 100%)",
-    cta: "linear-gradient(135deg, #3877BA 0%, #5E6EC4 100%)",
+    cta: "#3877BA",
   },
 };
 
@@ -372,7 +370,7 @@ export const CUSTOM_EXTRAS: PaletteExtras = {
   backdrop:
     "radial-gradient(55% 45% at 100% 0%, color-mix(in oklab, var(--secondary) 45%, transparent) 0%, transparent 70%), " +
     "radial-gradient(70% 40% at 0% 100%, color-mix(in oklab, var(--primary) 45%, transparent) 0%, transparent 70%), var(--surface)",
-  cta: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)",
+  cta: "var(--primary)",
 };
 
 export const DEFAULT_PALETTE: PaletteId = "campus-glow";
@@ -387,12 +385,36 @@ export interface PaletteOption {
 
 /** Names and descriptions as in Campus App's appearance settings. */
 export const PALETTE_OPTIONS: readonly PaletteOption[] = [
-  { id: "campus-glow", label: "Campus Glow", description: "The original Campus Web look" },
-  { id: "dark", label: "Dark", description: "Clean neutral black and charcoal" },
-  { id: "monochrome", label: "Monochrome", description: "Quiet, focused black and white" },
-  { id: "high-contrast", label: "High Contrast", description: "Sharper edges and brighter text" },
-  { id: "midnight", label: "Midnight", description: "A calmer blue-only palette" },
-  { id: "custom", label: "Custom accent", description: "Your chosen accent on the Campus UI" },
+  {
+    id: "campus-glow",
+    label: "Campus Glow",
+    description: "The original Campus Web look",
+  },
+  {
+    id: "dark",
+    label: "Dark",
+    description: "Clean neutral black and charcoal",
+  },
+  {
+    id: "monochrome",
+    label: "Monochrome",
+    description: "Quiet, focused black and white",
+  },
+  {
+    id: "high-contrast",
+    label: "High Contrast",
+    description: "Sharper edges and brighter text",
+  },
+  {
+    id: "midnight",
+    label: "Midnight",
+    description: "A calmer blue-only palette",
+  },
+  {
+    id: "custom",
+    label: "Custom accent",
+    description: "Your chosen accent on the Campus UI",
+  },
 ];
 
 /** Campus App's accent swatches. */

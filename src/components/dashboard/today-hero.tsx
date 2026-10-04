@@ -1,23 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import CountUp from "@/components/CountUp";
+import { WeekStrip } from "@/components/dashboard/week-strip";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  ArrowRight,
+  BookOpen,
+  Utensils,
+} from "lucide-react";
+import { useMemo, type CSSProperties } from "react";
 
-import { AttendanceRing } from "@/components/charts/attendance-ring";
-import { CachedBadge, ShimmerBlock } from "@/components/feedback/data-states";
+import {
+  CachedBadge,
+  ErrorState,
+  ShimmerBlock,
+} from "@/components/feedback/data-states";
 import { STUDENT_ROUTES } from "@/constants/routes";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudentCopy } from "@/hooks/use-student-copy";
 import { usePlanner, useProfile } from "@/hooks/use-student-data";
 import { useToday, type Today } from "@/hooks/use-today";
-import { countBelowThreshold, mergeTheoryPracticalCourses, overallAttendance } from "@/lib/student/attendance";
+import {
+  courseAttendance,
+  countBelowThreshold,
+  mergeTheoryPracticalCourses,
+  overallAttendance,
+} from "@/lib/student/attendance";
 import { holidaysInMonth, plannerMonths } from "@/lib/student/planner";
 import { batchLabel, firstName } from "@/lib/student/profile";
 import { formatMinutes, minutesSinceMidnight } from "@/lib/student/timetable";
 import type { StudentCopy } from "@/constants/copy";
 
-const dayFormat = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "short" });
-const todayFormat = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long" });
+const dayFormat = new Intl.DateTimeFormat("en-IN", {
+  weekday: "long",
+  day: "numeric",
+  month: "short",
+});
+const todayFormat = new Intl.DateTimeFormat("en-IN", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
 
 function greeting(hour: number): string {
   if (hour < 5) return "Up late";
@@ -35,12 +59,18 @@ function inMinutes(minutes: number): string {
 }
 
 function relativeDay(date: Date, now: Date): string {
-  const diff = Math.round((new Date(date).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) / 86_400_000);
+  const diff = Math.round(
+    (new Date(date).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) /
+      86_400_000,
+  );
   return diff === 1 ? "Tomorrow" : dayFormat.format(date);
 }
 
 /** The one line that answers "what's happening right now?". */
-function headline(today: Today, copy: StudentCopy): { kicker: string; title: string; detail: string } {
+function headline(
+  today: Today,
+  copy: StudentCopy,
+): { kicker: string; title: string; detail: string } {
   const { now, moment, classes, upcoming } = today;
   if (!now) return { kicker: "", title: "", detail: "" };
   const minutes = minutesSinceMidnight(now);
@@ -53,7 +83,13 @@ function headline(today: Today, copy: StudentCopy): { kicker: string; title: str
     return {
       kicker: `On now, until ${formatMinutes(c.endMinutes)}`,
       title: c.subject,
-      detail: [c.room && `Room ${c.room}`, moment.next && `Then ${moment.next.subject} at ${formatMinutes(moment.next.startMinutes)}`].filter(Boolean).join(". "),
+      detail: [
+        c.room && `Room ${c.room}`,
+        moment.next &&
+          `Then ${moment.next.subject} at ${formatMinutes(moment.next.startMinutes)}`,
+      ]
+        .filter(Boolean)
+        .join(". "),
     };
   }
   if (moment.next) {
@@ -64,12 +100,29 @@ function headline(today: Today, copy: StudentCopy): { kicker: string; title: str
       detail: `${formatMinutes(n.startMinutes)}${n.room ? ` in ${n.room}` : ""}`,
     };
   }
-  if (classes.length > 0) return { kicker: `Day ${today.dayOrder}`, title: "You're done for today.", detail: after };
-  return { kicker: todayFormat.format(now), title: `No ${copy.items} today.`, detail: after };
+  if (classes.length > 0)
+    return {
+      kicker: `Day ${today.dayOrder}`,
+      title: "You're done for today.",
+      detail: after,
+    };
+  return {
+    kicker: todayFormat.format(now),
+    title: `No ${copy.items} today.`,
+    detail: after,
+  };
 }
 
 /** How far through the class on now - a bar that fills as the period runs. */
-function ClassProgress({ start, end, now }: { start: number; end: number; now: number }) {
+function ClassProgress({
+  start,
+  end,
+  now,
+}: {
+  start: number;
+  end: number;
+  now: number;
+}) {
   const total = Math.max(1, end - start);
   const done = Math.min(total, Math.max(0, now - start));
   const left = total - done;
@@ -84,90 +137,243 @@ function ClassProgress({ start, end, now }: { start: number; end: number; now: n
         className="relative h-2 flex-1 overflow-hidden rounded-full bg-surface-highest"
       >
         <span
-          className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,var(--success),var(--success-accent))] shadow-[0_0_12px_var(--success-accent)] transition-[width] duration-(--duration-long)"
+          className="absolute inset-y-0 left-0 rounded-full bg-success-accent transition-[width] duration-(--duration-long)"
           style={{ width: `${(done / total) * 100}%` }}
         />
       </div>
-      <span className="shrink-0 text-sm font-extrabold text-on-surface tabular">{left} min left</span>
+      <span className="shrink-0 text-sm font-extrabold text-on-surface tabular">
+        {left} min left
+      </span>
     </div>
   );
 }
 
 /**
  * The dashboard's hero: what's on now or next (or when you're back), next to
- * the overall attendance gauge - the two things every visit is for.
+ * the attendance target and the next action.
  */
 export function TodayHero() {
   const copy = useStudentCopy();
   const profile = useProfile();
   const planner = usePlanner();
   const today = useToday();
-  const isMobile = useIsMobile();
 
   const stats = useMemo(() => {
-    const courses = mergeTheoryPracticalCourses(profile.data?.courses ?? [], profile.data?.attendanceSource);
-    return { overall: overallAttendance(courses), below: countBelowThreshold(courses), total: courses.length };
+    const courses = mergeTheoryPracticalCourses(
+      profile.data?.courses ?? [],
+      profile.data?.attendanceSource,
+    );
+    return {
+      courses: courses
+        .map(courseAttendance)
+        .sort((a, b) => Number(a.isPending) - Number(b.isPending)),
+      overall: overallAttendance(courses),
+      below: countBelowThreshold(courses),
+      total: courses.length,
+    };
   }, [profile.data]);
-  const holidays = today.now ? holidaysInMonth(plannerMonths(planner.data), today.now).length : 0;
+  const holidays = today.now
+    ? holidaysInMonth(plannerMonths(planner.data), today.now).length
+    : 0;
 
-  if (profile.isLoading || !today.now) return <ShimmerBlock className="h-72 rounded-[2rem]" />;
+  if (profile.error && !profile.data)
+    return (
+      <ErrorState
+        error={profile.error}
+        title="Couldn’t load your overview"
+        onRetry={profile.refetch}
+      />
+    );
+  if (profile.isLoading || today.isLoading || !today.now)
+    return <ShimmerBlock className="h-72 rounded-[2rem]" />;
 
   const name = firstName(profile.data?.name);
-  const line = headline(today, copy);
+  const line =
+    today.error && !today.classes.length && !today.upcoming
+      ? {
+          kicker: todayFormat.format(today.now),
+          title: "Your day, at a glance.",
+          detail:
+            "Your schedule is unavailable right now. You can still check your attendance and explore campus.",
+        }
+      : headline(today, copy);
+  const freeDay =
+    !today.error &&
+    !today.classes.length &&
+    !today.moment.current &&
+    !today.moment.next;
+  const weekday = today.now.toLocaleDateString("en-IN", { weekday: "long" });
   const chips = [
     today.dayOrder !== null && `Day ${today.dayOrder}`,
     profile.data?.semester && `Semester ${profile.data.semester}`,
     profile.data?.comboBatch && batchLabel(profile.data.comboBatch),
-    holidays > 0 && `${holidays} ${holidays === 1 ? "holiday" : "holidays"} this month`,
+    holidays > 0 &&
+      `${holidays} ${holidays === 1 ? "holiday" : "holidays"} this month`,
   ].filter(Boolean) as string[];
 
   return (
-    <section aria-label="Today" className="panel panel-raised relative isolate overflow-hidden rounded-[2rem]">
-      <div aria-hidden className="aurora" />
-      <div className="relative z-10 grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-10">
-        <div className="flex min-w-0 flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-base font-bold text-on-surface-muted">
-              {greeting(today.now.getHours())}
-              {name ? `, ${name}` : ""}
-            </p>
-            <CachedBadge savedAt={profile.savedAt} refreshing={profile.isFetching} />
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="flex items-center gap-2 text-sm font-extrabold text-primary-accent">
-              {today.moment.current && <span aria-hidden className="live-dot text-success-accent" />}
-              {line.kicker}
-            </p>
-            <h1 className="text-display font-black text-on-surface">{line.title}</h1>
-            {line.detail && <p className="max-w-xl text-base font-semibold text-on-surface-muted sm:text-lg">{line.detail}</p>}
-          </div>
-          {today.moment.current && <ClassProgress start={today.moment.current.startMinutes} end={today.moment.current.endMinutes} now={minutesSinceMidnight(today.now)} />}
-          {chips.length > 0 && (
-            <ul className="flex flex-wrap gap-2">
-              {chips.map((chip) => (
-                <li key={chip} className="glass rounded-full border border-outline-variant px-3 py-1.5 text-xs font-bold text-on-surface">
-                  {chip}
-                </li>
-              ))}
-            </ul>
-          )}
+    <section aria-label="Today" className="home-hero">
+      <div className="home-welcome">
+        <div className="home-greeting flex flex-wrap items-center gap-2">
+          <p>
+            {greeting(today.now.getHours())}
+            {name ? `, ${name}` : ""}
+          </p>
+          <CachedBadge
+            savedAt={profile.savedAt}
+            refreshing={profile.isFetching}
+          />
         </div>
-
+        <span className="home-welcome-date">
+          {todayFormat.format(today.now)}
+        </span>
+      </div>
+      <div className="home-hero-grid">
+        <div className="home-hero-copy" data-free-day={freeDay || undefined}>
+          <div className="home-now-label">
+            <span
+              aria-hidden
+              className={today.moment.current ? "live-dot" : "home-status-dot"}
+            />
+            {freeDay ? `No ${copy.items} today` : line.kicker}
+          </div>
+          <h1 className="home-headline">
+            {freeDay ? (
+              <>
+                {weekday}.<br />
+                <span>On your terms.</span>
+              </>
+            ) : (
+              line.title
+            )}
+          </h1>
+          {line.detail && <p className="home-hero-detail">{line.detail}</p>}
+          {today.moment.current && (
+            <ClassProgress
+              start={today.moment.current.startMinutes}
+              end={today.moment.current.endMinutes}
+              now={minutesSinceMidnight(today.now)}
+            />
+          )}
+          <div className="home-hero-bottom">
+            <Link href={STUDENT_ROUTES.timetable} className="home-button">
+              Open timetable <ArrowRight aria-hidden className="size-4" />
+            </Link>
+            <div className="home-meta">
+              {chips.map((chip) => (
+                <span key={chip}>{chip}</span>
+              ))}
+            </div>
+          </div>
+          <WeekStrip now={today.now} />
+        </div>
         {stats.total > 0 && (
           <Link
             href={STUDENT_ROUTES.attendance}
-            className="glass pressable flex items-center gap-5 rounded-[1.5rem] border border-outline-variant p-4 pr-6 shadow-[inset_0_1px_0_color-mix(in_oklab,var(--on-surface)_10%,transparent)] hover:border-outline lg:flex-col lg:gap-3 lg:p-6"
+            className="home-attendance-summary panel"
+            aria-label={`${copy.overallRate}: ${stats.overall.toFixed(1)}%. ${stats.below} subjects below 75%. View attendance.`}
           >
-            <AttendanceRing percent={stats.overall} label="overall" size={isMobile ? 112 : 148} />
-            <span className="flex min-w-0 flex-1 flex-col gap-1 lg:items-center lg:text-center">
-              <span className="font-extrabold text-on-surface">{copy.overallRate}</span>
-              <span className={stats.below > 0 ? "text-sm font-bold text-danger-accent" : "text-sm font-bold text-success-accent"}>
-                {stats.below > 0 ? `${stats.below} of ${stats.total} under 75%` : "All above 75%"}
+            <span className="home-widget-heading">
+              <span>{copy.overallRate}</span>
+              <ArrowUpRight aria-hidden className="size-4" />
+            </span>
+            <span className="home-attendance-value" aria-hidden>
+              <CountUp
+                to={Math.round(stats.overall * 10) / 10}
+                duration={0.8}
+              />
+              <small>%</small>
+            </span>
+            <span className="home-attendance-caption">
+              Across your subjects this semester
+            </span>
+            <span className="home-distribution" aria-hidden>
+              <span className="home-chart-target">
+                <span>75% target</span>
+              </span>
+              <span className="home-chart-bars">
+                {stats.courses.map((item, i) => {
+                  const initials = item.course.courseTitle
+                    .split(/\s+/)
+                    .filter(
+                      (word) =>
+                        !["and", "for", "of"].includes(word.toLowerCase()),
+                    )
+                    .map((word) => word[0])
+                    .join("")
+                    .slice(0, 4);
+                  return (
+                    <span
+                      className="home-chart-column"
+                      key={item.course.courseCode + i}
+                      title={`${item.course.courseTitle}: ${item.isPending ? "Not started" : `${item.percent.toFixed(1)}%`}`}
+                    >
+                      <span
+                        className="home-chart-bar"
+                        data-pending={item.isPending || undefined}
+                        data-safe={
+                          (!item.isPending && item.percent >= 75) || undefined
+                        }
+                        style={
+                          {
+                            "--bar-height": `${item.isPending ? 3 : Math.max(0, Math.min(100, item.percent))}%`,
+                            "--bar-delay": `${i * 65}ms`,
+                          } as CSSProperties
+                        }
+                      />
+                      <small>{initials}</small>
+                    </span>
+                  );
+                })}
+              </span>
+            </span>
+            <span className="home-attendance-footer">
+              <span
+                className={
+                  stats.below
+                    ? "home-status-tag text-danger-accent"
+                    : "home-status-tag text-success-accent"
+                }
+              >
+                <i aria-hidden />
+                {stats.below
+                  ? `${stats.below} subjects need attention`
+                  : "All subjects on track"}
+              </span>
+              <span className="home-attendance-action">
+                {stats.below ? "See your recovery plan" : "Check your margins"}
+                <ArrowRight aria-hidden className="size-4" />
               </span>
             </span>
           </Link>
         )}
       </div>
+      <nav className="home-shortcuts" aria-label="Quick access">
+        <Link href={STUDENT_ROUTES.notes}>
+          <BookOpen aria-hidden className="size-4" />
+          <span>
+            <strong>Study materials</strong>
+            <small>Notes and course resources</small>
+          </span>
+          <ArrowUpRight aria-hidden className="size-3.5" />
+        </Link>
+        <Link href={STUDENT_ROUTES.planner}>
+          <CalendarDays aria-hidden className="size-4" />
+          <span>
+            <strong>Academic planner</strong>
+            <small>See what’s coming up</small>
+          </span>
+          <ArrowUpRight aria-hidden className="size-3.5" />
+        </Link>
+        <Link href={STUDENT_ROUTES.mess}>
+          <Utensils aria-hidden className="size-4" />
+          <span>
+            <strong>What’s in mess</strong>
+            <small>Check today’s menu</small>
+          </span>
+          <ArrowUpRight aria-hidden className="size-3.5" />
+        </Link>
+      </nav>
     </section>
   );
 }

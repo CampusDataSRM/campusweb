@@ -22,6 +22,8 @@ export interface PersistedQueryOptions<T> {
   /** Cache location: the account scope and a resource name. */
   cache: { scope: string; resource: string };
   enabled?: boolean;
+  /** A required session or parent query has not resolved yet. */
+  waiting?: boolean;
   /** Reject a fetched value as unusable (it is then neither shown nor saved). */
   isUsable?: (value: T) => boolean;
   staleTime?: number;
@@ -51,6 +53,7 @@ export function usePersistedQuery<T>({
   queryFn,
   cache,
   enabled = true,
+  waiting = false,
   isUsable,
   staleTime,
 }: PersistedQueryOptions<T>): PersistedQueryResult<T> {
@@ -83,10 +86,11 @@ export function usePersistedQuery<T>({
     fromCache,
     savedAt: fromCache ? copy.savedAt : null,
     isLoading:
-      live === undefined &&
-      copy === null &&
-      (network.isPending || saved.isPending) &&
-      enabled,
+      waiting ||
+      (live === undefined &&
+        copy === null &&
+        (network.isPending || saved.isPending) &&
+        enabled),
     isFetching: network.isFetching,
     error: network.error,
     refetch: network.refetch,
