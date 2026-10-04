@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CampusWall, WallEyebrow } from "@/components/auth/campus-wall";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { Logo } from "@/components/brand/logo";
 import { STORE_LINKS } from "@/constants/site";
@@ -19,9 +20,7 @@ export default function SignInPage() {
       </header>
       <div className="sign-in-layout">
         <section className="sign-in-pitch" aria-labelledby="welcome-title">
-          <div className="sign-in-eyebrow">
-            <span aria-hidden /> Clubs and events, in one place
-          </div>
+          <WallEyebrow />
           <h1 id="welcome-title">
             Your campus.
             <br />
@@ -31,36 +30,9 @@ export default function SignInPage() {
             Every club, every event and the people behind them. One place to see
             what&apos;s happening around campus this week, and where to be.
           </p>
-          <ol className="sign-in-features">
-            <li>
-              <span aria-hidden>01</span>
-              <div>
-                <strong>See what&apos;s on.</strong>
-                <p>
-                  Workshops, fests, talks and meetups across campus, in one
-                  planner.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span aria-hidden>02</span>
-              <div>
-                <strong>Find your clubs.</strong>
-                <p>
-                  Browse every club, what they&apos;re up to and how to join.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span aria-hidden>03</span>
-              <div>
-                <strong>Never miss out.</strong>
-                <p>
-                  Like events, follow clubs and keep up with what&apos;s coming.
-                </p>
-              </div>
-            </li>
-          </ol>
+        </section>
+        <section className="sign-in-wall-area" aria-label="On campus now">
+          <CampusWall />
         </section>
         <section aria-labelledby="sign-in-title" className="sign-in-card">
           <div>

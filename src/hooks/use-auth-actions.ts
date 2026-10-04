@@ -50,13 +50,17 @@ export function useSignIn() {
   });
 }
 
+/** Start a guest session and open a public page (events by default). */
 export function useBrowseAsGuest() {
   const router = useRouter();
   const { startSession } = useSession();
-  return useCallback(async () => {
-    await startSession({ kind: "guest", token: "", netId: "" });
-    router.replace(STUDENT_ROUTES.events);
-  }, [router, startSession]);
+  return useCallback(
+    async (to?: unknown) => {
+      await startSession({ kind: "guest", token: "", netId: "" });
+      router.replace(typeof to === "string" ? to : STUDENT_ROUTES.events);
+    },
+    [router, startSession],
+  );
 }
 
 export function useSignOut() {

@@ -1736,17 +1736,25 @@ a.planner-cell:hover {
 .sign-in-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 400px;
-  gap: 100px;
-  align-items: center;
+  grid-template-areas:
+    "pitch card"
+    "wall card";
+  gap: 8px 100px;
+  align-items: start;
   width: 100%;
   max-width: 1240px;
   margin: auto;
   padding: 54px 32px 70px;
 }
 .sign-in-pitch {
+  grid-area: pitch;
   display: flex;
   flex-direction: column;
   gap: 28px;
+}
+.sign-in-wall-area {
+  grid-area: wall;
+  min-width: 0;
 }
 .sign-in-eyebrow {
   display: flex;
@@ -1802,7 +1810,207 @@ a.planner-cell:hover {
   color: var(--on-surface-muted);
   margin-top: 3px;
 }
+/* The wall: what's on, for real, in the page's own hairline language. */
+.sign-in-wall {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  min-width: 0;
+}
+.sign-in-pitch {
+  min-width: 0;
+}
+.sign-in-wall-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0 6px;
+}
+.sign-in-wall-head h2 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-surface-subtle);
+}
+.sign-in-wall-head button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--on-surface-muted);
+  transition: color 150ms ease;
+}
+.sign-in-wall-head button:hover {
+  color: var(--primary-accent);
+}
+.sign-in-wall-list {
+  display: flex;
+  flex-direction: column;
+}
+.sign-in-wall-list li {
+  border-top: 1px solid var(--outline-variant);
+  animation: rise-in 500ms var(--ease-decelerate) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+}
+.sign-in-wall-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 0;
+  text-align: left;
+  border-radius: 10px;
+  transition: opacity 150ms ease;
+}
+.sign-in-wall-row[data-skeleton] {
+  height: 72px;
+  border-top: 1px solid var(--outline-variant);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--on-surface) 4%, transparent), transparent);
+  background-size: 200% 100%;
+  animation: notes-shimmer 1.4s linear infinite;
+}
+.sign-in-wall-row[data-phase="past"] {
+  opacity: 0.7;
+}
+.sign-in-wall-row:hover {
+  opacity: 1;
+}
+.sign-in-wall-row:hover .sign-in-wall-title {
+  color: var(--primary-accent);
+}
+.sign-in-wall-thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 9px;
+  background: var(--surface-container);
+  color: var(--primary-accent);
+  box-shadow: inset 0 0 0 1px var(--outline-variant);
+}
+.sign-in-wall-thumb img {
+  object-fit: cover;
+}
+.sign-in-wall-title {
+  display: block;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+.sign-in-wall-sub {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--on-surface-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sign-in-wall-when {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  font-family: var(--font-home), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-surface-muted);
+  font-variant-numeric: tabular-nums;
+}
+.sign-in-wall-row[data-phase="ongoing"] .sign-in-wall-when {
+  color: var(--success-accent);
+}
+/* Clubs: a slow strip of logos that pauses under the pointer. */
+.sign-in-clubs {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 58px;
+  overflow: hidden;
+  border-top: 1px solid var(--outline-variant);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+/* Absolutely positioned so its width never widens the column. */
+.sign-in-clubs-track {
+  position: absolute;
+  top: 9px;
+  left: 0;
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  animation: sign-in-strip calc(var(--count, 20) * 2.4s) linear infinite;
+}
+.sign-in-clubs:hover .sign-in-clubs-track {
+  animation-play-state: paused;
+}
+@keyframes sign-in-strip {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.sign-in-club {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 4px 14px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--outline-variant);
+  background: color-mix(in oklab, var(--surface-container) 70%, transparent);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--on-surface-muted);
+  white-space: nowrap;
+}
+.sign-in-club img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-high);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--on-surface) 10%, transparent);
+}
+.sign-in-club[data-recruiting]::after {
+  content: "Recruiting";
+  margin-left: 2px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--success-accent);
+  background: color-mix(in oklab, var(--success-accent) 14%, transparent);
+}
+.sign-in-eyebrow[data-live] {
+  color: var(--success-accent);
+}
+.sign-in-eyebrow .live-dot {
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-clubs-track {
+    animation: none;
+  }
+  .sign-in-wall-list li,
+  .sign-in-wall-row[data-skeleton] {
+    animation: none;
+  }
+}
 .sign-in-card {
+  grid-area: card;
+  align-self: center;
   padding: 30px;
   border: 1px solid var(--outline-variant);
   border-radius: 18px;
@@ -1893,6 +2101,10 @@ a.planner-cell:hover {
   }
   .sign-in-layout {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "pitch"
+      "card"
+      "wall";
     padding: 30px 20px 40px;
     gap: 34px;
     max-width: 560px;
