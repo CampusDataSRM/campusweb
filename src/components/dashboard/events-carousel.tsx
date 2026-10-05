@@ -4,13 +4,15 @@ import {
   ArrowUpRight,
   CalendarDays,
   CheckCircle,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Coffee,
   ExternalLink,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -21,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { STUDENT_ROUTES } from "@/constants/routes";
 import { useNow } from "@/hooks/use-now";
-import { AttendanceCard } from "@/components/dashboard/today-hero";
 import { useEvents } from "@/hooks/use-student-data";
 import {
   PINNED_CLUB,
@@ -73,8 +74,6 @@ function when(event: ClubEvent, phase: EventPhase, now: Date): string {
   return monthDay(start);
 }
 
-const ROTATE_MS = 4000;
-
 interface Spot {
   event: ClubEvent;
   phase: EventPhase;
@@ -119,42 +118,45 @@ function useSpotlight(): {
   };
 }
 
-/** The attendance card, only when the spotlight has taken its place in the hero. */
-export function AttendanceCardWhenEvents() {
-  const { spots, loading } = useSpotlight();
-  if (loading || spots.length === 0) return null;
-  return <AttendanceCard />;
-}
-
-/**
- * The hero's right tile when clubs have posted something: one event at a
- * time, poster edge to edge, title and date at the foot, quietly turning
- * through what's on. Tap for the details. With nothing on, the attendance
- * card keeps its place.
- */
+/** A manually browsable campus spotlight, independent of student data. */
 export function EventSpotlight() {
-  const { spots, loading, now } = useSpotlight();
+  const { spots, loading, error, refetch, now } = useSpotlight();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [portraitPosters, setPortraitPosters] = useState<
+    Record<string, boolean>
+  >({});
   const [selectedEvent, setSelectedEvent] = useState<ClubEvent | null>(null);
   const count = spots.length;
   const active = count ? spots[index % count] : null;
-
-  useEffect(() => {
-    if (count < 2 || paused || selectedEvent) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(
-      () => setIndex((i) => (i + 1) % count),
-      ROTATE_MS,
-    );
-    return () => window.clearInterval(timer);
-  }, [count, paused, selectedEvent]);
 
   if (loading)
     return (
       <div className="home-spotlight panel" data-skeleton="" aria-busy="true" />
     );
-  if (!active || !now) return <AttendanceCard />;
+  if (!active || !now)
+    return (
+      <section className="home-spotlight panel" aria-label="Campus events">
+        <div className="home-spotlight-top">
+          <span className="home-widget-heading">On campus</span>
+          <Link href={STUDENT_ROUTES.events}>
+            All events <ArrowUpRight aria-hidden className="size-4" />
+          </Link>
+        </div>
+        <div className="home-spotlight-empty">
+          <CalendarDays aria-hidden className="size-6" />
+          <p>
+            {error
+              ? "Campus events couldn't load. Give it another try."
+              : "Nothing new on campus just yet. Check back for upcoming events."}
+          </p>
+          {error && (
+            <button type="button" onClick={refetch}>
+              Try again
+            </button>
+          )}
+        </div>
+      </section>
+    );
 
   const pinned = active.event.club_name === PINNED_CLUB;
   const onNow = spots.filter(
@@ -162,14 +164,7 @@ export function EventSpotlight() {
   ).length;
 
   return (
-    <section
-      className="home-spotlight panel"
-      aria-label="Campus events"
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
-    >
+    <section className="home-spotlight panel" aria-label="Campus events">
       <div className="home-spotlight-top">
         <span className="home-widget-heading">
           <span>
@@ -183,6 +178,7 @@ export function EventSpotlight() {
           </span>
         </span>
         <Link href={STUDENT_ROUTES.events} aria-label="Explore all events">
+          All events
           <ArrowUpRight aria-hidden className="size-4" />
         </Link>
       </div>
@@ -190,11 +186,11 @@ export function EventSpotlight() {
       <button
         type="button"
         className="home-spotlight-body"
+        data-portrait={portraitPosters[active.event.id] || undefined}
         onClick={() => setSelectedEvent(active.event)}
         aria-label={`${active.event.title}. View details`}
       >
-        {/* The banner window is the 2:1 template clubs are given; any shape
-            fits inside it whole, on a blurred copy of itself. */}
+        {/* Preserve the whole club poster in the preview, regardless of format. */}
         <span
           key={`art-${active.event.id}`}
           className="home-spotlight-art"
@@ -216,7 +212,16 @@ export function EventSpotlight() {
                 fill
                 unoptimized
                 sizes="40vw"
-                className="home-spotlight-poster"
+                className="home-spotlight-poster object-contain"
+                onLoad={(event) => {
+                  const image = event.currentTarget;
+                  const portrait = image.naturalHeight > image.naturalWidth;
+                  setPortraitPosters((current) =>
+                    current[active.event.id] === portrait
+                      ? current
+                      : { ...current, [active.event.id]: portrait },
+                  );
+                }}
               />
             </>
           ) : (
@@ -230,6 +235,9 @@ export function EventSpotlight() {
               ? "Happening now"
               : "Coming up"}
         </span>
+        <span className="home-spotlight-organizer">
+          {active.event.club_name}
+        </span>
         <strong key={`title-${active.event.id}`}>{active.event.title}</strong>
         <span className="home-spotlight-when">
           {pinned
@@ -239,22 +247,49 @@ export function EventSpotlight() {
             !pinned &&
             ` · ${active.event.timing.replace(/\s+to\s+/i, " - ")}`}
         </span>
+        <span className="home-spotlight-cta">
+          View event <ArrowUpRight aria-hidden className="size-4" />
+        </span>
       </button>
 
       {count > 1 && (
-        <div className="home-spotlight-dots" role="tablist" aria-label="Events">
-          {spots.map((spot, i) => (
-            <button
-              key={spot.event.id}
-              type="button"
-              role="tab"
-              aria-selected={i === index % count}
-              aria-label={spot.event.title}
-              onClick={() => setIndex(i)}
-            >
-              <i style={{ animationDuration: `${ROTATE_MS}ms` }} />
-            </button>
-          ))}
+        <div className="home-spotlight-controls">
+          <div className="home-spotlight-dots" aria-label="Choose an event">
+            {spots.map((spot, i) => (
+              <button
+                key={spot.event.id}
+                type="button"
+                aria-pressed={i === index % count}
+                aria-label={spot.event.title}
+                onClick={() => setIndex(i)}
+              >
+                <i />
+              </button>
+            ))}
+          </div>
+          <span
+            className="home-spotlight-position"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {(index % count) + 1} / {count}
+          </span>
+          <button
+            type="button"
+            className="home-event-arrow size-11"
+            aria-label="Previous event"
+            onClick={() => setIndex((current) => (current - 1 + count) % count)}
+          >
+            <ChevronLeft aria-hidden className="size-4" />
+          </button>
+          <button
+            type="button"
+            className="home-event-arrow size-11"
+            aria-label="Next event"
+            onClick={() => setIndex((current) => (current + 1) % count)}
+          >
+            <ChevronRight aria-hidden className="size-4" />
+          </button>
         </div>
       )}
       <Dialog

@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import CountUp from "@/components/CountUp";
 import { WeekStrip } from "@/components/dashboard/week-strip";
 import {
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   ArrowRight,
   BookOpen,
   Utensils,
 } from "lucide-react";
-import { useMemo, type CSSProperties, type ReactNode } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 import {
   CachedBadge,
@@ -20,6 +20,7 @@ import {
 import { STUDENT_ROUTES } from "@/constants/routes";
 import { useSession } from "@/context/session-context";
 import { useStudentCopy } from "@/hooks/use-student-copy";
+import { useNow } from "@/hooks/use-now";
 import { usePlanner, useProfile } from "@/hooks/use-student-data";
 import { useToday, type Today } from "@/hooks/use-today";
 import {
@@ -173,22 +174,31 @@ export function AttendanceCard() {
   const copy = useStudentCopy();
   const stats = useAttendanceStats();
   if (stats.total === 0) return null;
+  const hasAttendance = stats.courses.some((course) => !course.isPending);
   return (
     <Link
       href={STUDENT_ROUTES.attendance}
       className="home-attendance-summary panel"
-      aria-label={`${copy.overallRate}: ${stats.overall.toFixed(1)}%. ${stats.below} subjects below 75%. View attendance.`}
+      aria-label={
+        hasAttendance
+          ? `${copy.overallRate}: ${stats.overall.toFixed(1)}%. ${stats.below} subjects below 75%. View attendance.`
+          : "Attendance has not started. View subjects."
+      }
     >
       <span className="home-widget-heading">
         <span>{copy.overallRate}</span>
         <ArrowUpRight aria-hidden className="size-4" />
       </span>
-      <span className="home-attendance-value" aria-hidden>
-        <CountUp to={Math.round(stats.overall * 10) / 10} duration={0.8} />
-        <small>%</small>
-      </span>
-      <span className="home-attendance-caption">
-        Across your subjects this semester
+      <span className="home-attendance-metric">
+        <span className="home-attendance-value" aria-hidden>
+          {hasAttendance ? stats.overall.toFixed(1) : "—"}
+          {hasAttendance && <small>%</small>}
+        </span>
+        <span className="home-attendance-caption">
+          {hasAttendance
+            ? "This semester · 75% target"
+            : "Waiting for your first class"}
+        </span>
       </span>
       <span className="home-distribution" aria-hidden>
         <span className="home-chart-target">
@@ -232,18 +242,22 @@ export function AttendanceCard() {
       <span className="home-attendance-footer">
         <span
           className={
-            stats.below
-              ? "home-status-tag text-danger-accent"
-              : "home-status-tag text-success-accent"
+            !hasAttendance
+              ? "home-status-tag text-on-surface-muted"
+              : stats.below
+                ? "home-status-tag text-danger-accent"
+                : "home-status-tag text-success-accent"
           }
         >
           <i aria-hidden />
-          {stats.below
-            ? `${stats.below} subjects need attention`
-            : "All subjects on track"}
+          {!hasAttendance
+            ? "Attendance not started"
+            : stats.below
+              ? `${stats.below} subjects need attention`
+              : "All subjects on track"}
         </span>
         <span className="home-attendance-action">
-          {stats.below ? "See your recovery plan" : "Check your margins"}
+          {hasAttendance ? "View attendance" : "View subjects"}
           <ArrowRight aria-hidden className="size-4" />
         </span>
       </span>
@@ -251,16 +265,38 @@ export function AttendanceCard() {
   );
 }
 
-/**
- * The dashboard's hero: what's on now or next (or when you're back), next to
- * the attendance target and the next action.
- */
-/**
- * The dashboard's hero: what's on now or next (or when you're back), next to
- * the attendance target and the next action - or, when `aside` is given,
- * whatever should take the attendance tile's place (the event spotlight).
- */
+/** Personal status and campus events load independently. */
 export function TodayHero({ aside }: { aside?: ReactNode } = {}) {
+  const profile = useProfile();
+  const now = useNow();
+  const name = firstName(profile.data?.name);
+  return (
+    <section aria-label="Today" className="home-hero">
+      <div className="home-welcome">
+        <div className="home-greeting flex flex-wrap items-center gap-2">
+          <p>
+            {now ? greeting(now.getHours()) : "Welcome back"}
+            {name ? `, ${name}` : ""}
+          </p>
+          <CachedBadge
+            savedAt={profile.savedAt}
+            refreshing={profile.isFetching}
+          />
+        </div>
+        {now && (
+          <span className="home-welcome-date">{todayFormat.format(now)}</span>
+        )}
+      </div>
+      <div className="home-hero-grid">
+        <DayOverview />
+        {aside}
+      </div>
+    </section>
+  );
+}
+
+function DayOverview() {
+  const [weekOpen, setWeekOpen] = useState(false);
   const copy = useStudentCopy();
   const isDemo = useSession().session?.kind === "demo";
   const profile = useProfile();
@@ -282,7 +318,6 @@ export function TodayHero({ aside }: { aside?: ReactNode } = {}) {
   if (profile.isLoading || today.isLoading || !today.now)
     return <ShimmerBlock className="h-72 rounded-[2rem]" />;
 
-  const name = firstName(profile.data?.name);
   const line =
     today.error && !today.classes.length && !today.upcoming
       ? {
@@ -307,93 +342,91 @@ export function TodayHero({ aside }: { aside?: ReactNode } = {}) {
   ].filter(Boolean) as string[];
 
   return (
-    <section aria-label="Today" className="home-hero">
-      <div className="home-welcome">
-        <div className="home-greeting flex flex-wrap items-center gap-2">
-          <p>
-            {greeting(today.now.getHours())}
-            {name ? `, ${name}` : ""}
-          </p>
-          <CachedBadge
-            savedAt={profile.savedAt}
-            refreshing={profile.isFetching}
-          />
-        </div>
-        <span className="home-welcome-date">
-          {todayFormat.format(today.now)}
-        </span>
+    <div className="home-hero-copy" data-free-day={freeDay || undefined}>
+      <div className="home-now-label">
+        <span
+          aria-hidden
+          className={today.moment.current ? "live-dot" : "home-status-dot"}
+        />
+        {freeDay ? `No ${copy.items} today` : line.kicker}
       </div>
-      <div className="home-hero-grid">
-        <div className="home-hero-copy" data-free-day={freeDay || undefined}>
-          <div className="home-now-label">
-            <span
-              aria-hidden
-              className={today.moment.current ? "live-dot" : "home-status-dot"}
-            />
-            {freeDay ? `No ${copy.items} today` : line.kicker}
-          </div>
-          <h1 className="home-headline">
-            {freeDay ? (
-              <>
-                {weekday}.<br />
-                <span>On your terms.</span>
-              </>
-            ) : (
-              line.title
-            )}
-          </h1>
-          {line.detail && <p className="home-hero-detail">{line.detail}</p>}
-          {today.moment.current && (
-            <ClassProgress
-              start={today.moment.current.startMinutes}
-              end={today.moment.current.endMinutes}
-              now={minutesSinceMidnight(today.now)}
-            />
-          )}
-          <div className="home-hero-bottom">
-            <Link href={STUDENT_ROUTES.timetable} className="home-button">
-              Open timetable <ArrowRight aria-hidden className="size-4" />
-            </Link>
-            <div className="home-meta">
-              {chips.map((chip) => (
-                <span key={chip}>{chip}</span>
-              ))}
-            </div>
-          </div>
-          <WeekStrip now={today.now} />
-        </div>
-        {aside ?? <AttendanceCard />}
-      </div>
-      {/* Notes, the planner and mess are student tools; the evaluator
-          account is an events programme and never sees them. */}
-      {!isDemo && (
-        <nav className="home-shortcuts" aria-label="Quick access">
-          <Link href={STUDENT_ROUTES.notes}>
-            <BookOpen aria-hidden className="size-4" />
-            <span>
-              <strong>Study materials</strong>
-              <small>Notes and course resources</small>
-            </span>
-            <ArrowUpRight aria-hidden className="size-3.5" />
-          </Link>
-          <Link href={STUDENT_ROUTES.planner}>
-            <CalendarDays aria-hidden className="size-4" />
-            <span>
-              <strong>Academic planner</strong>
-              <small>See what’s coming up</small>
-            </span>
-            <ArrowUpRight aria-hidden className="size-3.5" />
-          </Link>
-          <Link href={STUDENT_ROUTES.mess}>
-            <Utensils aria-hidden className="size-4" />
-            <span>
-              <strong>What’s in mess</strong>
-              <small>Check today’s menu</small>
-            </span>
-            <ArrowUpRight aria-hidden className="size-3.5" />
-          </Link>
-        </nav>
+      <h1 className="home-headline">
+        {freeDay ? (
+          <>
+            {weekday}.<br />
+            <span>On your terms.</span>
+          </>
+        ) : (
+          line.title
+        )}
+      </h1>
+      {line.detail && <p className="home-hero-detail">{line.detail}</p>}
+      {today.moment.current && (
+        <ClassProgress
+          start={today.moment.current.startMinutes}
+          end={today.moment.current.endMinutes}
+          now={minutesSinceMidnight(today.now)}
+        />
       )}
-    </section>
+      <div className="home-hero-bottom">
+        <Link href={STUDENT_ROUTES.timetable} className="home-button">
+          Open timetable <ArrowRight aria-hidden className="size-4" />
+        </Link>
+        <div className="home-meta">
+          {chips.map((chip) => (
+            <span key={chip}>{chip}</span>
+          ))}
+        </div>
+      </div>
+      {!isDemo && (
+        <div className="home-week-container" data-expanded={weekOpen}>
+          <button
+            type="button"
+            className="home-week-toggle"
+            aria-expanded={weekOpen}
+            aria-controls="dashboard-week"
+            onClick={() => setWeekOpen(!weekOpen)}
+          >
+            Next 7 days <ChevronDown aria-hidden size={16} />
+          </button>
+          <div id="dashboard-week" className="home-week-content">
+            <WeekStrip now={today.now} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function DashboardShortcuts() {
+  const isDemo = useSession().session?.kind === "demo";
+  if (isDemo) return null;
+  return (
+    <nav className="home-shortcuts" aria-label="Quick access">
+      <Link href={STUDENT_ROUTES.notes}>
+        <BookOpen aria-hidden className="size-4" />
+        <span>
+          <strong>Study materials</strong>
+          <small>Notes and course resources</small>
+        </span>
+        <ArrowUpRight aria-hidden className="size-3.5" />
+      </Link>
+      <Link href={STUDENT_ROUTES.planner}>
+        <CalendarDays aria-hidden className="size-4" />
+        <span>
+          <strong>Academic planner</strong>
+          <small>See what’s coming up</small>
+        </span>
+        <ArrowUpRight aria-hidden className="size-3.5" />
+      </Link>
+      <Link href={STUDENT_ROUTES.mess}>
+        <Utensils aria-hidden className="size-4" />
+        <span>
+          <strong>What’s in mess</strong>
+          <small>Check today’s menu</small>
+        </span>
+        <ArrowUpRight aria-hidden className="size-3.5" />
+      </Link>
+    </nav>
   );
 }

@@ -15,11 +15,30 @@ import {
 
 const dayFormat = new Intl.DateTimeFormat("en-IN", { weekday: "long" });
 
+function agendaDay(date: Date, now: Date | null): string {
+  if (now) {
+    const tomorrow = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
+    if (
+      date.getFullYear() === tomorrow.getFullYear() &&
+      date.getMonth() === tomorrow.getMonth() &&
+      date.getDate() === tomorrow.getDate()
+    ) {
+      return "Tomorrow";
+    }
+  }
+  return dayFormat.format(date);
+}
+
 export function TodayClassesCard() {
   const copy = useStudentCopy();
   const today = useToday();
   if (today.isLoading) return <ShimmerBlock className="h-64" />;
-  const showingToday = today.classes.length > 0;
+  // useToday supplies the next class day only once today's classes are over.
+  const showingToday = today.classes.length > 0 && !today.upcoming;
   const day = showingToday ? today.dayOrder : today.upcoming?.dayOrder;
   const classes: TimetableClass[] = showingToday
     ? today.classes
@@ -27,10 +46,20 @@ export function TodayClassesCard() {
   const title = showingToday
     ? "Today’s agenda"
     : today.upcoming
-      ? `${dayFormat.format(today.upcoming.date)}’s agenda`
+      ? `${agendaDay(today.upcoming.date, today.now)}’s agenda`
       : "Your agenda";
   const nowMinutes =
     showingToday && today.now ? minutesSinceMidnight(today.now) : -1;
+  const activeClass = today.moment.current ?? today.moment.next;
+  const activeIndex = showingToday
+    ? classes.findIndex((item) => item.id === activeClass?.id)
+    : 0;
+  const previewStart =
+    activeIndex < 0 ? Math.max(0, classes.length - 3) : activeIndex;
+  const preview = classes.slice(previewStart, previewStart + 3);
+  const timetableHref = day
+    ? `${STUDENT_ROUTES.timetable}?day=${day}`
+    : STUDENT_ROUTES.timetable;
   return (
     <section
       aria-label={`${title}: ${copy.items}`}
@@ -38,14 +67,7 @@ export function TodayClassesCard() {
     >
       <header className="home-widget-heading">
         <h2>{title}</h2>
-        <Link
-          href={
-            day
-              ? `${STUDENT_ROUTES.timetable}?day=${day}`
-              : STUDENT_ROUTES.timetable
-          }
-          aria-label="Open timetable"
-        >
+        <Link href={timetableHref} aria-label="Open timetable">
           <ArrowUpRight aria-hidden className="size-4" />
         </Link>
       </header>
@@ -71,7 +93,7 @@ export function TodayClassesCard() {
         </div>
       ) : (
         <ol className="home-agenda-list">
-          {classes.map((item, i) => {
+          {preview.map((item, i) => {
             const isNow = showingToday && today.moment.current?.id === item.id;
             const isNext =
               !isNow &&
@@ -110,6 +132,12 @@ export function TodayClassesCard() {
             );
           })}
         </ol>
+      )}
+      {classes.length > 3 && (
+        <Link href={timetableHref} className="home-agenda-all">
+          View all {classes.length} {copy.items}
+          <ArrowUpRight aria-hidden className="size-4" />
+        </Link>
       )}
     </section>
   );

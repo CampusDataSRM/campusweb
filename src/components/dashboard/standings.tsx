@@ -39,27 +39,25 @@ export function Standings() {
       <div className="home-academic-strip">
         <Link href={STUDENT_ROUTES.marks}>
           <span>Internal marks</span>
-          <strong>
-            {Math.round(n.got * 10) / 10}
-            <small> / {n.total}</small>
+          <strong className={n.total > 0 ? undefined : "home-academic-empty"}>
+            {n.total > 0 ? (
+              <>
+                {Math.round(n.got * 10) / 10}
+                <small> / {n.total}</small>
+              </>
+            ) : (
+              "Awaiting marks"
+            )}
           </strong>
-          <small>Published so far</small>
+          <small>
+            {n.total > 0 ? "Published so far" : "No marks published yet"}
+          </small>
         </Link>
         {showSgpa && n.sgpa && (
           <Link href={STUDENT_ROUTES.marks}>
             <span>Projected SGPA</span>
             <strong>{n.sgpa.sgpa.toFixed(2)}</strong>
             <small>Based on published marks</small>
-          </Link>
-        )}
-        {profile.data.semester && (
-          <Link href={STUDENT_ROUTES.timetable}>
-            <span>Current semester</span>
-            <strong>{profile.data.semester.toString().padStart(2, "0")}</strong>
-            <small>
-              Your timetable
-              <ArrowUpRight aria-hidden className="size-3" />
-            </small>
           </Link>
         )}
       </div>
