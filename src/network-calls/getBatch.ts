@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -34,8 +34,3 @@ export const batchQueryOptions = (config?: RequestConfig) =>
     queryKey: queryKeys.batch.current,
     queryFn: () => fetchBatch(config),
   });
-
-/** Client-side hook. Server-hydrated data is picked up automatically. */
-export function useBatch() {
-  return useQuery(batchQueryOptions());
-}

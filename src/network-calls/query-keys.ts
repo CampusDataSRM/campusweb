@@ -1,21 +1,30 @@
 /**
  * Central query key registry.
  *
- * Always build keys through these factories — never inline string keys — so
- * server prefetches and client hooks are guaranteed to hit the same cache
- * entries, and invalidation stays trivial (e.g. queryKeys.planner.all).
+ * Always build keys through these factories - never inline string keys - so
+ * prefetches, hooks and invalidation hit the same cache entries.
  *
- * As endpoints arrive, extend this map hierarchically, e.g.:
- *   mess: { all: ["mess"], menu: (day) => ["mess", "menu", day] }
+ * Student data is scoped by `scope` (the NetID, or "demo"/"guest"), so two
+ * accounts used in one tab can never read each other's cached data, and
+ * signing out is one `removeQueries(queryKeys.student.all(scope))`.
  */
 export const queryKeys = {
-  planner: {
-    all: ["planner"] as const,
-    current: ["planner", "current"] as const,
+  student: {
+    all: (scope: string) => ["student", scope] as const,
+    profile: (scope: string) => ["student", scope, "profile"] as const,
+    timetable: (scope: string, batch: number) =>
+      ["student", scope, "timetable", batch] as const,
+    planner: (scope: string) => ["student", scope, "planner"] as const,
+    studentPortalMarks: (scope: string) =>
+      ["student", scope, "student-portal-marks"] as const,
   },
-  timetable: {
-    all: ["timetable"] as const,
-    byBatch: (batch: number) => ["timetable", "batch", batch] as const,
+  events: {
+    all: ["events"] as const,
+    list: (scope: string) => ["events", "list", scope] as const,
+  },
+  clubs: {
+    all: ["clubs"] as const,
+    list: (scope: string) => ["clubs", "list", scope] as const,
   },
   batch: {
     all: ["batch"] as const,
@@ -25,13 +34,10 @@ export const queryKeys = {
     all: ["feedback"] as const,
     current: ["feedback", "current"] as const,
   },
-  events: {
-    all: ["events"] as const,
-    list: ["events", "list"] as const,
-  },
-  clubs: {
-    all: ["clubs"] as const,
-    list: ["clubs", "list"] as const,
+  notes: {
+    catalogue: ["notes", "catalogue"] as const,
+    /** Per-account shelf: recently opened files and pinned subjects. */
+    shelf: (scope: string) => ["notes", "shelf", scope] as const,
   },
   clubEvents: {
     all: ["clubEvents"] as const,

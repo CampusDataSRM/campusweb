@@ -103,7 +103,7 @@ export type Planner = Record<string, PlannerMonth>;
 export interface StudentPortalLoginRequest {
   net_id: string;
   password: string;
-  registration_number: string;
+  registration_number?: string;
 }
 
 /** POST /student-portal/login — response. */
@@ -117,6 +117,8 @@ export interface StudentPortalLoginResponse {
 /** POST /student-portal/attendance — request body. */
 export interface AttendanceRequest {
   net_id: string;
+  /** Bypass the backend cache and pull from the Student Portal now. */
+  force_refresh?: boolean;
 }
 
 /** POST /student-portal/attendance — per-subject attendance row. */
@@ -167,6 +169,10 @@ export interface UserCourse {
   attendancePercent: string;
   practicalDetails: string;
   roomNo: string;
+  /** Classes credited as present for approved OD/ML (Student Portal merge). */
+  odMlCount?: number;
+  /** True when this row merges Academia and Student Portal attendance. */
+  studentPortalMergedAttendance?: boolean;
 }
 
 /** POST /auth/force-refresh/user — one named test's marks inside a course. */
@@ -381,3 +387,133 @@ export interface TimetableResponse {
   day_order: string;
   timetable: Timetable;
 }
+
+/**
+ * GET /auth/user - the signed-in student's profile, served from the backend's
+ * cache (vs the live /auth/force-refresh/user). Same shape, plus the demo
+ * flag; any field may be missing on a partial upstream response.
+ */
+export type StudentProfile = Partial<ForceRefreshUserResponse> & {
+  /** True for the evaluator (demo) account. */
+  isTestUser?: boolean;
+};
+
+/** POST /demo/login - request body. */
+export interface DemoLoginRequest {
+  net_id: string;
+  password: string;
+}
+
+/** POST /demo/login - response. */
+export interface DemoLoginResponse {
+  /** Signed demo session token, "<base64 payload>.<signature>". */
+  demo_token: string;
+  /** Lifetime in seconds. */
+  expires_in?: number;
+  is_test_user?: boolean;
+}
+
+/** GET /demo/snapshot - the demo profile. */
+export interface DemoSnapshotResponse {
+  status: string;
+  content: StudentProfile;
+}
+
+/** PUT /users/eventaction and /users/clubaction - the `action` header. */
+export type LikeAction = "like" | "unlike";
+
+/** POST /student-portal/marks - request body. */
+export interface StudentPortalMarksRequest {
+  net_id: string;
+  force_refresh: boolean;
+}
+
+/** POST /student-portal/marks - response. */
+export interface StudentPortalMarksResponse {
+  status: string;
+  testPerformances: UserTestPerformance[];
+}
+
+/** POST /auth/forgotpassword, PATCH /auth/resetpassword, POST /users/updatepassword. */
+export interface StatusMessageResponse {
+  status: string;
+  message?: string;
+}
+
+/** PATCH /auth/resetpassword/{token} - body. */
+export interface ResetPasswordRequest {
+  password: string;
+  passwordConfirm: string;
+}
+
+/** POST /users/updatepassword - body (field casing as the backend expects). */
+export interface UpdatePasswordRequest {
+  currentPassword: string;
+  NewPassword: string;
+  PasswordConfirm: string;
+}
+
+/** GET /users/getprofile - the signed-in club. */
+export interface ClubProfileResponse {
+  status?: string;
+  data: Club;
+}
+
+/** Club profile fields, for sign-up and profile updates (sent as multipart). */
+export interface ClubProfileInput {
+  name: string;
+  description: string;
+  websiteLink: string;
+  isRecruiting: boolean;
+  labels: [string, string, string];
+  logo?: File | null;
+}
+
+/** POST /auth/club-register - profile plus credentials. */
+export interface ClubRegisterInput extends ClubProfileInput {
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+/** POST /users/create-event - sent as multipart. */
+export interface CreateEventInput {
+  title: string;
+  websiteLink: string;
+  /** "YYYY-MM-DD". */
+  startDate: string;
+  endDate: string;
+  /** "HH:MM". */
+  startTime: string;
+  endTime: string;
+  odsProvided: boolean;
+  refreshmentsProvided: boolean;
+  labels: [string, string, string];
+  banner: File;
+}
+
+/* ── Studique notes catalogue (public/data/studique) ── */
+
+export interface StudiqueFileEntry {
+  name: string;
+  fileId?: string;
+  url: string;
+}
+
+export interface StudiqueSubjectEntry {
+  name: string;
+  semester: string;
+  ppts: StudiqueFileEntry[];
+  pyqs: StudiqueFileEntry[];
+  syllabus: StudiqueFileEntry[];
+}
+
+export interface StudiqueCatalogueFile {
+  success: boolean;
+  updatedAt: string;
+  source: string;
+  subjects: StudiqueSubjectEntry[];
+}
+
+/** Subject name -> semester (1-8) or null; `_README` is a comment. */
+export type StudiqueSemesterMap = Record<string, number | string | null>;

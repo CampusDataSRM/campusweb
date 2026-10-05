@@ -1,108 +1,83 @@
-﻿import type { Metadata } from "next";
-import Head from "next/head";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+
+import { ThemeHead } from "@/components/theme/theme-head";
 import { GA_ID } from "@/constants";
-import { plusJakartaSans, nunito } from "@/lib/fonts";
+import { DEFAULT_PALETTE, PRESET_PALETTES } from "@/constants/theme";
+import { SITE } from "@/constants/site";
+import { dmSans, nunito, spaceGrotesk } from "@/lib/fonts";
 import Providers from "./providers";
 import "./globals.css";
-
-const APP_NAME = "Campus Web";
-const APP_DEFAULT_TITLE = "The Campus Web";
-const APP_DESCRIPTION = "Your one-stop campus solution";
-const APP_URL = "https://campusweb.in";
+import "./product.css";
+import "./campus-glow.css";
 
 export const metadata: Metadata = {
-  title: APP_DEFAULT_TITLE,
-  description: APP_DESCRIPTION,
-  manifest: "/manifest.json",
-  applicationName: APP_NAME,
+  metadataBase: new URL(SITE.url),
+  title: { default: SITE.name, template: `%s · ${SITE.name}` },
+  description: SITE.description,
+  applicationName: SITE.shortName,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: APP_DEFAULT_TITLE,
+    title: SITE.name,
   },
-  formatDetection: {
-    telephone: false,
-  },
+  formatDetection: { telephone: false },
   openGraph: {
     type: "website",
-    url: APP_URL,
-    siteName: APP_NAME,
-    title: APP_DEFAULT_TITLE,
-    description: APP_DESCRIPTION,
-    images: [
-      {
-        url: "/logo_png.png",
-        alt: APP_NAME,
-      },
-    ],
+    url: SITE.url,
+    siteName: SITE.shortName,
+    title: SITE.name,
+    description: SITE.description,
+    images: [{ url: SITE.ogImage, alt: SITE.shortName }],
   },
   twitter: {
     card: "summary_large_image",
-    title: APP_DEFAULT_TITLE,
-    description: APP_DESCRIPTION,
-    site: APP_URL,
-    creator: "campusweb",
-    images: ["/logo_png.png"],
+    title: SITE.name,
+    description: SITE.description,
+    images: [SITE.ogImage],
   },
-  icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
-  },
+  icons: { icon: "/logo_png.png", apple: "/manifest/apple-touch-icon.png" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "dark",
+  themeColor:
+    DEFAULT_PALETTE === "custom"
+      ? PRESET_PALETTES["campus-glow"].surface
+      : PRESET_PALETTES[DEFAULT_PALETTE].surface,
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} ${nunito.variable} dark h-full antialiased`}
+      data-palette={DEFAULT_PALETTE}
+      // The pre-paint script may change data-palette and inline variables
+      // before React hydrates; the DOM is authoritative for those.
+      suppressHydrationWarning
+      className={`${nunito.variable} ${dmSans.variable} ${spaceGrotesk.variable} h-full`}
     >
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-        <meta charSet="utf-8" />
-        <meta name="description" content={APP_DESCRIPTION} />
-        <meta name="application-name" content={APP_NAME} />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta name="apple-mobile-web-app-title" content={APP_DEFAULT_TITLE} />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={APP_DEFAULT_TITLE} />
-        <meta name="twitter:description" content={APP_DESCRIPTION} />
-        <meta name="twitter:site" content={APP_URL} />
-        <meta name="twitter:creator" content="campusweb" />
-        <meta name="twitter:images" content="/logo_png.png" />
-      </Head>
-      <body className="min-h-full flex flex-col">
+      <head>
+        <ThemeHead />
+      </head>
+      <body className="flex min-h-full flex-col">
         {GA_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
             />
-            <Script id="google-analytics">
-              {`window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments)}
-              gtag('js', new Date());
-              gtag('config', '${GA_ID}');`}
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${GA_ID}');`}
             </Script>
           </>
         )}
-        <Providers>
-          <TooltipProvider>{children}</TooltipProvider>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

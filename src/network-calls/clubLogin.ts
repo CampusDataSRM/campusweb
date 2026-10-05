@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -35,11 +34,4 @@ export async function postClubLogin(
  */
 export function isClubLoginSuccess(response: ClubLoginResponse): boolean {
   return response.status === "success";
-}
-
-/** Client-side login mutation. */
-export function useClubLogin() {
-  return useMutation({
-    mutationFn: (credentials: ClubLoginRequest) => postClubLogin(credentials),
-  });
 }
