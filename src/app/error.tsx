@@ -1,60 +1,39 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-//import Cookies from "js-cookie";
 
-const Error = () => {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+import { RotateCw, TriangleAlert } from "lucide-react";
+import Link from "next/link";
+import { useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/auth";
+
+/**
+ * A render crash. Never signs anyone out: "Try again" re-renders the segment,
+ * and the dashboard link starts fresh. The error is logged for debugging;
+ * nothing technical is shown to students.
+ */
+export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
-    <>
-      <div className="flex flex-col justify-center items-center h-screen w-full">
-        <div>
-          <img
-            src="/something-went-wrong.svg"
-            alt="404"
-            className="w-96 h-auto"
-          />
-        </div>
-        <button
-          type="submit"
-          onClick={() => {
-            setLoading(true);
-            //Cookies.remove("X-CSRF-Token");
-            localStorage.clear();
-            router.push("/");
-          }}
-          disabled={loading}
-          className="z-10 bg-gradient-to-r from-theme_primary to-theme_secondary py-3 px-5 rounded-lg text-theme_text_normal w-48 text-center tracking-wider text-lg font-semibold"
-        >
-          {loading ? (
-            <svg
-              className="animate-spin mx-auto h-7 w-7 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          ) : (
-            "Lets Fix it!"
-          )}
-        </button>
+    <main className="flex min-h-dvh flex-1 flex-col items-center justify-center gap-6 px-page text-center">
+      <span className="flex size-16 items-center justify-center rounded-3xl bg-danger-container text-danger-accent">
+        <TriangleAlert aria-hidden className="size-8" />
+      </span>
+      <div className="flex max-w-md flex-col gap-2">
+        <h1 className="text-h2 font-extrabold text-on-surface">Something went wrong</h1>
+        <p className="text-on-surface-muted">This page hit a problem. You&apos;re still signed in - try again, or head back to your dashboard.</p>
       </div>
-    </>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button size="touch" onClick={reset}>
+          <RotateCw aria-hidden /> Try again
+        </Button>
+        <Button variant="outline" size="touch" render={<Link href={ROUTES.student} />} nativeButton={false}>
+          Go to dashboard
+        </Button>
+      </div>
+    </main>
   );
-};
-
-export default Error;
+}

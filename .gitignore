@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Resources not to be commited
+/nocommit
+
+# local config files
+.claude

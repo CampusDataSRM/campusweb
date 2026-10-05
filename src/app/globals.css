@@ -2,278 +2,564 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* The app is dark-first: every palette is a dark palette. */
+@custom-variant dark (&:where(html, html *));
 
-/* ───────────────────────────────────────────────
-   Tailwind v4 Theme — Campus Web Design System
-   ─────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────────────────
+   Colour utilities.
 
+   No colour is defined in this file. Palette values (`--surface`, `--primary`
+   ...) are generated from src/constants/theme.ts and injected by the root
+   layout; this block only exposes them as Tailwind utilities
+   (`bg-surface-container`, `text-on-surface-muted`, `border-outline` ...).
+   ─────────────────────────────────────────────────────────────────────────── */
 @theme inline {
-  /* ── Typography ── */
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --font-nunito: var(--font-nunito);
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-modal: var(--surface-modal);
 
-  /* ── Radius ── */
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-brand: var(--on-surface-brand);
+  --color-on-surface-muted: var(--on-surface-muted);
+  --color-on-surface-subtle: var(--on-surface-subtle);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
 
-  /* ── shadcn semantic colors ── */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-on-primary: var(--on-primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-accent: var(--primary-accent);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
 
-  /* ── Chart colors (blue → purple gradient) ── */
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-success: var(--success);
+  --color-on-success: var(--on-success);
+  --color-success-accent: var(--success-accent);
+  --color-success-container: var(--success-container);
+  --color-on-success-container: var(--on-success-container);
+
+  --color-warning: var(--warning);
+  --color-on-warning: var(--on-warning);
+  --color-warning-accent: var(--warning-accent);
+  --color-warning-container: var(--warning-container);
+  --color-on-warning-container: var(--on-warning-container);
+
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+  --color-danger-accent: var(--danger-accent);
+  --color-danger-container: var(--danger-container);
+  --color-on-danger-container: var(--on-danger-container);
+
+  --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* ── Sidebar ── */
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  /* shadcn/ui names, aliased onto the roles above so stock components theme
+     correctly with no edits. */
+  --color-background: var(--surface);
+  --color-foreground: var(--on-surface);
+  --color-card: var(--surface-container);
+  --color-card-foreground: var(--on-surface);
+  --color-popover: var(--surface-modal);
+  --color-popover-foreground: var(--on-surface);
+  --color-primary-foreground: var(--on-primary);
+  --color-secondary-foreground: var(--on-secondary);
+  --color-muted: var(--surface-highest);
+  --color-muted-foreground: var(--on-surface-muted);
+  --color-accent: var(--surface-high);
+  --color-accent-foreground: var(--on-surface);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--on-danger);
+  --color-border: var(--outline-variant);
+  --color-input: var(--outline);
 
-  /* ── Campus Brand Colors ── */
-  --color-campus-primary: var(--campus-primary);
-  --color-campus-secondary: var(--campus-secondary);
-  --color-campus-text-primary: var(--campus-text-primary);
-  --color-campus-success: var(--campus-success);
-  --color-campus-warning: var(--campus-warning);
-  --color-campus-card-bg: var(--campus-card-bg);
-  --color-campus-card-border: var(--campus-card-border);
+  --color-sidebar: color-mix(in oklab, var(--surface-low) 45%, transparent);
+  --color-sidebar-foreground: var(--on-surface);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--on-primary);
+  --color-sidebar-accent: var(--surface-high);
+  --color-sidebar-accent-foreground: var(--on-surface);
+  --color-sidebar-border: var(--outline-variant);
+  --color-sidebar-ring: var(--ring);
+
+  /* ── Typography ── */
+  --font-sans: var(--font-dm-sans);
+  --font-heading: var(--font-home);
+
+  /* ── Radius: 12px base. Controls 8, cards 12-16, sheets/dialogs 20-28. ── */
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: calc(var(--radius) + 24px);
 }
 
-/* ───────────────────────────────────────────────
-   Light Mode (secondary experience)
-   ─────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────────────────
+   Scale tokens (not colour): type, motion, layout.
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Fluid type, 360 -> 1440px viewports. Each clamp() keeps a rem term so
+     browser zoom still scales it (WCAG 1.4.4). Body text stays fixed. */
+  --text-display: clamp(2rem, 1.5rem + 2.222vw, 3.5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-h1: clamp(1.75rem, 1.5rem + 1.111vw, 2.5rem);
+  --text-h1--line-height: 1.12;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: clamp(1.375rem, 1.208rem + 0.741vw, 1.875rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h3: clamp(1.125rem, 1.042rem + 0.37vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+  --text-stat: clamp(1.75rem, 1.417rem + 1.481vw, 2.75rem);
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.02em;
+
+  /* Motion (Material 3 tokens). Exits run ~30% faster than entrances. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --duration-micro: 100ms;
+  --duration-short: 150ms;
+  --duration-medium: 250ms;
+  --duration-long: 400ms;
+
+  /* Layout */
+  --spacing-page: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --container-content: 72rem;
+
+  --animate-shimmer: shimmer 1.6s var(--ease-standard) infinite;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.375rem transparent;
+  }
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6%, 5%, 0) scale(1.15);
+  }
+}
+
+@keyframes route-load {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.92);
+  }
+}
+
+@keyframes route-done {
+  from {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-y {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes ring-draw {
+  from {
+    stroke-dashoffset: var(--ring-c);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
 
 :root {
-  /* ── shadcn semantic ── */
-  --background: oklch(0.985 0.002 260);
-  --foreground: oklch(0.145 0.005 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0.005 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0.005 260);
-  --primary: oklch(0.52 0.22 264);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0.01 260);
-  --secondary-foreground: oklch(0.205 0.01 260);
-  --muted: oklch(0.955 0.01 260);
-  --muted-foreground: oklch(0.45 0.01 260);
-  --accent: oklch(0.94 0.015 264);
-  --accent-foreground: oklch(0.205 0.01 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.90 0.01 260);
-  --input: oklch(0.90 0.01 260);
-  --ring: oklch(0.52 0.22 264);
-  --radius: 0.625rem;
-
-  /* ── Charts (blue → purple, light mode) ── */
-  --chart-1: oklch(0.65 0.16 240);
-  --chart-2: oklch(0.55 0.20 255);
-  --chart-3: oklch(0.50 0.22 270);
-  --chart-4: oklch(0.45 0.24 285);
-  --chart-5: oklch(0.40 0.25 300);
-
-  /* ── Sidebar (light) ── */
-  --sidebar: oklch(0.975 0.005 260);
-  --sidebar-foreground: oklch(0.145 0.005 260);
-  --sidebar-primary: oklch(0.52 0.22 264);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.015 264);
-  --sidebar-accent-foreground: oklch(0.205 0.01 260);
-  --sidebar-border: oklch(0.90 0.01 260);
-  --sidebar-ring: oklch(0.52 0.22 264);
-
-  /* ── Campus Brand (light) ── */
-  --campus-primary: oklch(0.52 0.22 264);
-  --campus-secondary: oklch(0.49 0.26 293);
-  --campus-text-primary: oklch(0.40 0.10 240);
-  --campus-success: oklch(0.55 0.17 162);
-  --campus-warning: oklch(0.65 0.18 75);
-  --campus-card-bg: oklch(0.52 0.22 264 / 8%);
-  --campus-card-border: oklch(0.52 0.22 264 / 15%);
+  --radius: 0.75rem;
+  color-scheme: dark;
 }
-
-/* ───────────────────────────────────────────────
-   Dark Mode (primary experience)
-   ─────────────────────────────────────────────── */
-
-.dark {
-  /* ── shadcn semantic ── */
-  --background: oklch(0.13 0.01 260);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.18 0.015 260);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.18 0.015 260);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.588 0.22 264);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.541 0.26 293);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.22 0.01 260);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.25 0.03 264);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.637 0.196 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.588 0.22 264);
-
-  /* ── Charts (blue → purple, dark mode) ── */
-  --chart-1: oklch(0.75 0.15 240);
-  --chart-2: oklch(0.65 0.19 255);
-  --chart-3: oklch(0.58 0.22 270);
-  --chart-4: oklch(0.50 0.24 285);
-  --chart-5: oklch(0.45 0.25 300);
-
-  /* ── Sidebar (dark) ── */
-  --sidebar: oklch(0.16 0.012 260);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.588 0.22 264);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.25 0.03 264);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.588 0.22 264);
-
-  /* ── Campus Brand (dark — primary experience) ── */
-  --campus-primary: oklch(0.588 0.22 264);
-  --campus-secondary: oklch(0.541 0.26 293);
-  --campus-text-primary: oklch(0.75 0.08 230);
-  --campus-success: oklch(0.696 0.17 162);
-  --campus-warning: oklch(0.769 0.165 75);
-  --campus-card-bg: oklch(0.35 0.08 250 / 20%);
-  --campus-card-border: oklch(0.5 0.1 250 / 15%);
-}
-
-/* ───────────────────────────────────────────────
-   Base Styles
-   ─────────────────────────────────────────────── */
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
-    @apply font-sans;
-  }
-}
-
-/* ───────────────────────────────────────────────
-   Ambient Orb Animations
-   ─────────────────────────────────────────────── */
-
-@keyframes campus-drift-1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(30px, -20px) scale(1.05);
-  }
-  50% {
-    transform: translate(-15px, 25px) scale(0.95);
-  }
-  75% {
-    transform: translate(20px, 15px) scale(1.02);
-  }
-}
-
-@keyframes campus-drift-2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(-25px, 30px) scale(0.97);
-  }
-  50% {
-    transform: translate(20px, -15px) scale(1.04);
-  }
-  75% {
-    transform: translate(-30px, -20px) scale(1.01);
-  }
-}
-
-@keyframes campus-drift-3 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(20px, 25px) scale(1.03);
-  }
-  50% {
-    transform: translate(-25px, -30px) scale(0.96);
-  }
-  75% {
-    transform: translate(15px, -20px) scale(1.06);
-  }
-}
-
-/* ───────────────────────────────────────────────
-   Utility Component Classes
-   ─────────────────────────────────────────────── */
-
-@layer components {
-  /* Signature blue → purple gradient for CTAs */
-  .campus-gradient {
-    background: linear-gradient(
-      to bottom right,
-      var(--campus-primary),
-      var(--campus-secondary)
-    );
+    @apply bg-surface font-sans text-on-surface;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Glassmorphic card — the core Campus Web card style */
-  .campus-card {
-    background: var(--campus-card-bg);
-    border: 1px solid var(--campus-card-border);
-    border-radius: var(--radius-xl);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 4px 30px oklch(0 0 0 / 10%);
+  body {
+    @apply min-h-dvh text-on-surface antialiased;
+    /* Transparent on purpose: <html> paints the canvas colour, and the
+       palette's glow (body::before) must sit between the two. */
+    background: transparent;
   }
 
-  /* Ambient glow for background orbs */
-  .campus-glow {
-    border-radius: 9999px;
-    filter: blur(80px);
-    opacity: 0.2;
-    will-change: transform;
+  /* The palette's backdrop (Campus Glow's glow), pinned to the viewport. A
+     fixed layer rather than background-attachment, which iOS ignores. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     pointer-events: none;
+    background: var(--backdrop);
+  }
+
+  /* A whisper of grain over the glow - smooths the banding dark gradients
+     show on most screens. Static, one tiny inline SVG. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Hide the CSS backdrop layers when a canvas backdrop effect is active. */
+  html[data-backdrop-effect] body::before,
+  html[data-backdrop-effect] body::after {
+    display: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading text-balance;
+  }
+
+  /* Visible, high-contrast focus for keyboard users only (WCAG 2.4.7 / 2.4.13).
+     A solid 2px ring with an offset in the canvas colour - shadcn's default
+     translucent ring falls below 3:1. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+
+  /* Thin, palette-aware scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-bright) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Skeleton shimmer in palette colours - never a white flash. */
+  .skeleton-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--surface-high) 0%,
+      var(--surface-highest) 50%,
+      var(--surface-high) 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* The primary call-to-action fill - a gradient in Campus Glow. */
+  .bg-cta {
+    background: var(--cta);
+  }
+
+  /* One entrance per route keeps responsive and async content visible. */
+  .page-enter {
+    animation: rise-in var(--duration-long) var(--ease-decelerate) both;
+  }
+
+  /* Tap feedback on anything that navigates or opens. */
+  .pressable {
+    transition:
+      transform var(--duration-short) var(--ease-standard),
+      border-color var(--duration-short) var(--ease-standard),
+      background-color var(--duration-short) var(--ease-standard);
+  }
+  .pressable:active {
+    transform: scale(0.98);
+  }
+
+  /* The hero's living glow: two blurred palette blobs drifting slowly.
+     Transform-only, so it stays on the compositor; frozen under reduced
+     motion by the global rule. */
+  .aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .aurora::before,
+  .aurora::after {
+    content: "";
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    filter: blur(64px);
+    opacity: 0.55;
+    will-change: transform;
+    animation: aurora-drift 16s ease-in-out infinite alternate;
+  }
+  .aurora::before {
+    top: -45%;
+    left: -15%;
+    background: radial-gradient(circle, var(--primary-accent), transparent 65%);
+  }
+  .aurora::after {
+    right: -20%;
+    bottom: -55%;
+    background: radial-gradient(circle, var(--secondary), transparent 65%);
+    animation-duration: 21s;
+    animation-direction: alternate-reverse;
+  }
+
+  /* ── Panels ─────────────────────────────────────────────────────────
+     The one card surface. The palette's container tint, a soft top sheen
+     and a 1px inner highlight - light falling on dark glass - plus a
+     deep, soft drop shadow. No backdrop-filter, so it's cheap to scroll. */
+  .panel {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--on-surface) 5%, transparent) 0%,
+        transparent 45%
+      ),
+      var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 8%, transparent),
+      0 1px 2px color-mix(in oklab, var(--surface-lowest) 40%, transparent),
+      0 18px 40px -18px
+        color-mix(in oklab, var(--surface-lowest) 80%, transparent);
+  }
+  /* The raised variant for the one thing on a page that matters most. */
+  .panel-raised {
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 12%, transparent),
+      0 30px 80px -30px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 18px 40px -18px
+        color-mix(in oklab, var(--surface-lowest) 90%, transparent);
+  }
+
+  /* ── Spotlight ──────────────────────────────────────────────────────
+     A soft light that follows the cursor across a card, and lights the
+     card's edge nearest to it. Position comes from SpotlightTracker
+     (--mx/--my); mouse and trackpad only. */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight::before,
+    .spotlight::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--duration-medium) var(--ease-standard);
+    }
+    .spotlight::before {
+      z-index: -1;
+      background: radial-gradient(
+        28rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 11%, transparent),
+        transparent 45%
+      );
+    }
+    .spotlight::after {
+      z-index: 1;
+      padding: 1px;
+      background: radial-gradient(
+        16rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 75%, transparent),
+        transparent 60%
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .spotlight:hover::before,
+    .spotlight:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* ── Header: clear at the top of the page, glass once content
+     scrolls under it (data-scrolled from StudentShell). */
+  .app-header {
+    transition:
+      background-color var(--duration-medium) var(--ease-standard),
+      border-color var(--duration-medium) var(--ease-standard);
+    border-bottom: 1px solid transparent;
+  }
+  .app-header[data-scrolled="true"] {
+    background: color-mix(in oklab, var(--surface) 65%, transparent);
+    border-bottom-color: var(--outline-variant);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* ── Route progress: a thin glowing line while a page loads. */
+  .route-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 2px;
+    pointer-events: none;
+    transform-origin: left;
+    background: var(--cta);
+    box-shadow: 0 0 12px var(--primary-accent);
+  }
+  .route-progress[data-state="loading"] {
+    animation: route-load 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  }
+  .route-progress[data-state="done"] {
+    animation: route-done 450ms var(--ease-standard) forwards;
+  }
+
+  /* ── Sheen: a light sweep across the primary button on hover. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      color-mix(in oklab, var(--on-primary) 28%, transparent) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+  }
+  .sheen:hover::after {
+    transition: transform 700ms var(--ease-standard);
+    transform: translateX(120%);
+  }
+
+  /* ── Sign-in product preview (components/auth/product-preview.tsx) */
+  .preview-stage {
+    transform: rotateX(var(--rx, 6deg)) rotateY(var(--ry, -12deg));
+    transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  /* Opaque, so overlapping layers read as stacked glass, not a smear. */
+  .preview-card {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--on-surface) 6%, transparent) 0%,
+        transparent 50%
+      ),
+      linear-gradient(var(--surface-container), var(--surface-container)),
+      var(--surface-modal);
+  }
+  .preview-float {
+    animation: float-y 5s ease-in-out infinite alternate;
+  }
+  /* Bars fill from the left when they first appear. */
+  .bar-grow {
+    transform-origin: left;
+    animation: bar-grow 900ms var(--ease-decelerate) both;
+  }
+  .preview-ring {
+    animation: ring-draw 1.4s var(--ease-decelerate) both 300ms;
+  }
+
+  /* Glass: a translucent surface that lets the palette's glow through. */
+  .glass {
+    background: color-mix(in oklab, var(--surface-container) 70%, transparent);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  /* "Happening now" dot. */
+  .live-dot {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: live-pulse 1.6s var(--ease-standard) infinite;
+  }
+
+  /* Stat numbers line up as they count. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
