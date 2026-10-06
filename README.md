@@ -40,9 +40,9 @@ standalone orders. Cashfree's order/payment API is the source of confirmation.
 
 ## Campus App browser checkout
 
-Android uses an in-app browser; iOS retains its existing native Cashfree SDK.
+Android uses an embedded Android WebView inside a private app activity; iOS retains its existing native Cashfree SDK.
 The Flutter app creates its order through CampusAPI's authenticated
-`/auth/payment/cashfree/order` endpoint, then opens `/app` in an in-app browser.
+`/auth/payment/cashfree/order` endpoint, then opens `/app?embedded=1` inside the app. This mode shows only a loading state and the Cashfree checkout, with no browser chrome, brand card, footer, or second Pay step.
 The URL fragment carries only `order_id`, `payment_session_id`, and `amount`
 (10, 12, 15, or 20 INR). The page clears that fragment from history after loading.
 There is no student credential, account identifier, or merchant secret in the URL.
@@ -53,8 +53,11 @@ The browser reuses that order; it never creates a standalone `web_` payment.
 independently calls CampusAPI's authenticated verify endpoint for the exact
 order before unlocking access. Existing CampusAPI webhooks fulfill these
 account-bound `cf_` orders normally. Keep the same Cashfree merchant keys on
-both services. Closing the browser returns to the payment dialog; bounded
-confirmation polling and the app-resume check handle delayed payments.
+both services. The native completion event is only a verification hint. CampusAPI confirmation
+automatically closes the checkout and returns to the app. Android back cancels
+the screen without treating cancellation as payment; pending orders are retained.
+HTTPS bank/3DS navigation stays inside the WebView, while selected UPI app
+links open the payment app. No browser chooser is launched.
 
 Deploy this branch with `/app` before distributing the updated Flutter app.
 Existing standalone checkout at `/` remains available.

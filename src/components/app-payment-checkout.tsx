@@ -7,7 +7,17 @@ import { parseAppCheckout, type AppCheckout } from "@/lib/app-checkout";
 
 // Browser values only select checkout/receipt. The signed-in Flutter app must
 // verify this exact order with CampusAPI before activating student access.
-export function AppPaymentCheckout() {
+declare global {
+  interface Window {
+    CampusCheckout?: { postMessage(message: string): void };
+  }
+}
+
+export function AppPaymentCheckout({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) {
   const [checkout, setCheckout] = useState<AppCheckout | null>(null);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -22,7 +32,11 @@ export function AppPaymentCheckout() {
       try {
         const data = parseAppCheckout(window.location.hash);
         // Keep the payment session out of browser history and future referrers.
-        window.history.replaceState(null, "", "/app");
+        window.history.replaceState(
+          null,
+          "",
+          embedded ? "/app?embedded=1" : "/app",
+        );
         setCheckout(data);
         setMessage("");
       } catch (error) {
@@ -36,7 +50,7 @@ export function AppPaymentCheckout() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [embedded]);
 
   const pay = useCallback(
     async (checkOnly = false) => {
@@ -55,6 +69,8 @@ export function AppPaymentCheckout() {
             redirectTarget: "_modal",
           });
         }
+        // Native completion is a hint only; CampusAPI verifies before closing.
+        window.CampusCheckout?.postMessage("completed");
         const response = await fetch("/api/payment/app/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -75,15 +91,21 @@ export function AppPaymentCheckout() {
         ) {
           setPaid(true);
           setMessage(
-            "Close this browser to return to Campus App. The app will verify and activate your access.",
+            embedded
+              ? "Confirming your payment…"
+              : "Close this browser to return to Campus App. The app will verify and activate your access.",
           );
         } else if (result.status === "expired") {
           setMessage(
-            "This checkout expired. Close this browser and start a fresh payment in Campus App.",
+            embedded
+              ? "This checkout expired. Return and start a fresh payment."
+              : "This checkout expired. Close this browser and start a fresh payment in Campus App.",
           );
         } else {
           setMessage(
-            "Payment is still being confirmed. Check again, or close this browser and check status in Campus App.",
+            embedded
+              ? "Payment is still being confirmed. You can return and check status."
+              : "Payment is still being confirmed. Check again, or close this browser and check status in Campus App.",
           );
         }
       } catch (error) {
@@ -91,14 +113,16 @@ export function AppPaymentCheckout() {
           (error instanceof Error
             ? error.message
             : "Could not confirm payment.") +
-            " You can also close this browser and check status in Campus App.",
+            (embedded
+              ? " Return and check status if you already paid."
+              : " You can also close this browser and check status in Campus App."),
         );
       } finally {
         lock.current = false;
         setBusy(false);
       }
     },
-    [checkout, paid],
+    [checkout, paid, embedded],
   );
 
   useEffect(() => {
@@ -108,17 +132,39 @@ export function AppPaymentCheckout() {
     void Promise.resolve().then(() => pay());
   }, [ready, checkout, pay]);
 
+  const sdk = (
+    <Script
+      src="https://sdk.cashfree.com/js/v3/cashfree.js"
+      onReady={() => setReady(true)}
+      onError={() =>
+        setMessage(
+          "Could not load Cashfree. Close this browser and try again from Campus App.",
+        )
+      }
+    />
+  );
+  if (embedded)
+    return (
+      <main className="embedded-checkout">
+        {sdk}
+        <div role="status" aria-live="polite">
+          <span className="checkout-spinner" aria-hidden />
+          <p>
+            {message ||
+              (paid ? "Confirming your payment…" : "Opening secure checkout…")}
+          </p>
+          {message && checkout && !busy && !paid && ready && (
+            <button className="embedded-retry" onClick={() => void pay()}>
+              Retry checkout
+            </button>
+          )}
+        </div>
+      </main>
+    );
+
   return (
     <main className="payment-page">
-      <Script
-        src="https://sdk.cashfree.com/js/v3/cashfree.js"
-        onReady={() => setReady(true)}
-        onError={() =>
-          setMessage(
-            "Could not load Cashfree. Close this browser and try again from Campus App.",
-          )
-        }
-      />
+      {sdk}
       <header className="brand">
         <Image src="/logo_png.png" alt="" width={32} height={32} priority />
         Campus App

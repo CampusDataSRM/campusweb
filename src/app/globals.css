@@ -212,3 +212,42 @@ footer p {
     font-size: 15px;
   }
 }
+
+.embedded-checkout {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fff;
+  color: #17212b;
+  text-align: center;
+  color-scheme: light;
+}
+.checkout-spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e5ebf0;
+  border-top-color: #007fa8;
+  border-radius: 50%;
+  animation: checkout-spin 0.8s linear infinite;
+}
+.embedded-retry {
+  border: 0;
+  border-radius: 8px;
+  background: #007fa8;
+  color: #fff;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+@keyframes checkout-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .checkout-spinner {
+    animation: none;
+  }
+}
