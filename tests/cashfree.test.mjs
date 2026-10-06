@@ -5,6 +5,7 @@ import {
   verifyOrder,
   orderIdFor,
   validateRequestId,
+  verifyAppOrder,
 } from "../src/lib/server/cashfree.ts";
 
 const originalFetch = globalThis.fetch;
@@ -116,4 +117,34 @@ test("pending, expired, and not-yet-created orders can recover safely", async ()
   assert.equal((await verifyOrder(requestId)).status, "expired");
   globalThis.fetch = async () => new Response("", { status: 404 });
   assert.equal((await verifyOrder(requestId)).status, "not_created");
+});
+
+test("an account-bound app order requires a matching successful transaction", async () => {
+  const id = "cf_" + "b".repeat(40);
+  let amount = 12;
+  globalThis.fetch = async (url) =>
+    response(
+      url.endsWith("/payments")
+        ? [
+            {
+              payment_status: "SUCCESS",
+              payment_amount: amount,
+              payment_currency: "INR",
+              cf_payment_id: 456,
+            },
+          ]
+        : { ...order("PAID"), order_id: id, order_amount: 12 },
+    );
+  assert.equal((await verifyAppOrder(id, 12)).status, "paid");
+  amount = 10;
+  assert.equal((await verifyAppOrder(id, 12)).status, "pending");
+  await assert.rejects(verifyAppOrder(id, 10), /validate/);
+  await assert.rejects(
+    verifyAppOrder("../another-order", 12),
+    (error) => error.status === 400,
+  );
+  await assert.rejects(
+    verifyAppOrder(id, 100),
+    (error) => error.status === 400,
+  );
 });

@@ -38,6 +38,26 @@ student access or create CampusAPI payment records. The existing CampusAPI
 webhook configuration is not changed by this branch; it does not fulfill these
 standalone orders. Cashfree's order/payment API is the source of confirmation.
 
+## Campus App browser checkout
+
+Android uses an in-app browser; iOS retains its existing native Cashfree SDK.
+The Flutter app creates its order through CampusAPI's authenticated
+`/auth/payment/cashfree/order` endpoint, then opens `/app` in an in-app browser.
+The URL fragment carries only `order_id`, `payment_session_id`, and `amount`
+(10, 12, 15, or 20 INR). The page clears that fragment from history after loading.
+There is no student credential, account identifier, or merchant secret in the URL.
+
+The browser reuses that order; it never creates a standalone `web_` payment.
+`/api/payment/app/verify` verifies Cashfree's receipt for display. The Flutter app
+independently calls CampusAPI's authenticated verify endpoint for the exact
+order before unlocking access. Existing CampusAPI webhooks fulfill these
+account-bound `cf_` orders normally. Keep the same Cashfree merchant keys on
+both services. Closing the browser returns to the payment dialog; bounded
+confirmation polling and the app-resume check handle delayed payments.
+
+Deploy this branch with `/app` before distributing the updated Flutter app.
+Existing standalone checkout at `/` remains available.
+
 ## Verify
 
 ```sh

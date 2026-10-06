@@ -10,6 +10,13 @@ const config: NextConfig = {
   async headers() {
     return [
       {
+        source: "/app",
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "Cache-Control", value: "no-store" },
+        ],
+      },
+      {
         source: "/sw.js",
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },

@@ -74,11 +74,11 @@ async function request<T>(path: string, payload?: object): Promise<T> {
     );
   return (await response.json()) as T;
 }
-function validOrder(order: Order, id: string) {
+function validOrder(order: Order, id: string, amount = 10) {
   if (
     !order ||
     order.order_id !== id ||
-    order.order_amount !== 10 ||
+    order.order_amount !== amount ||
     order.order_currency !== "INR"
   )
     throw new PaymentError("Could not validate this ₹10 payment.");
@@ -127,6 +127,32 @@ export async function verifyOrder(requestId: string) {
       return { status: "not_created", order_id: id };
     throw error;
   }
+  return paymentStatus(order, id, 10);
+}
+
+// CampusAPI creates these authenticated, account-bound orders. This endpoint
+// only displays their receipt; CampusAPI alone fulfills the student's access.
+export async function verifyAppOrder(orderId: unknown, amount: unknown) {
+  if (
+    typeof orderId !== "string" ||
+    !/^cf_[a-f0-9]{40}$/.test(orderId) ||
+    typeof amount !== "number" ||
+    ![10, 12, 15, 20].includes(amount)
+  ) {
+    throw new PaymentError(
+      "Invalid app checkout. Open payment from Campus App.",
+      400,
+    );
+  }
+  const order = validOrder(
+    await request<Order>("/orders/" + orderId),
+    orderId,
+    amount,
+  );
+  return paymentStatus(order, orderId, amount);
+}
+
+async function paymentStatus(order: Order, id: string, amount: number) {
   if (["EXPIRED", "TERMINATED"].includes(order.order_status))
     return { status: "expired", order_id: id };
   if (order.order_status !== "PAID") return { status: "pending", order_id: id };
@@ -136,12 +162,12 @@ export async function verifyOrder(requestId: string) {
     payments.some(
       (p) =>
         p.payment_status === "SUCCESS" &&
-        p.payment_amount === 10 &&
+        p.payment_amount === amount &&
         p.payment_currency === "INR" &&
         p.cf_payment_id !== undefined &&
         p.cf_payment_id !== null,
     );
   return paid
-    ? { status: "paid", order_id: id, amount: 10, currency: "INR" }
+    ? { status: "paid", order_id: id, amount, currency: "INR" }
     : { status: "pending", order_id: id };
 }

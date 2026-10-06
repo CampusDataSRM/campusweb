@@ -5,11 +5,12 @@ import {
   PaymentError,
   validateRequestId,
   verifyOrder,
+  verifyAppOrder,
 } from "./cashfree";
 
 export async function handlePayment(
   request: Request,
-  action: "order" | "verify",
+  action: "order" | "verify" | "app-verify",
 ) {
   try {
     const origin = checkoutOrigin(request);
@@ -18,11 +19,16 @@ export async function handlePayment(
     const body = await request.json().catch(() => {
       throw new PaymentError("Invalid checkout request.", 400);
     });
-    const id = validateRequestId(body?.request_id);
     const data =
-      action === "order"
-        ? await createOrder(id, body.phone, origin)
-        : await verifyOrder(id);
+      action === "app-verify"
+        ? await verifyAppOrder(body?.order_id, body?.amount)
+        : action === "order"
+          ? await createOrder(
+              validateRequestId(body?.request_id),
+              body.phone,
+              origin,
+            )
+          : await verifyOrder(validateRequestId(body?.request_id));
     return NextResponse.json(data, {
       headers: { "Cache-Control": "no-store" },
     });
