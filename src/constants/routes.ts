@@ -12,6 +12,7 @@ export const STUDENT_ROUTES = {
   cgpa: "/student/cgpa",
   notes: "/student/notes",
   settings: "/student/settings",
+  payment: "/student/payment",
 } as const;
 
 export const LEGAL_ROUTES = {

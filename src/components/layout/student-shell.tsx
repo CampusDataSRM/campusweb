@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useNavigation } from "@/hooks/use-navigation";
 import { STUDENT_ROUTES } from "@/constants/routes";
+import { useSession } from "@/context/session-context";
 
 /**
  * The frame every student page shares: sidebar from tablet width up, a top
@@ -39,6 +40,7 @@ export function StudentShell({ children }: { children: ReactNode }) {
   const scrolled = useScrolled();
   const pathname = usePathname();
   const { items, utility } = useNavigation();
+  const { session } = useSession();
   const current =
     [...items, ...utility].find((item) => item.href === pathname)?.label ??
     "Campus";
@@ -64,6 +66,17 @@ export function StudentShell({ children }: { children: ReactNode }) {
             <span>{current}</span>
           </span>
           <div className="ml-auto flex items-center gap-2">
+            {(session?.kind === "academia" ||
+              session?.kind === "student-portal") && (
+              <Button
+                variant="tonal"
+                size="touch"
+                render={<Link href={STUDENT_ROUTES.payment} />}
+                nativeButton={false}
+              >
+                Pay ₹10
+              </Button>
+            )}
             <OfflinePill />
             <CommandMenu />
           </div>

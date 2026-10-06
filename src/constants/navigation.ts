@@ -19,6 +19,7 @@ import {
   Percent,
   Scale,
   Settings2,
+  CreditCard,
   Trophy,
   UsersRound,
   UtensilsCrossed,
@@ -44,7 +45,12 @@ const LEGAL_ITEM: NavItem = {
 };
 
 const STUDENT_NAV: NavItem[] = [
-  { href: STUDENT_ROUTES.dashboard, label: "Dashboard", shortLabel: "Home", icon: LayoutDashboard },
+  {
+    href: STUDENT_ROUTES.dashboard,
+    label: "Dashboard",
+    shortLabel: "Home",
+    icon: LayoutDashboard,
+  },
   { href: STUDENT_ROUTES.attendance, label: "Attendance", icon: Percent },
   { href: STUDENT_ROUTES.planner, label: "Planner", icon: CalendarDays },
   { href: STUDENT_ROUTES.marks, label: "Marks", icon: BarChart3 },
@@ -58,7 +64,12 @@ const STUDENT_NAV: NavItem[] = [
 
 const DEMO_NAV: NavItem[] = [
   { href: STUDENT_ROUTES.dashboard, label: "Home", icon: LayoutDashboard },
-  { href: STUDENT_ROUTES.attendance, label: "Check-ins", shortLabel: "Check-in", icon: CalendarCheck2 },
+  {
+    href: STUDENT_ROUTES.attendance,
+    label: "Check-ins",
+    shortLabel: "Check-in",
+    icon: CalendarCheck2,
+  },
   { href: STUDENT_ROUTES.events, label: "Events", icon: Sparkles },
   { href: STUDENT_ROUTES.marks, label: "Scores", icon: Trophy },
   { href: STUDENT_ROUTES.clubs, label: "Clubs", icon: UsersRound },
@@ -92,14 +103,22 @@ const PHONE_BAR_SLOTS = 4;
 export function navigationFor(kind: SessionKind): NavigationModel {
   switch (kind) {
     case "demo":
-      return { items: DEMO_NAV, primary: DEMO_NAV.slice(0, PHONE_BAR_SLOTS), utility: [SETTINGS_ITEM] };
+      return {
+        items: DEMO_NAV,
+        primary: DEMO_NAV.slice(0, PHONE_BAR_SLOTS),
+        utility: [SETTINGS_ITEM],
+      };
     case "guest":
       return { items: GUEST_NAV, primary: GUEST_NAV, utility: [SETTINGS_ITEM] };
     default:
       return {
         items: STUDENT_NAV,
         primary: STUDENT_NAV.slice(0, PHONE_BAR_SLOTS),
-        utility: [SETTINGS_ITEM, LEGAL_ITEM],
+        utility: [
+          { href: STUDENT_ROUTES.payment, label: "Pay ₹10", icon: CreditCard },
+          SETTINGS_ITEM,
+          LEGAL_ITEM,
+        ],
       };
   }
 }
