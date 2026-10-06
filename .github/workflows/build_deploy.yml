@@ -1,0 +1,170 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches:
+      - v2.0.0
+  workflow_dispatch:
+
+env:
+  REGISTRY: hyd.ocir.io
+  IMAGE_NAME: axpy4trirhwz/campusweb-frontend-web
+
+jobs:
+
+  # ==========================================
+  # BUILD + PUSH
+  # ==========================================
+
+  build-and-push:
+    name: Build and Push Frontend to OCIR
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    outputs:
+      image_tag: ${{ steps.version.outputs.TAG }}
+
+    steps:
+
+      # ----------------------------------------
+      # Checkout repository
+      # ----------------------------------------
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # ----------------------------------------
+      # Generate Image Tag
+      # ----------------------------------------
+
+      - name: Generate Image Tag
+        id: version
+        shell: bash
+        run: |
+          TAG=$(git rev-parse --short HEAD)
+
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+
+          echo "=========================================="
+          echo "Git commit tag: $TAG"
+          echo "Docker image tag: nova-$TAG"
+          echo "=========================================="
+
+
+      # ----------------------------------------
+      # Set up QEMU for ARM64
+      # ----------------------------------------
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+
+      # ----------------------------------------
+      # Set up Docker Buildx
+      # ----------------------------------------
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+
+      # ----------------------------------------
+      # Login to OCIR
+      # ----------------------------------------
+
+      - name: Connect to OCIR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.OCIR_USERNAME }}
+          password: ${{ secrets.OCIR_AUTH_TOKEN }}
+
+
+      # ----------------------------------------
+      # Build and Push Docker Image
+      # ----------------------------------------
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+
+          platforms: linux/arm64
+
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:nova-${{ steps.version.outputs.TAG }}
+
+          build-args: |
+            NEXT_PUBLIC_SERVE=${{ secrets.NEXT_PUBLIC_SERVE }}
+            NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }}
+
+          provenance: false
+          sbom: false
+
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
+      # ----------------------------------------
+      # Display Image Information
+      # ----------------------------------------
+
+      - name: Display image information
+        run: |
+          echo "=========================================="
+          echo "Docker image pushed successfully"
+          echo "=========================================="
+
+          echo "Image:"
+          echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:nova-${{ steps.version.outputs.TAG }}"
+
+          echo "Platform:"
+          echo "linux/arm64"
+
+          echo "Commit:"
+          echo "${{ steps.version.outputs.TAG }}"
+
+          echo "=========================================="
+
+
+  # ==========================================
+  # DEPLOY
+  # ==========================================
+
+  deploy:
+    name: Deploy Frontend
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Deploy using Ansible
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+          script: |
+            echo "=========================================="
+            echo "Starting frontend deployment"
+            echo "=========================================="
+
+            echo "Service: frontend"
+            echo "Commit tag: ${{ needs.build-and-push.outputs.image_tag }}"
+            echo "Docker tag: nova-${{ needs.build-and-push.outputs.image_tag }}"
+
+            ansible-playbook \
+              -i /home/ubuntu/campusweb-swarm/ansible/inventory \
+              /home/ubuntu/campusweb-swarm/ansible/deploy.yml \
+              -e service=campusweb-nova-prod \
+              -e campusweb_nova_prod_tag=${{ needs.build-and-push.outputs.image_tag }}
+
+            echo "=========================================="
+            echo "Frontend deployment command completed"
+            echo "=========================================="
