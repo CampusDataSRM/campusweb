@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Campus Web payment
 
-## Getting Started
+This branch contains only a public ₹10 Cashfree checkout at `/`. There is no
+student login, dashboard, club portal, academic data, or new subscription.
+Old `/student/*`, `/club/*`, and `/payment` URLs redirect to checkout.
 
-First, run the development server:
+## Run
 
-```bash
+```sh
+npm ci
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Use the same production merchant settings as CampusAPI, configured as **server
+environment variables** on the payment deployment:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `CASHFREE_ENV=production`
+- `CASHFREE_CLIENT_ID`
+- `CASHFREE_CLIENT_SECRET`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Do not prefix these with `NEXT_PUBLIC_` or commit their values. Whitelist
+`payment.campusweb.in` in Cashfree. This app needs a Next.js server, not a static
+export. No CampusAPI URL or university credentials are required.
 
-## Learn More
+Orders are fixed to ₹10 INR on the server. A random browser request ID maps to
+a stable merchant order ID for retries. Confirmation requires a PAID order and
+a matching SUCCESS transaction fetched from Cashfree, never an SDK callback.
+Pending payments can be checked again; expired orders can be restarted.
 
-To learn more about Next.js, take a look at the following resources:
+These standalone `web_` orders are payment tests/receipts. They do not grant
+student access or create CampusAPI payment records. The existing CampusAPI
+webhook configuration is not changed by this branch; it does not fulfill these
+standalone orders. Cashfree's order/payment API is the source of confirmation.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Verify
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+npm test
+npm run lint
+npm run build
+```
 
-## Deploy on Vercel
+Tests use mocked provider responses; no money is transferred by them. Verify a
+real payment on the configured deployment separately.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[Cashfree integration reference](https://www.cashfree.com/docs/payments/online/web/redirect)

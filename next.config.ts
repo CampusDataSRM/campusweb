@@ -1,24 +1,19 @@
-﻿import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+import type { NextConfig } from "next";
+const config: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/student/:path*", destination: "/", permanent: false },
+      { source: "/club/:path*", destination: "/", permanent: false },
+      { source: "/payment", destination: "/", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {
-        // Required later by the service worker (public/sw.js) to control the
-        // whole origin and to never be cached.
         source: "/sw.js",
-        headers: [
-          { key: "Service-Worker-Allowed", value: "/" },
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
-          },
-        ],
+        headers: [{ key: "Cache-Control", value: "no-store" }],
       },
     ];
   },
 };
-
-export default nextConfig;
+export default config;
