@@ -19,6 +19,11 @@ environment variables** on the payment deployment:
 - `CASHFREE_CLIENT_ID`
 - `CASHFREE_CLIENT_SECRET`
 
+The public checkout origin defaults to `https://payment.campusweb.in`. For a
+different preview/deployment domain, set `PAYMENT_SITE_URL` to its exact origin.
+Origin validation and Cashfree return URLs use this public origin even when the
+hosting proxy gives Next.js an internal request URL.
+
 Do not prefix these with `NEXT_PUBLIC_` or commit their values. Whitelist
 `payment.campusweb.in` in Cashfree. This app needs a Next.js server, not a static
 export. No CampusAPI URL or university credentials are required.

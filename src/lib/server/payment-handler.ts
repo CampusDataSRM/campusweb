@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { checkoutOrigin, CheckoutOriginError } from "./checkout-origin";
 import {
   createOrder,
   PaymentError,
@@ -11,9 +12,7 @@ export async function handlePayment(
   action: "order" | "verify",
 ) {
   try {
-    const url = new URL(request.url);
-    if (request.headers.get("origin") !== url.origin)
-      throw new PaymentError("Open checkout on this website to continue.", 403);
+    const origin = checkoutOrigin(request);
     if (Number(request.headers.get("content-length")) > 2048)
       throw new PaymentError("Invalid checkout request.", 400);
     const body = await request.json().catch(() => {
@@ -22,7 +21,7 @@ export async function handlePayment(
     const id = validateRequestId(body?.request_id);
     const data =
       action === "order"
-        ? await createOrder(id, body.phone, url.origin)
+        ? await createOrder(id, body.phone, origin)
         : await verifyOrder(id);
     return NextResponse.json(data, {
       headers: { "Cache-Control": "no-store" },
@@ -31,12 +30,17 @@ export async function handlePayment(
     return NextResponse.json(
       {
         message:
-          error instanceof PaymentError
+          error instanceof PaymentError || error instanceof CheckoutOriginError
             ? error.message
             : "Secure checkout is temporarily unavailable. Please retry.",
       },
       {
-        status: error instanceof PaymentError ? error.status : 502,
+        status:
+          error instanceof CheckoutOriginError
+            ? 403
+            : error instanceof PaymentError
+              ? error.status
+              : 502,
         headers: { "Cache-Control": "no-store" },
       },
     );
