@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Script from "next/script";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { parseAppCheckout, type AppCheckout } from "@/lib/app-checkout";
 
 // Browser values only select checkout/receipt. The signed-in Flutter app must
@@ -14,6 +14,7 @@ export function AppPaymentCheckout() {
   const [paid, setPaid] = useState(false);
   const [message, setMessage] = useState("Preparing your payment…");
   const lock = useRef(false);
+  const autoOpened = useRef(false);
   useEffect(() => {
     let active = true;
     void Promise.resolve().then(() => {
@@ -37,65 +38,75 @@ export function AppPaymentCheckout() {
     };
   }, []);
 
-  async function pay(checkOnly = false) {
-    if (!checkout || paid || lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setMessage("");
-    try {
-      if (!navigator.onLine)
-        throw new Error("Connect to the internet to continue.");
-      if (!checkOnly) {
-        if (!window.Cashfree)
-          throw new Error("Cashfree is still loading. Please retry.");
-        await window.Cashfree({ mode: "production" }).checkout({
-          paymentSessionId: checkout.sessionId,
-          redirectTarget: "_modal",
+  const pay = useCallback(
+    async (checkOnly = false) => {
+      if (!checkout || paid || lock.current) return;
+      lock.current = true;
+      setBusy(true);
+      setMessage("");
+      try {
+        if (!navigator.onLine)
+          throw new Error("Connect to the internet to continue.");
+        if (!checkOnly) {
+          if (!window.Cashfree)
+            throw new Error("Cashfree is still loading. Please retry.");
+          await window.Cashfree({ mode: "production" }).checkout({
+            paymentSessionId: checkout.sessionId,
+            redirectTarget: "_modal",
+          });
+        }
+        const response = await fetch("/api/payment/app/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_id: checkout.orderId,
+            amount: checkout.amount,
+          }),
+          cache: "no-store",
+          signal: AbortSignal.timeout(40_000),
         });
+        const result = await response.json();
+        if (!response.ok)
+          throw new Error(result.message ?? "Could not confirm payment.");
+        if (
+          result.status === "paid" &&
+          result.order_id === checkout.orderId &&
+          result.amount === checkout.amount
+        ) {
+          setPaid(true);
+          setMessage(
+            "Close this browser to return to Campus App. The app will verify and activate your access.",
+          );
+        } else if (result.status === "expired") {
+          setMessage(
+            "This checkout expired. Close this browser and start a fresh payment in Campus App.",
+          );
+        } else {
+          setMessage(
+            "Payment is still being confirmed. Check again, or close this browser and check status in Campus App.",
+          );
+        }
+      } catch (error) {
+        setMessage(
+          (error instanceof Error
+            ? error.message
+            : "Could not confirm payment.") +
+            " You can also close this browser and check status in Campus App.",
+        );
+      } finally {
+        lock.current = false;
+        setBusy(false);
       }
-      const response = await fetch("/api/payment/app/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_id: checkout.orderId,
-          amount: checkout.amount,
-        }),
-        cache: "no-store",
-        signal: AbortSignal.timeout(40_000),
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message ?? "Could not confirm payment.");
-      if (
-        result.status === "paid" &&
-        result.order_id === checkout.orderId &&
-        result.amount === checkout.amount
-      ) {
-        setPaid(true);
-        setMessage(
-          "Close this browser to return to Campus App. The app will verify and activate your access.",
-        );
-      } else if (result.status === "expired") {
-        setMessage(
-          "This checkout expired. Close this browser and start a fresh payment in Campus App.",
-        );
-      } else {
-        setMessage(
-          "Payment is still being confirmed. Check again, or close this browser and check status in Campus App.",
-        );
-      }
-    } catch (error) {
-      setMessage(
-        (error instanceof Error
-          ? error.message
-          : "Could not confirm payment.") +
-          " You can also close this browser and check status in Campus App.",
-      );
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
-  }
+    },
+    [checkout, paid],
+  );
+
+  useEffect(() => {
+    if (!ready || !checkout || autoOpened.current) return;
+    autoOpened.current = true;
+    // Cashfree modal checkout embeds its window; no second user click is needed.
+    void Promise.resolve().then(() => pay());
+  }, [ready, checkout, pay]);
 
   return (
     <main className="payment-page">
@@ -120,13 +131,13 @@ export function AppPaymentCheckout() {
           {paid
             ? "Payment confirmed"
             : checkout
-              ? `Pay ₹${checkout.amount}.`
+              ? "Opening Cashfree…"
               : "Campus App payment"}
         </h1>
         <p className="description">
           {paid
             ? "Thank you for supporting Campus."
-            : "30 days of Campus access. One-time payment."}
+            : "Complete your payment in the Cashfree window."}
         </p>
         {checkout && !paid && (
           <>
@@ -136,14 +147,16 @@ export function AppPaymentCheckout() {
                 ₹{checkout.amount}.00 <small>INR</small>
               </strong>
             </div>
-            <button
-              className="pay-button"
-              disabled={!ready || busy}
-              onClick={() => void pay()}
-            >
-              {busy ? "Checking payment…" : `Pay ₹${checkout.amount}`}
-              <span aria-hidden>↗</span>
-            </button>
+            {message && !busy && (
+              <button
+                className="pay-button"
+                disabled={!ready || busy}
+                onClick={() => void pay()}
+              >
+                Open Cashfree again
+                <span aria-hidden>↗</span>
+              </button>
+            )}
             <button
               className="check-button"
               disabled={busy}

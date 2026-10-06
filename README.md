@@ -47,6 +47,7 @@ The URL fragment carries only `order_id`, `payment_session_id`, and `amount`
 (10, 12, 15, or 20 INR). The page clears that fragment from history after loading.
 There is no student credential, account identifier, or merchant secret in the URL.
 
+Cashfree checkout opens automatically after the handoff; there is no second Pay step.
 The browser reuses that order; it never creates a standalone `web_` payment.
 `/api/payment/app/verify` verifies Cashfree's receipt for display. The Flutter app
 independently calls CampusAPI's authenticated verify endpoint for the exact
