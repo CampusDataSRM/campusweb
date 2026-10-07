@@ -1,4 +1,5 @@
 import { clearStoredSession } from "@/lib/auth/session";
+import { clearCachedPages } from "@/lib/pwa/sw-client";
 /**
  * Shared axios client for all API calls.
  *
@@ -67,6 +68,7 @@ function createApiClient(): AxiosInstance {
       ) {
         revocationPending = true;
         await clearStoredSession();
+        await clearCachedPages();
         // Carry only a public reason through the full reload, never session data.
         window.location.replace("/#session-revoked");
       }

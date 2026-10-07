@@ -18,7 +18,7 @@
  * on activate. Served with no-cache (next.config.ts) so updates land at once.
  */
 
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC = `cw-static-${VERSION}`;
 const PAGES = `cw-pages-${VERSION}`;
 const ASSETS = `cw-assets-${VERSION}`;
@@ -113,7 +113,9 @@ async function page(event) {
   const network = (async () => {
     const preloaded = await event.preloadResponse;
     const response = preloaded || (await fetch(request));
-    if (cacheable(response)) event.waitUntil(putIn(PAGES, pageKey(request.url), response.clone()));
+    // Auth redirects may land on login/events. Never store that HTML under
+    // /student: Next would then hydrate the wrong route on a later visit.
+    if (cacheable(response) && !response.redirected) event.waitUntil(putIn(PAGES, pageKey(request.url), response.clone()));
     return response;
   })();
 

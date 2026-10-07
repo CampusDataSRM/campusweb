@@ -44,7 +44,7 @@ QR login uses only POST `/qr/create` and polling GET `/qr/status`; there is no S
 
 ## Verified evidence
 
-- 35 automated tests passed, covering QR lifecycle/provider metadata, friendly
+- 37 automated tests passed, covering QR lifecycle/provider metadata, friendly
   device labels, cookie parsing, both request builders, and legacy compatibility.
 - Production build/TypeScript and focused ESLint passed.
 - Browser fixtures passed password and QR provider selection, reload persistence,
@@ -69,3 +69,17 @@ platform. The browser sends friendly `X-Device-Name` and `X-Device-Platform: web
 on both QR create/status requests (confirmed in Firefox). Correct stored device
 metadata still needs backend verification; changing frontend display labels would
 not prove the backend captured it.
+
+## Dashboard navigation after QR re-login
+
+A follow-up repair resets routing with a full navigation at session changes,
+clears all `cw-pages-*` cache versions (the client previously cleared v1 while
+the worker used v2), and prevents redirected HTML from being cached under the
+requested dashboard URL. The service worker is now v3 to discard old entries.
+Remote revocation clears page caches before returning to sign-in.
+
+Two regression tests failed before the repair and pass afterward. Production
+browser fixtures with an active service worker passed QR login, remote 401
+revocation, QR re-login, old-cache removal, and three repeated Events/Dashboard
+transitions for both Academia and Student Portal. These fixtures use synthetic
+API responses; they do not claim another live phone approval.

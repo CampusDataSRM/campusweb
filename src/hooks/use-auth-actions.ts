@@ -3,12 +3,11 @@
 /**
  * Session lifecycle actions: sign in, browse as guest, sign out.
  *
- * Navigation uses `replace` so Back never returns to a page the session no
- * longer allows; proxy.ts routes the next request on the new cookie.
+ * Session changes use a full navigation so prefetched redirects from the
+ * previous cookie cannot survive; proxy.ts reads the new cookie afresh.
  */
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import { ROUTES } from "@/constants/auth";
@@ -33,19 +32,19 @@ const scopeOf = (session: StudentSession) =>
 
 /** Both password and phone login enter through the same persisted session. */
 export function useCompleteSignIn() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { startSession } = useSession();
   return useCallback(
     async (session: StudentSession) => {
+      await clearCachedPages();
       await startSession(session);
       await queryClient.invalidateQueries({
         queryKey: queryKeys.student.all(scopeOf(session)),
       });
       notify.success("Signed in", { id: "auth" });
-      router.replace(ROUTES.student);
+      window.location.replace(ROUTES.student);
     },
-    [router, queryClient, startSession],
+    [queryClient, startSession],
   );
 }
 
@@ -59,19 +58,20 @@ export function useSignIn() {
 
 /** Start a guest session and open a public page (events by default). */
 export function useBrowseAsGuest() {
-  const router = useRouter();
   const { startSession } = useSession();
   return useCallback(
     async (to?: unknown) => {
+      await clearCachedPages();
       await startSession({ kind: "guest", token: "", netId: "" });
-      router.replace(typeof to === "string" ? to : STUDENT_ROUTES.events);
+      window.location.replace(
+        typeof to === "string" ? to : STUDENT_ROUTES.events,
+      );
     },
-    [router, startSession],
+    [startSession],
   );
 }
 
 export function useSignOut() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { session, endSession } = useSession();
 
@@ -89,6 +89,6 @@ export function useSignOut() {
       await clearCachedPages();
     }
     await endSession();
-    router.replace(ROUTES.home);
-  }, [endSession, queryClient, router, session]);
+    window.location.replace(ROUTES.home);
+  }, [endSession, queryClient, session]);
 }

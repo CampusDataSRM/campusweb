@@ -6,8 +6,8 @@
  */
 
 /** Must match PAGES in public/sw.js. */
-export const PAGES_CACHE = "cw-pages-v1";
-const WARMED_KEY = "cw-warmed-v1";
+export const PAGES_CACHE = "cw-pages-v3";
+const WARMED_KEY = "cw-warmed-v3";
 
 export const swSupported = () =>
   typeof navigator !== "undefined" && "serviceWorker" in navigator;
@@ -65,8 +65,18 @@ export async function clearCachedPages(): Promise<void> {
   } catch {
     // Ignore.
   }
-  if (typeof caches !== "undefined")
-    await caches.delete(PAGES_CACHE).catch(() => false);
+  if (typeof caches !== "undefined") {
+    try {
+      const names = await caches.keys();
+      await Promise.all(
+        names
+          .filter((name) => name.startsWith("cw-pages-"))
+          .map((name) => caches.delete(name)),
+      );
+    } catch {
+      // Cache storage may be unavailable; session navigation must still finish.
+    }
+  }
   if (swSupported())
     navigator.serviceWorker.controller?.postMessage({ type: "CLEAR_PAGES" });
 }
