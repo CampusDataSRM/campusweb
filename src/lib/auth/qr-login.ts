@@ -1,3 +1,4 @@
+import { webDeviceHeaders } from "./device-info.ts";
 /** Ephemeral QR channel. Secrets stay in this closure, outside query caches/storage. */
 export type QrState =
   | "creating"
@@ -15,7 +16,10 @@ export interface QrView {
 }
 export interface QrApproval {
   netId: string;
-  cookies: string;
+  cookies?: string;
+  sessionToken?: string;
+  sessionId?: string;
+  provider?: string;
 }
 
 export function qrPayload(channelId: string): string {
@@ -59,6 +63,7 @@ export function startQrLogin(
   const request = async (url: URL, method: "GET" | "POST") => {
     const response = await fetch(url, {
       method,
+      headers: webDeviceHeaders(),
       cache: "no-store",
       credentials: "omit",
       referrerPolicy: "no-referrer",
@@ -87,15 +92,28 @@ export function startQrLogin(
         if (
           typeof result.netId !== "string" ||
           !result.netId ||
-          typeof result.cookies !== "string" ||
-          !result.cookies
+          (result.provider === "student_portal"
+            ? typeof result.sessionToken !== "string" || !result.sessionToken
+            : typeof result.cookies !== "string" || !result.cookies)
         ) {
           finish("error");
           return;
         }
         finish("approved"); // Stop before persisting or navigating: approval is returned once.
         try {
-          await approve({ netId: result.netId, cookies: result.cookies });
+          await approve({
+            netId: result.netId,
+            cookies: result.cookies,
+            ...(typeof result.sessionToken === "string" && result.sessionToken
+              ? { sessionToken: result.sessionToken }
+              : {}),
+            ...(typeof result.sessionId === "string"
+              ? { sessionId: result.sessionId }
+              : {}),
+            ...(typeof result.provider === "string"
+              ? { provider: result.provider }
+              : {}),
+          });
         } catch {
           status = "error";
           publish();

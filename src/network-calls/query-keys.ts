@@ -11,6 +11,7 @@
 export const queryKeys = {
   student: {
     all: (scope: string) => ["student", scope] as const,
+    sessions: (scope: string) => ["student", scope, "sessions"] as const,
     profile: (scope: string) => ["student", scope, "profile"] as const,
     timetable: (scope: string, batch: number) =>
       ["student", scope, "timetable", batch] as const,

@@ -29,6 +29,8 @@ export interface StudentSession {
   token: string;
   /** Username without the domain, lowercased - sent as X-Net-ID. */
   netId: string;
+  /** Unified server-issued token; optional for older cookie-only sessions. */
+  sessionToken?: string;
 }
 
 const KINDS: readonly SessionKind[] = [
@@ -39,7 +41,9 @@ const KINDS: readonly SessionKind[] = [
 ];
 
 /** Validate untrusted cookie content into a session, or null. */
-export function parseSession(raw: string | null | undefined): StudentSession | null {
+export function parseSession(
+  raw: string | null | undefined,
+): StudentSession | null {
   if (!raw) return null;
   try {
     const value = JSON.parse(raw) as Partial<StudentSession>;
@@ -47,7 +51,14 @@ export function parseSession(raw: string | null | undefined): StudentSession | n
     const token = typeof value.token === "string" ? value.token : "";
     const netId = typeof value.netId === "string" ? value.netId : "";
     if (value.kind !== "guest" && (!token || !netId)) return null;
-    return { kind: value.kind as SessionKind, token, netId };
+    return {
+      kind: value.kind as SessionKind,
+      token,
+      netId,
+      ...(typeof value.sessionToken === "string" && value.sessionToken
+        ? { sessionToken: value.sessionToken }
+        : {}),
+    };
   } catch {
     return null;
   }
@@ -73,8 +84,12 @@ export async function clearStoredSession(): Promise<void> {
 export const isSignedIn = (session: StudentSession | null) =>
   session !== null && session.kind !== "guest";
 
-export const studentPortalSession = (netId: string): StudentSession => ({
+export const studentPortalSession = (
+  netId: string,
+  sessionToken?: string,
+): StudentSession => ({
   kind: "student-portal",
   token: STUDENT_PORTAL_SESSION_MARKER,
   netId,
+  ...(sessionToken ? { sessionToken } : {}),
 });

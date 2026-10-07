@@ -1,3 +1,4 @@
+import { clearStoredSession } from "@/lib/auth/session";
 /**
  * Shared axios client for all API calls.
  *
@@ -10,12 +11,7 @@
  * credentialless by default.
  */
 
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
 /** Normalized error shape every consumer can rely on. */
 export class ApiError extends Error {
@@ -52,9 +48,20 @@ function createApiClient(): AxiosInstance {
   // error boundaries, toasts) always handle a consistent error type.
   client.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
+    async (error: AxiosError) => {
       const status = error.response?.status;
       const data = error.response?.data;
+      if (
+        status === 401 &&
+        typeof data === "object" &&
+        data !== null &&
+        "code" in data &&
+        data.code === "session_revoked" &&
+        typeof window !== "undefined"
+      ) {
+        await clearStoredSession();
+        window.location.replace("/");
+      }
       const message =
         (typeof data === "object" && data !== null && "message" in data
           ? String((data as { message: unknown }).message)

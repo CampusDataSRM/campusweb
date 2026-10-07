@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCompleteSignIn } from "@/hooks/use-auth-actions";
+import { studentPortalSession } from "@/lib/auth/session";
 import { qrPayload, startQrLogin, type QrView } from "@/lib/auth/qr-login";
 
 const messages = {
@@ -15,7 +16,7 @@ const messages = {
   denied: "Login denied on your phone.",
   expired: "This code has expired.",
   consumed: "This code has already been used.",
-  error: "Phone login is unavailable. Use HTTPS and try a fresh code.",
+  error: "Phone login could not connect. Please try a fresh code.",
 };
 
 export function PhoneSignIn({ onClose }: { onClose: () => void }) {
@@ -27,8 +28,17 @@ export function PhoneSignIn({ onClose }: { onClose: () => void }) {
       startQrLogin(
         process.env.NEXT_PUBLIC_SERVE,
         setView,
-        async ({ netId, cookies }) => {
-          await completeSignIn({ kind: "academia", netId, token: cookies });
+        async ({ netId, cookies, sessionToken, provider }) => {
+          await completeSignIn(
+            provider === "student_portal"
+              ? studentPortalSession(netId, sessionToken)
+              : {
+                  kind: "academia",
+                  netId,
+                  token: cookies!,
+                  ...(sessionToken ? { sessionToken } : {}),
+                },
+          );
         },
       ),
     [generation, completeSignIn],

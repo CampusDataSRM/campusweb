@@ -55,6 +55,8 @@ export interface LoginPassResponse {
  * the harvested Academia session cookies as a raw string.
  */
 export interface LoginResponse {
+  sessionToken?: string;
+  sessionId?: string;
   postResponse?: {
     code?: string;
     message?: string;
@@ -108,6 +110,8 @@ export interface StudentPortalLoginRequest {
 
 /** POST /student-portal/login — response. */
 export interface StudentPortalLoginResponse {
+  session_token?: string;
+  session_id?: string;
   /** Active semester id, e.g. "7". */
   semester_id: string;
   /** "success" on sign-in; other values indicate failure. */

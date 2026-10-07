@@ -1,13 +1,13 @@
 "use client";
 
-import { ChevronRight, ExternalLink, Scale } from "lucide-react";
+import { ChevronRight, ExternalLink, Scale, Laptop } from "lucide-react";
 import Link from "next/link";
 
 import { AccountSummary } from "@/components/layout/account-summary";
 import { PageHeader, Section } from "@/components/layout/page-header";
 import { AppInstall } from "@/components/pwa/app-install";
 import { ThemePicker } from "@/components/theme/theme-picker";
-import { LEGAL_ROUTES } from "@/constants/routes";
+import { LEGAL_ROUTES, STUDENT_ROUTES } from "@/constants/routes";
 import { SOCIAL_LINKS, STORE_LINKS } from "@/constants/site";
 
 const LINKS = [
@@ -35,6 +35,14 @@ export function SettingsView() {
           <Section title="Account">
             <div className="rounded-2xl panel p-4">
               <AccountSummary />
+              <Link
+                href={STUDENT_ROUTES.devices}
+                className="mt-4 flex min-h-12 items-center gap-3 border-t border-outline-variant pt-4 font-semibold text-on-surface hover:text-primary-accent"
+              >
+                <Laptop aria-hidden className="size-5 text-primary-accent" />
+                Devices
+                <ChevronRight aria-hidden className="ml-auto size-5" />
+              </Link>
             </div>
           </Section>
           <Section title="More">

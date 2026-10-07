@@ -1,3 +1,4 @@
+import { webDeviceHeaders } from "@/lib/auth/device-info";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -20,7 +21,7 @@ export async function postLogin(
   const { data } = await apiClient.post<LoginResponse>(
     "/auth/login",
     credentials,
-    config,
+    { ...config, headers: { ...config?.headers, ...webDeviceHeaders() } },
   );
   return data;
 }

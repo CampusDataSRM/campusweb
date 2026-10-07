@@ -18,11 +18,18 @@ export function studentRequestConfig(
   session: StudentSession | null,
 ): RequestConfig {
   if (!session || session.kind === "guest") return {};
+  const unified = session.sessionToken
+    ? { "X-Session-Token": session.sessionToken }
+    : {};
   if (session.kind === "demo") {
-    return { headers: { "X-Demo-Token": session.token } };
+    return { headers: { "X-Demo-Token": session.token, ...unified } };
   }
   return {
-    headers: { "X-CSRF-Token": session.token, "X-Net-ID": session.netId },
+    headers: {
+      "X-CSRF-Token": session.token,
+      "X-Net-ID": session.netId,
+      ...unified,
+    },
     withCredentials: session.kind === "student-portal",
   };
 }

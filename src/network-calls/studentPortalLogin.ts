@@ -1,3 +1,4 @@
+import { webDeviceHeaders } from "@/lib/auth/device-info";
 
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
@@ -22,7 +23,7 @@ export async function postStudentPortalLogin(
   const { data } = await apiClient.post<StudentPortalLoginResponse>(
     "/student-portal/login",
     credentials,
-    config,
+    { ...config, headers: { ...config?.headers, ...webDeviceHeaders() } },
   );
   return data;
 }

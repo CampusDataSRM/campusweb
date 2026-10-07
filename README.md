@@ -58,3 +58,25 @@ Configure `CASHFREE_ENV=production`, `CASHFREE_CLIENT_ID`, and
 Run `npm test` for QR lifecycle and payment tests, and `npm run build` for the
 production build and TypeScript checks. A real CampusApp scan/approval remains a
 deployment/device acceptance check.
+
+## Unified sessions and devices
+
+New password logins capture the backend's unified session token; QR approvals
+also select the Academia or Student Portal provider. The optional `sessionToken`
+rides in `cw-session`, alongside the existing token and NetID. Authenticated calls
+send `X-Session-Token` when available and retain their existing auth headers and
+Student Portal credentials. Older sessions remain usable; sign in again to enable
+device management.
+
+Password-login and QR requests identify the browser with `X-Client: web`,
+`X-Device-Platform: web`, and a browser/OS label in `X-Device-Name`. The API's CORS
+configuration must allow these three headers plus `X-Session-Token` and the
+frontend origin. On a 401 with `code: session_revoked`, the frontend clears its
+session cookie and navigates back to login; other 401 codes keep existing error
+handling.
+
+Open **Settings → Devices** (`/student/settings/devices`) to list sessions, sign
+out another device, or sign out everywhere else. Requests use `/sessions` under
+the configured API base (which already includes `/api`). The current device has
+no individual revoke action. The list refreshes after mutations, on window focus,
+and every 30 seconds while the page is open.

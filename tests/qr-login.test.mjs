@@ -130,3 +130,38 @@ test("HTTP API configuration is rejected before creating a channel", async (t) =
   assert.equal(fetch.mock.callCount(), 0);
   assert.equal(views.at(-1).status, "error");
 });
+
+test("QR approval carries unified Academia session metadata", async (t) => {
+  const approval = {
+    status: "approved",
+    netId: "AB1234",
+    cookies: "synthetic-cookie",
+    sessionToken: "synthetic-unified",
+    sessionId: "session-1",
+    provider: "academia",
+  };
+  const s = setup(t, [channel, approval]);
+  await flush();
+  assert.equal(s.calls[0].options.headers["X-Client"], "web");
+  assert.equal(s.calls[0].options.headers["X-Device-Platform"], "web");
+  t.mock.timers.tick(2000);
+  await flush();
+  const { status, ...expected } = approval;
+  assert.deepEqual(s.approvals, [expected]);
+});
+test("Student Portal QR approval does not require Academia cookies", async (t) => {
+  const s = setup(t, [
+    channel,
+    {
+      status: "approved",
+      netId: "AB1234",
+      sessionToken: "synthetic-unified",
+      provider: "student_portal",
+    },
+  ]);
+  await flush();
+  t.mock.timers.tick(2000);
+  await flush();
+  assert.equal(s.approvals[0].provider, "student_portal");
+  assert.equal(s.approvals[0].sessionToken, "synthetic-unified");
+});

@@ -73,13 +73,19 @@ export function isFirstYearAccount(
 async function academiaLogin(
   identity: LoginIdentity,
   password: string,
-): Promise<string> {
+): Promise<StudentSession> {
   const response: LoginResponse & { cookies?: string } = await postLogin(
     { username: identity.loginId, password },
     { timeout: LOGIN_TIMEOUT_MS },
   );
   const cookies = response.Cookies ?? response.cookies;
-  if (cookies) return cookies;
+  if (cookies)
+    return {
+      kind: "academia",
+      token: cookies,
+      netId: identity.netId,
+      ...(response.sessionToken ? { sessionToken: response.sessionToken } : {}),
+    };
   // A 200 that still failed: read the body the same way as an error response.
   throw fromFailureBody(response);
 }
@@ -121,11 +127,6 @@ export async function signIn({
 
   const academia = settle(academiaLogin(identity, password));
   const portal = settle(studentPortalLogin(identity, password));
-  const academiaSession = (token: string): StudentSession => ({
-    kind: "academia",
-    token,
-    netId: identity.netId,
-  });
 
   const first = await Promise.race([
     academia.then((result) => ({ source: "academia" as const, result })),
@@ -138,17 +139,20 @@ export async function signIn({
       delay(STUDENT_PORTAL_GRACE_MS),
     ]);
     return quickPortal?.ok && isFirstYearAccount(quickPortal.value)
-      ? studentPortalSession(identity.netId)
-      : academiaSession(first.result.value);
+      ? studentPortalSession(identity.netId, quickPortal.value.session_token)
+      : first.result.value;
   }
 
   const portalResult = await portal;
   if (portalResult.ok && isFirstYearAccount(portalResult.value)) {
-    return studentPortalSession(identity.netId);
+    return studentPortalSession(
+      identity.netId,
+      portalResult.value.session_token,
+    );
   }
 
   const academiaResult = await academia;
-  if (academiaResult.ok) return academiaSession(academiaResult.value);
+  if (academiaResult.ok) return academiaResult.value;
 
   // Portal signed in but says this isn't a first-year, and Academia failed:
   // Academia is their login, so its error is the one that matters.
