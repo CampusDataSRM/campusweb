@@ -1,76 +1,60 @@
-# Campus Web payment
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This branch contains only a public ₹10 Cashfree checkout at `/`. There is no
-student login, dashboard, club portal, academic data, or new subscription.
-Old `/student/*`, `/club/*`, and `/payment` URLs redirect to checkout.
+## Getting Started
 
-## Run
+First, run the development server:
 
-```sh
-npm ci
-cp .env.example .env.local
+```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Use the same production merchant settings as CampusAPI, configured as **server
-environment variables** on the payment deployment:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- `CASHFREE_ENV=production`
-- `CASHFREE_CLIENT_ID`
-- `CASHFREE_CLIENT_SECRET`
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-The public checkout origin defaults to `https://payment.campusweb.in`. For a
-different preview/deployment domain, set `PAYMENT_SITE_URL` to its exact origin.
-Origin validation and Cashfree return URLs use this public origin even when the
-hosting proxy gives Next.js an internal request URL.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Do not prefix these with `NEXT_PUBLIC_` or commit their values. Whitelist
-`payment.campusweb.in` in Cashfree. This app needs a Next.js server, not a static
-export. No CampusAPI URL or university credentials are required.
+## Learn More
 
-Orders are fixed to ₹10 INR on the server. A random browser request ID maps to
-a stable merchant order ID for retries. Confirmation requires a PAID order and
-a matching SUCCESS transaction fetched from Cashfree, never an SDK callback.
-Pending payments can be checked again; expired orders can be restarted.
+To learn more about Next.js, take a look at the following resources:
 
-These standalone `web_` orders are payment tests/receipts. They do not grant
-student access or create CampusAPI payment records. The existing CampusAPI
-webhook configuration is not changed by this branch; it does not fulfill these
-standalone orders. Cashfree's order/payment API is the source of confirmation.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Campus App browser checkout
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Android uses an embedded Android WebView inside a private app activity; iOS retains its existing native Cashfree SDK.
-The Flutter app creates its order through CampusAPI's authenticated
-`/auth/payment/cashfree/order` endpoint, then opens `/app?embedded=1` inside the app. This mode shows only a loading state and the Cashfree checkout, with no browser chrome, brand card, footer, or second Pay step.
-The URL fragment carries only `order_id`, `payment_session_id`, and `amount`
-(10, 12, 15, or 20 INR). The page clears that fragment from history after loading.
-There is no student credential, account identifier, or merchant secret in the URL.
+## Deploy on Vercel
 
-Cashfree checkout opens automatically after the handoff; there is no second Pay step.
-The browser reuses that order; it never creates a standalone `web_` payment.
-`/api/payment/app/verify` verifies Cashfree's receipt for display. The Flutter app
-independently calls CampusAPI's authenticated verify endpoint for the exact
-order before unlocking access. Existing CampusAPI webhooks fulfill these
-account-bound `cf_` orders normally. Keep the same Cashfree merchant keys on
-both services. The native completion event is only a verification hint. CampusAPI confirmation
-automatically closes the checkout and returns to the app. Android back cancels
-the screen without treating cancellation as payment; pending orders are retained.
-HTTPS bank/3DS navigation stays inside the WebView, while selected UPI app
-links open the payment app. No browser chooser is launched.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Deploy this branch with `/app` before distributing the updated Flutter app.
-Existing standalone checkout at `/` remains available.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Verify
+## Phone QR login
 
-```sh
-npm test
-npm run lint
-npm run build
-```
+Set `NEXT_PUBLIC_SERVE=https://api.campusweb.in/api` at **build time** (the Docker
+build already accepts this argument). Serve the frontend over HTTPS. On the login
+page, choose **Log in with phone**, scan in the signed-in CampusApp, and approve.
+The browser uses the existing Academia session cookie and authenticated request
+headers, then opens `/student`. No credentials or captcha are entered on the web.
 
-Tests use mocked provider responses; no money is transferred by them. Verify a
-real payment on the configured deployment separately.
+QR channels and their secrets are ephemeral: nothing is saved in web storage,
+URLs used for navigation, or query caches. The QR contains only the channel ID.
+The status endpoint requires the secret as a query parameter over HTTPS; these
+requests use no-store and no-referrer. Backend/access-log operators should redact
+that parameter. Denied, expired, consumed, and failed channels stop polling and
+allow **Refresh code**. Switching back to password login cancels the channel.
 
-[Cashfree integration reference](https://www.cashfree.com/docs/payments/online/web/redirect)
+The full v2 site is restored on this branch; the existing standalone Cashfree
+checkout lives at `/payment`, and the CampusApp checkout handoff stays at `/app`.
+Configure `CASHFREE_ENV=production`, `CASHFREE_CLIENT_ID`, and
+`CASHFREE_CLIENT_SECRET` on the server for those routes.
+
+Run `npm test` for QR lifecycle and payment tests, and `npm run build` for the
+production build and TypeScript checks. A real CampusApp scan/approval remains a
+deployment/device acceptance check.

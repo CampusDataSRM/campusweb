@@ -1,253 +1,565 @@
-:root {
-  color-scheme: dark;
-  --muted: #acb7c9;
-  --accent: #20baff;
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* The app is dark-first: every palette is a dark palette. */
+@custom-variant dark (&:where(html, html *));
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Colour utilities.
+
+   No colour is defined in this file. Palette values (`--surface`, `--primary`
+   ...) are generated from src/constants/theme.ts and injected by the root
+   layout; this block only exposes them as Tailwind utilities
+   (`bg-surface-container`, `text-on-surface-muted`, `border-outline` ...).
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-modal: var(--surface-modal);
+
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-brand: var(--on-surface-brand);
+  --color-on-surface-muted: var(--on-surface-muted);
+  --color-on-surface-subtle: var(--on-surface-subtle);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-accent: var(--primary-accent);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-success: var(--success);
+  --color-on-success: var(--on-success);
+  --color-success-accent: var(--success-accent);
+  --color-success-container: var(--success-container);
+  --color-on-success-container: var(--on-success-container);
+
+  --color-warning: var(--warning);
+  --color-on-warning: var(--on-warning);
+  --color-warning-accent: var(--warning-accent);
+  --color-warning-container: var(--warning-container);
+  --color-on-warning-container: var(--on-warning-container);
+
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+  --color-danger-accent: var(--danger-accent);
+  --color-danger-container: var(--danger-container);
+  --color-on-danger-container: var(--on-danger-container);
+
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* shadcn/ui names, aliased onto the roles above so stock components theme
+     correctly with no edits. */
+  --color-background: var(--surface);
+  --color-foreground: var(--on-surface);
+  --color-card: var(--surface-container);
+  --color-card-foreground: var(--on-surface);
+  --color-popover: var(--surface-modal);
+  --color-popover-foreground: var(--on-surface);
+  --color-primary-foreground: var(--on-primary);
+  --color-secondary-foreground: var(--on-secondary);
+  --color-muted: var(--surface-highest);
+  --color-muted-foreground: var(--on-surface-muted);
+  --color-accent: var(--surface-high);
+  --color-accent-foreground: var(--on-surface);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--on-danger);
+  --color-border: var(--outline-variant);
+  --color-input: var(--outline);
+
+  --color-sidebar: color-mix(in oklab, var(--surface-low) 45%, transparent);
+  --color-sidebar-foreground: var(--on-surface);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--on-primary);
+  --color-sidebar-accent: var(--surface-high);
+  --color-sidebar-accent-foreground: var(--on-surface);
+  --color-sidebar-border: var(--outline-variant);
+  --color-sidebar-ring: var(--ring);
+
+  /* ── Typography ── */
+  --font-sans: var(--font-dm-sans);
+  --font-heading: var(--font-home);
+
+  /* ── Radius: 12px base. Controls 8, cards 12-16, sheets/dialogs 20-28. ── */
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: calc(var(--radius) + 24px);
 }
-* {
-  box-sizing: border-box;
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Scale tokens (not colour): type, motion, layout.
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Fluid type, 360 -> 1440px viewports. Each clamp() keeps a rem term so
+     browser zoom still scales it (WCAG 1.4.4). Body text stays fixed. */
+  --text-display: clamp(2rem, 1.5rem + 2.222vw, 3.5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-h1: clamp(1.75rem, 1.5rem + 1.111vw, 2.5rem);
+  --text-h1--line-height: 1.12;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: clamp(1.375rem, 1.208rem + 0.741vw, 1.875rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h3: clamp(1.125rem, 1.042rem + 0.37vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+  --text-stat: clamp(1.75rem, 1.417rem + 1.481vw, 2.75rem);
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.02em;
+
+  /* Motion (Material 3 tokens). Exits run ~30% faster than entrances. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --duration-micro: 100ms;
+  --duration-short: 150ms;
+  --duration-medium: 250ms;
+  --duration-long: 400ms;
+
+  /* Layout */
+  --spacing-page: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --container-content: 72rem;
+
+  --animate-shimmer: shimmer 1.6s var(--ease-standard) infinite;
 }
-body {
-  margin: 0;
-  color: #eef4fc;
-  background: #030711;
-}
-button,
-input {
-  font: inherit;
-}
-button:focus-visible,
-a:focus-visible,
-input:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 4px;
-}
-.payment-page {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 36px 24px;
-  background: radial-gradient(ellipse at 85% 20%, #101b3d 0, transparent 55%);
-}
-.brand {
-  align-self: flex-start;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-.checkout {
-  width: 100%;
-  max-width: 460px;
-  margin: auto;
-  padding: 40px;
-  border: 1px solid #293449;
-  border-radius: 24px;
-  background: linear-gradient(145deg, #071323, #111d3c);
-  box-shadow: 0 24px 70px #0005;
-}
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-}
-.eyebrow span {
-  font-size: 24px;
-  line-height: 1;
-}
-h1 {
-  margin: 24px 0 8px;
-  font-size: clamp(32px, 7vw, 48px);
-  font-weight: 600;
-  letter-spacing: -1.5px;
-}
-.description {
-  color: var(--muted);
-  line-height: 1.6;
-  font-size: 14px;
-  margin: 0 0 30px;
-}
-.amount {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 0;
-  margin-bottom: 24px;
-  border-top: 1px solid #2a3548;
-  border-bottom: 1px solid #2a3548;
-}
-.amount > span {
-  font-size: 14px;
-  color: var(--muted);
-}
-.amount strong {
-  font-size: 24px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.amount small {
-  font-size: 11px;
-  color: var(--muted);
-}
-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.phone-field {
-  display: flex;
-  align-items: center;
-  border: 1px solid #52617b;
-  border-radius: 12px;
-  background: #ffffff05;
-}
-.phone-field > span {
-  padding: 0 14px;
-  border-right: 1px solid #52617b;
-  font-size: 14px;
-  color: var(--muted);
-}
-input {
-  min-width: 0;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #eef4fc;
-  padding: 15px 12px;
-  font-size: 16px;
-  border-radius: 12px;
-}
-input::placeholder {
-  color: #97a7bf;
-  font-size: 14px;
-}
-.pay-button {
-  margin-top: 22px;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  min-height: 50px;
-  border: 0;
-  border-radius: 12px;
-  background: #0079ad;
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.pay-button:hover {
-  background: #007eaf;
-}
-button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-.check-button {
-  display: block;
-  width: 100%;
-  min-height: 44px;
-  margin-top: 8px;
-  border: 0;
-  background: transparent;
-  color: #d5e5fc;
-  font-size: 13px;
-  cursor: pointer;
-}
-.status {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #d0e3fb;
-  margin: 16px 0;
-}
-.status:empty {
-  display: none;
-}
-.processor {
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 24px;
-}
-.processor strong {
-  color: #edf5ff;
-}
-footer {
-  text-align: center;
-  margin-top: 32px;
-  color: #94a5be;
-  font-size: 12px;
-}
-footer div {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-a {
-  color: #b8cbe5;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-footer p {
-  margin: 18px 0 0;
-}
-@media (max-width: 520px) {
-  .payment-page {
-    padding: 24px 18px;
-    gap: 32px;
-  }
-  .checkout {
-    padding: 30px 24px;
-    margin: auto 0;
-  }
-  .brand {
-    font-size: 15px;
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
   }
 }
 
-.embedded-checkout {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: #fff;
-  color: #17212b;
-  text-align: center;
-  color-scheme: light;
-}
-.checkout-spinner {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 3px solid #e5ebf0;
-  border-top-color: #007fa8;
-  border-radius: 50%;
-  animation: checkout-spin 0.8s linear infinite;
-}
-.embedded-retry {
-  border: 0;
-  border-radius: 8px;
-  background: #007fa8;
-  color: #fff;
-  padding: 12px 20px;
-  cursor: pointer;
-}
-@keyframes checkout-spin {
-  to {
-    transform: rotate(360deg);
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.375rem transparent;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .checkout-spinner {
-    animation: none;
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6%, 5%, 0) scale(1.15);
+  }
+}
+
+@keyframes route-load {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.92);
+  }
+}
+
+@keyframes route-done {
+  from {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-y {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes ring-draw {
+  from {
+    stroke-dashoffset: var(--ring-c);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+:root {
+  --radius: 0.75rem;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply bg-surface font-sans text-on-surface;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply min-h-dvh text-on-surface antialiased;
+    /* Transparent on purpose: <html> paints the canvas colour, and the
+       palette's glow (body::before) must sit between the two. */
+    background: transparent;
+  }
+
+  /* The palette's backdrop (Campus Glow's glow), pinned to the viewport. A
+     fixed layer rather than background-attachment, which iOS ignores. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--backdrop);
+  }
+
+  /* A whisper of grain over the glow - smooths the banding dark gradients
+     show on most screens. Static, one tiny inline SVG. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Hide the CSS backdrop layers when a canvas backdrop effect is active. */
+  html[data-backdrop-effect] body::before,
+  html[data-backdrop-effect] body::after {
+    display: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading text-balance;
+  }
+
+  /* Visible, high-contrast focus for keyboard users only (WCAG 2.4.7 / 2.4.13).
+     A solid 2px ring with an offset in the canvas colour - shadcn's default
+     translucent ring falls below 3:1. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+
+  /* Thin, palette-aware scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-bright) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Skeleton shimmer in palette colours - never a white flash. */
+  .skeleton-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--surface-high) 0%,
+      var(--surface-highest) 50%,
+      var(--surface-high) 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* The primary call-to-action fill - a gradient in Campus Glow. */
+  .bg-cta {
+    background: var(--cta);
+  }
+
+  /* One entrance per route keeps responsive and async content visible. */
+  .page-enter {
+    animation: rise-in var(--duration-long) var(--ease-decelerate) both;
+  }
+
+  /* Tap feedback on anything that navigates or opens. */
+  .pressable {
+    transition:
+      transform var(--duration-short) var(--ease-standard),
+      border-color var(--duration-short) var(--ease-standard),
+      background-color var(--duration-short) var(--ease-standard);
+  }
+  .pressable:active {
+    transform: scale(0.98);
+  }
+
+  /* The hero's living glow: two blurred palette blobs drifting slowly.
+     Transform-only, so it stays on the compositor; frozen under reduced
+     motion by the global rule. */
+  .aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .aurora::before,
+  .aurora::after {
+    content: "";
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    filter: blur(64px);
+    opacity: 0.55;
+    will-change: transform;
+    animation: aurora-drift 16s ease-in-out infinite alternate;
+  }
+  .aurora::before {
+    top: -45%;
+    left: -15%;
+    background: radial-gradient(circle, var(--primary-accent), transparent 65%);
+  }
+  .aurora::after {
+    right: -20%;
+    bottom: -55%;
+    background: radial-gradient(circle, var(--secondary), transparent 65%);
+    animation-duration: 21s;
+    animation-direction: alternate-reverse;
+  }
+
+  /* ── Panels ─────────────────────────────────────────────────────────
+     The one card surface. The palette's container tint, a soft top sheen
+     and a 1px inner highlight - light falling on dark glass - plus a
+     deep, soft drop shadow. No backdrop-filter, so it's cheap to scroll. */
+  .panel {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--on-surface) 5%, transparent) 0%,
+        transparent 45%
+      ),
+      var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 8%, transparent),
+      0 1px 2px color-mix(in oklab, var(--surface-lowest) 40%, transparent),
+      0 18px 40px -18px
+        color-mix(in oklab, var(--surface-lowest) 80%, transparent);
+  }
+  /* The raised variant for the one thing on a page that matters most. */
+  .panel-raised {
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--on-surface) 12%, transparent),
+      0 30px 80px -30px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 18px 40px -18px
+        color-mix(in oklab, var(--surface-lowest) 90%, transparent);
+  }
+
+  /* ── Spotlight ──────────────────────────────────────────────────────
+     A soft light that follows the cursor across a card, and lights the
+     card's edge nearest to it. Position comes from SpotlightTracker
+     (--mx/--my); mouse and trackpad only. */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight::before,
+    .spotlight::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--duration-medium) var(--ease-standard);
+    }
+    .spotlight::before {
+      z-index: -1;
+      background: radial-gradient(
+        28rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 11%, transparent),
+        transparent 45%
+      );
+    }
+    .spotlight::after {
+      z-index: 1;
+      padding: 1px;
+      background: radial-gradient(
+        16rem circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--primary-accent) 75%, transparent),
+        transparent 60%
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .spotlight:hover::before,
+    .spotlight:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* ── Header: clear at the top of the page, glass once content
+     scrolls under it (data-scrolled from StudentShell). */
+  .app-header {
+    transition:
+      background-color var(--duration-medium) var(--ease-standard),
+      border-color var(--duration-medium) var(--ease-standard);
+    border-bottom: 1px solid transparent;
+  }
+  .app-header[data-scrolled="true"] {
+    background: color-mix(in oklab, var(--surface) 65%, transparent);
+    border-bottom-color: var(--outline-variant);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* ── Route progress: a thin glowing line while a page loads. */
+  .route-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 2px;
+    pointer-events: none;
+    transform-origin: left;
+    background: var(--cta);
+    box-shadow: 0 0 12px var(--primary-accent);
+  }
+  .route-progress[data-state="loading"] {
+    animation: route-load 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  }
+  .route-progress[data-state="done"] {
+    animation: route-done 450ms var(--ease-standard) forwards;
+  }
+
+  /* ── Sheen: a light sweep across the primary button on hover. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      color-mix(in oklab, var(--on-primary) 28%, transparent) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+  }
+  .sheen:hover::after {
+    transition: transform 700ms var(--ease-standard);
+    transform: translateX(120%);
+  }
+
+  /* ── Sign-in product preview (components/auth/product-preview.tsx) */
+  .preview-stage {
+    transform: rotateX(var(--rx, 6deg)) rotateY(var(--ry, -12deg));
+    transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  /* Opaque, so overlapping layers read as stacked glass, not a smear. */
+  .preview-card {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--on-surface) 6%, transparent) 0%,
+        transparent 50%
+      ),
+      linear-gradient(var(--surface-container), var(--surface-container)),
+      var(--surface-modal);
+  }
+  .preview-float {
+    animation: float-y 5s ease-in-out infinite alternate;
+  }
+  /* Bars fill from the left when they first appear. */
+  .bar-grow {
+    transform-origin: left;
+    animation: bar-grow 900ms var(--ease-decelerate) both;
+  }
+  .preview-ring {
+    animation: ring-draw 1.4s var(--ease-decelerate) both 300ms;
+  }
+
+  /* Glass: a translucent surface that lets the palette's glow through. */
+  .glass {
+    background: color-mix(in oklab, var(--surface-container) 70%, transparent);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  /* "Happening now" dot. */
+  .live-dot {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: live-pulse 1.6s var(--ease-standard) infinite;
+  }
+
+  /* Stat numbers line up as they count. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }

@@ -100,7 +100,7 @@ export async function createOrder(
       order_currency: "INR",
       customer_details: { customer_id: id, customer_phone: phone },
       order_note: "Campus Web ₹10 payment",
-      order_meta: { return_url: origin + "/" },
+      order_meta: { return_url: origin + "/payment" },
     });
   } catch {
     // Recover an idempotent order after a duplicate request or lost response.

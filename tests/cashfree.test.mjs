@@ -41,7 +41,7 @@ test("fixes the amount on the server and uses the production API", async () => {
     assert.equal(payload.customer_details.customer_phone, "9876543210");
     assert.equal(
       payload.order_meta.return_url,
-      "https://payment.campusweb.in/",
+      "https://payment.campusweb.in/payment",
     );
     assert.equal(options.cache, "no-store");
     return response(order());
