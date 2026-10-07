@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff, Loader2, LockKeyhole, UserRound } from "lucide-react";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { PhoneSignIn } from "@/components/auth/phone-sign-in";
@@ -13,6 +13,7 @@ import { ROUTES } from "@/constants/auth";
 import { LEGAL_ROUTES } from "@/constants/routes";
 import { useBrowseAsGuest, useSignIn } from "@/hooks/use-auth-actions";
 import { SignInError } from "@/lib/auth/sign-in-error";
+import { notify } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 interface FormValues {
@@ -27,6 +28,19 @@ interface FormValues {
  */
 export function SignInForm() {
   const id = useId();
+  useEffect(() => {
+    if (window.location.hash === "#session-revoked") {
+      notify.info("You were signed out from another device.", {
+        id: "session-revoked",
+        duration: 10000,
+      });
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+    }
+  }, []);
   const [phoneLogin, setPhoneLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const signIn = useSignIn();

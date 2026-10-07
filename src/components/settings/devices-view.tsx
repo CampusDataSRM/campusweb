@@ -3,7 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Laptop, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { STUDENT_ROUTES } from "@/constants/routes";
@@ -17,11 +18,18 @@ import { queryKeys } from "@/network-calls/query-keys";
 
 function seenAt(value: string) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Unknown" : date.toLocaleString();
+  return Number.isNaN(date.getTime())
+    ? "Unknown"
+    : formatDistanceToNow(date, { addSuffix: true });
 }
 
 export function DevicesView() {
   const { session, hydrated } = useSession();
+  const [, tick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => tick((n) => n + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
   const queryClient = useQueryClient();
   const [notice, setNotice] = useState("");
   const eligible =

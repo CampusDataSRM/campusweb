@@ -26,12 +26,17 @@ export class ApiError extends Error {
   }
 }
 
+let revocationPending = false;
+
 function createApiClient(): AxiosInstance {
   const client = axios.create({
     baseURL: process.env.NEXT_PUBLIC_SERVE ?? "",
     timeout: 15_000,
     headers: {
       "Content-Type": "application/json",
+      // Axios fetch adds a Node-style UA; Firefox treats it as a custom CORS
+      // header. Let the browser send its own UA instead. False locks it off.
+      "User-Agent": false,
     },
     // Never let the browser's HTTP cache answer an API call. Per-account data
     // lives at shared URLs (/auth/user, /auth/timetable/2 ...) told apart only
@@ -57,10 +62,13 @@ function createApiClient(): AxiosInstance {
         data !== null &&
         "code" in data &&
         data.code === "session_revoked" &&
-        typeof window !== "undefined"
+        typeof window !== "undefined" &&
+        !revocationPending
       ) {
+        revocationPending = true;
         await clearStoredSession();
-        window.location.replace("/");
+        // Carry only a public reason through the full reload, never session data.
+        window.location.replace("/#session-revoked");
       }
       const message =
         (typeof data === "object" && data !== null && "message" in data
