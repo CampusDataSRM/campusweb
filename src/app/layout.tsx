@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.shortName,
+  other: { "campusweb-release": "unified-sessions-2026-10-08-r2" },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
