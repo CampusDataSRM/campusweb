@@ -7,12 +7,23 @@ import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ROUTES } from "@/constants/auth";
 import { STUDENT_ROUTES } from "@/constants/routes";
 import { useSession } from "@/context/session-context";
+import { clearCachedPages } from "@/lib/pwa/sw-client";
 import {
   getSessions,
   revokeOtherSessions,
   revokeSession,
+  type DeviceSession,
 } from "@/network-calls/sessions";
 import { queryKeys } from "@/network-calls/query-keys";
 
@@ -24,7 +35,10 @@ function seenAt(value: string) {
 }
 
 export function DevicesView() {
-  const { session, hydrated } = useSession();
+  const { session, hydrated, endSession } = useSession();
+  const [confirmCurrent, setConfirmCurrent] = useState<DeviceSession | null>(
+    null,
+  );
   const [, tick] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => tick((n) => n + 1), 60000);
@@ -50,6 +64,16 @@ export function DevicesView() {
       id === null ? revokeOtherSessions(session!) : revokeSession(session!, id),
     onMutate: () => setNotice(""),
     onSuccess: async (_, id) => {
+      if (
+        devices.data?.some(
+          (device) => device.sessionId === id && device.current,
+        )
+      ) {
+        await endSession();
+        await clearCachedPages();
+        window.location.replace(ROUTES.home);
+        return;
+      }
       setNotice(
         id === null ? "Signed out everywhere else." : "Device signed out.",
       );
@@ -154,29 +178,84 @@ export function DevicesView() {
                       <dd className="break-all">{device.ip || "Unknown"}</dd>
                     </div>
                     <div className="flex flex-wrap gap-x-2">
+                      <dt>Location</dt>
+                      <dd>{device.approxLocation || "Unknown location"}</dd>
+                    </div>
+                    {device.model && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <dt>Browser / model</dt>
+                        <dd>{device.model}</dd>
+                      </div>
+                    )}
+                    {device.appVersion && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <dt>App version</dt>
+                        <dd>{device.appVersion}</dd>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-x-2">
                       <dt>Last active</dt>
                       <dd>{seenAt(device.lastSeenAt)}</dd>
                     </div>
                   </dl>
                 </div>
-                {!device.current && (
-                  <Button
-                    variant="outline"
-                    size="touch"
-                    disabled={revoke.isPending}
-                    aria-label={`Sign out ${device.deviceName || "device"}`}
-                    onClick={() => revoke.mutate(device.sessionId)}
-                  >
-                    {revoke.isPending && revoke.variables === device.sessionId
-                      ? "Signing out…"
-                      : "Sign out"}
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="touch"
+                  disabled={revoke.isPending}
+                  aria-label={`Sign out ${device.deviceName || "device"}`}
+                  onClick={() =>
+                    device.current
+                      ? setConfirmCurrent(device)
+                      : revoke.mutate(device.sessionId)
+                  }
+                >
+                  {revoke.isPending && revoke.variables === device.sessionId
+                    ? "Signing out…"
+                    : "Sign out"}
+                </Button>
               </li>
             ))}
           </ul>
         </>
       )}
+      <Dialog
+        open={!!confirmCurrent}
+        onOpenChange={(open) => {
+          if (!open && !revoke.isPending) setConfirmCurrent(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign out this device?</DialogTitle>
+            <DialogDescription>
+              This browser will return to the login screen.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              disabled={revoke.isPending}
+              onClick={() => setConfirmCurrent(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={revoke.isPending || !confirmCurrent}
+              onClick={() => {
+                if (confirmCurrent) revoke.mutate(confirmCurrent.sessionId);
+              }}
+            >
+              {revoke.isPending ? "Signing out…" : "Sign out this device"}
+            </Button>
+          </DialogFooter>
+          {revoke.isError && (
+            <p role="alert" className="text-danger-accent">
+              Could not sign out. Please try again.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

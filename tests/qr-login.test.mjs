@@ -143,7 +143,9 @@ test("QR approval carries unified Academia session metadata", async (t) => {
   const s = setup(t, [channel, approval]);
   await flush();
   assert.equal(s.calls[0].options.headers["X-Client"], "web");
-  assert.equal(s.calls[0].options.headers["X-Device-Platform"], "web");
+  assert.ok(s.calls[0].options.headers["X-Device-Platform"]);
+  assert.ok(s.calls[0].options.headers["X-Device-Model"]);
+  assert.ok(s.calls[0].options.headers["X-App-Version"]);
   t.mock.timers.tick(2000);
   await flush();
   const { status, ...expected } = approval;
@@ -164,4 +166,56 @@ test("Student Portal QR approval does not require Academia cookies", async (t) =
   await flush();
   assert.equal(s.approvals[0].provider, "student_portal");
   assert.equal(s.approvals[0].sessionToken, "synthetic-unified");
+});
+
+test("server QR payload and absolute expiry work without a legacy web secret", async (t) => {
+  const payload = "campusweb://qr-login?v=1&ch=server-channel";
+  const s = setup(t, [
+    {
+      channelId: "server-channel",
+      qrPayload: payload,
+      expiresAt: new Date(91000).toISOString(),
+    },
+    {
+      status: "approved",
+      netId: "AB1234",
+      sessionToken: "synthetic-unified",
+      provider: "student_portal",
+    },
+  ]);
+  await flush();
+  assert.equal(s.views.at(-1).qrPayload, payload);
+  assert.equal(s.views.at(-1).seconds, 90);
+  t.mock.timers.tick(2000);
+  await flush();
+  assert.equal(s.calls[1].url.searchParams.get("channelId"), "server-channel");
+  assert.equal(s.calls[1].url.searchParams.has("webSecret"), false);
+  assert.equal(s.approvals.length, 1);
+});
+
+test("a QR payload containing the web secret is rejected before rendering", async (t) => {
+  const s = setup(t, [
+    {
+      ...channel,
+      qrPayload: `campusweb://qr-login?v=1&ch=test&webSecret=${channel.webSecret}`,
+    },
+  ]);
+  await flush();
+  assert.equal(s.views.at(-1).status, "error");
+  assert.equal(JSON.stringify(s.views).includes(channel.webSecret), false);
+});
+
+test("expired server codes stop before polling", async (t) => {
+  const s = setup(t, [
+    {
+      channelId: "test",
+      qrPayload: "campusweb://qr-login?v=1&ch=test",
+      expiresAt: new Date(500).toISOString(),
+    },
+  ]);
+  await flush();
+  assert.equal(s.views.at(-1).status, "error");
+  t.mock.timers.tick(100000);
+  await flush();
+  assert.equal(s.calls.length, 1);
 });

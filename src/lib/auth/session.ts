@@ -31,6 +31,8 @@ export interface StudentSession {
   netId: string;
   /** Unified server-issued token; optional for older cookie-only sessions. */
   sessionToken?: string;
+  sessionId?: string;
+  provider?: "academia" | "student_portal";
 }
 
 const KINDS: readonly SessionKind[] = [
@@ -58,6 +60,12 @@ export function parseSession(
       ...(typeof value.sessionToken === "string" && value.sessionToken
         ? { sessionToken: value.sessionToken }
         : {}),
+      ...(typeof value.sessionId === "string" && value.sessionId
+        ? { sessionId: value.sessionId }
+        : {}),
+      ...(value.provider === "academia" || value.provider === "student_portal"
+        ? { provider: value.provider }
+        : {}),
     };
   } catch {
     return null;
@@ -71,7 +79,9 @@ export async function readSession(): Promise<StudentSession | null> {
 export async function writeSession(session: StudentSession): Promise<void> {
   await setCookie(SESSION_COOKIE, JSON.stringify(session), {
     maxAge: SESSION_COOKIE_MAX_AGE,
-    sameSite: "strict",
+    // Top-level links from another site must carry the shared login cookie.
+    // Authenticated API calls still use explicit session headers.
+    sameSite: "lax",
     secure:
       typeof window !== "undefined" && window.location.protocol === "https:",
   });
@@ -87,9 +97,12 @@ export const isSignedIn = (session: StudentSession | null) =>
 export const studentPortalSession = (
   netId: string,
   sessionToken?: string,
+  sessionId?: string,
 ): StudentSession => ({
   kind: "student-portal",
   token: STUDENT_PORTAL_SESSION_MARKER,
   netId,
   ...(sessionToken ? { sessionToken } : {}),
+  ...(sessionId ? { sessionId } : {}),
+  provider: "student_portal",
 });

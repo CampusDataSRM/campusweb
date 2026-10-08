@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { webDeviceHeaders } from "../src/lib/auth/device-info.ts";
+import {
+  webDeviceHeaders,
+  WEB_APP_VERSION,
+} from "../src/lib/auth/device-info.ts";
 for (const [ua, label] of [
   [
     "Mozilla/5.0 (Windows NT 10.0) Chrome/130.0 Safari/537.36",
@@ -21,7 +24,9 @@ for (const [ua, label] of [
   test(label, () =>
     assert.deepEqual(webDeviceHeaders(ua), {
       "X-Client": "web",
-      "X-Device-Platform": "web",
-      "X-Device-Name": label,
+      "X-Device-Platform": label.split(" on ")[1],
+      "X-Device-Name": label.split(" on ")[0],
+      "X-Device-Model": `${label.split(" on ")[0]} ${label.startsWith("Safari") ? "18" : "130.0"}`,
+      "X-App-Version": WEB_APP_VERSION,
     }),
   );

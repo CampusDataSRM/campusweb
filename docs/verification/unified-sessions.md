@@ -44,7 +44,7 @@ QR login uses only POST `/qr/create` and polling GET `/qr/status`; there is no S
 
 ## Verified evidence
 
-- 37 automated tests passed, covering QR lifecycle/provider metadata, friendly
+- 42 automated tests passed, covering QR lifecycle/provider metadata, friendly
   device labels, cookie parsing, both request builders, and legacy compatibility.
 - Production build/TypeScript and focused ESLint passed.
 - Browser fixtures passed password and QR provider selection, reload persistence,
@@ -83,3 +83,29 @@ browser fixtures with an active service worker passed QR login, remote 401
 revocation, QR re-login, old-cache removal, and three repeated Events/Dashboard
 transitions for both Academia and Student Portal. These fixtures use synthetic
 API responses; they do not claim another live phone approval.
+
+## Shared-tab sessions and expanded device metadata
+
+QR and password login both already used `useCompleteSignIn` / `startSession` /
+`writeSession`, writing the host's persistent `cw-session` cookie. No session token
+was held in tab storage. Browser fixtures reproduced a separate bug: direct new
+tabs reached `/student`, but an external-site link opening a new tab landed on `/`
+because `SameSite=Strict` withheld the cookie on the initial navigation. The cookie
+now uses `SameSite=Lax`, keeps its root path, 30-day lifetime and HTTPS Secure flag.
+Provider and server session ID are saved along with the unified token.
+
+Login and QR requests now send browser name, OS, browser/version model, web client
+and build version (`NEXT_PUBLIC_APP_VERSION`, with a release-label fallback). The
+Devices page adds approximate location, model and app version, and confirms before
+revoking the current session; successful current-device revocation clears the cookie.
+
+The live public QR-create response still returns `webSecret` and
+`expiresInSeconds`. That contract remains supported with the secret held in the
+polling closure. The updated `qrPayload` / `expiresAt` contract is supported too;
+the supplied QR payload is rendered and secret-bearing payloads are rejected.
+
+Browser fixtures passed all four password/QR + Academia/Student Portal paths,
+shared-cookie restoration in direct and external-link new tabs, device/auth
+headers, parallel login requests, relative activity/location, per-device and
+other-device revocation, current-device confirmation/cancellation, and remote
+revocation with notice. API responses in these fixtures are synthetic.

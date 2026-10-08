@@ -9,6 +9,7 @@ import ts from "typescript";
 // Load the actual TypeScript seams with the repository's @/ alias, without
 // adding a runtime dependency or starting Next just to test pure contracts.
 const nodeRequire = createRequire(import.meta.url);
+const browserDocument = { cookie: "" };
 const cache = new Map();
 function sourceModule(name) {
   const path = resolve(name.replace(/^@\//, "src/") + ".ts");
@@ -26,6 +27,8 @@ function sourceModule(name) {
     {
       module,
       exports: module.exports,
+      window: { location: { protocol: "https:" } },
+      document: browserDocument,
       require: (name) =>
         name.startsWith("@/") ? sourceModule(name) : nodeRequire(name),
     },
@@ -33,7 +36,8 @@ function sourceModule(name) {
   );
   return module.exports;
 }
-const { parseSession } = sourceModule("@/lib/auth/session");
+const { parseSession, writeSession, readSession } =
+  sourceModule("@/lib/auth/session");
 const { studentRequestConfig, studentPortalRequestConfig } = sourceModule(
   "@/lib/api/request-config",
 );
@@ -89,4 +93,43 @@ test("legacy, guest and demo requests remain compatible", () => {
       .headers["X-Demo-Token"],
     "demo-token",
   );
+});
+
+test("both providers preserve session identity in the shared cookie payload", () => {
+  for (const [kind, provider] of [
+    ["academia", "academia"],
+    ["student-portal", "student_portal"],
+  ]) {
+    const session = {
+      kind,
+      provider,
+      sessionToken: "synthetic-unified",
+      sessionId: "synthetic-id",
+      netId: "test",
+      token: "legacy",
+    };
+    const parsed = parseSession(JSON.stringify(session));
+    assert.equal(parsed.provider, provider);
+    assert.equal(parsed.sessionId, session.sessionId);
+    assert.equal(parsed.sessionToken, session.sessionToken);
+  }
+});
+
+test("the shared cookie persists a secure session and permits top-level external links", async () => {
+  await writeSession({
+    kind: "student-portal",
+    token: "legacy",
+    netId: "test",
+    sessionToken: "synthetic-unified",
+    sessionId: "synthetic-id",
+    provider: "student_portal",
+  });
+  assert.match(browserDocument.cookie, /path=\//);
+  assert.match(browserDocument.cookie, /max-age=2592000/);
+  assert.match(browserDocument.cookie, /samesite=lax/);
+  assert.match(browserDocument.cookie, /; secure/);
+  const restored = await readSession();
+  assert.equal(restored.sessionToken, "synthetic-unified");
+  assert.equal(restored.provider, "student_portal");
+  assert.equal(restored.sessionId, "synthetic-id");
 });

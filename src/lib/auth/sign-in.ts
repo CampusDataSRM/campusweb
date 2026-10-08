@@ -85,6 +85,8 @@ async function academiaLogin(
       token: cookies,
       netId: identity.netId,
       ...(response.sessionToken ? { sessionToken: response.sessionToken } : {}),
+      ...(response.sessionId ? { sessionId: response.sessionId } : {}),
+      provider: "academia",
     };
   // A 200 that still failed: read the body the same way as an error response.
   throw fromFailureBody(response);
@@ -139,7 +141,11 @@ export async function signIn({
       delay(STUDENT_PORTAL_GRACE_MS),
     ]);
     return quickPortal?.ok && isFirstYearAccount(quickPortal.value)
-      ? studentPortalSession(identity.netId, quickPortal.value.session_token)
+      ? studentPortalSession(
+          identity.netId,
+          quickPortal.value.session_token,
+          quickPortal.value.session_id,
+        )
       : first.result.value;
   }
 
@@ -148,6 +154,7 @@ export async function signIn({
     return studentPortalSession(
       identity.netId,
       portalResult.value.session_token,
+      portalResult.value.session_id,
     );
   }
 

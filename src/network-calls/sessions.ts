@@ -8,6 +8,8 @@ export interface DeviceSession {
   deviceName: string;
   platform: string;
   model?: string;
+  appVersion?: string;
+  approxLocation?: string;
   client: string;
   ip?: string;
   createdAt: string;

@@ -40,7 +40,13 @@ export function useStudentPortalUnlock() {
         // Academia sessions retain their own provider token while linking the portal.
         const refreshed =
           session.kind === "student-portal" && response.session_token
-            ? { ...session, sessionToken: response.session_token }
+            ? {
+                ...session,
+                sessionToken: response.session_token,
+                ...(response.session_id
+                  ? { sessionId: response.session_id }
+                  : {}),
+              }
             : session;
         if (refreshed !== session) await startSession(refreshed);
         await postAttendance(

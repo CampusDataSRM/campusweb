@@ -6,6 +6,7 @@ import { GA_ID } from "@/constants";
 import { DEFAULT_PALETTE, PRESET_PALETTES } from "@/constants/theme";
 import { SITE } from "@/constants/site";
 import { dmSans, nunito, spaceGrotesk } from "@/lib/fonts";
+import { WEB_APP_VERSION } from "@/lib/auth/device-info";
 import Providers from "./providers";
 import "./globals.css";
 import "./product.css";
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.shortName,
-  other: { "campusweb-release": "unified-sessions-2026-10-08-r2" },
+  other: { "campusweb-release": WEB_APP_VERSION },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

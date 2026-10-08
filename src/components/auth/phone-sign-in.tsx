@@ -6,7 +6,7 @@ import { Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCompleteSignIn } from "@/hooks/use-auth-actions";
 import { studentPortalSession } from "@/lib/auth/session";
-import { qrPayload, startQrLogin, type QrView } from "@/lib/auth/qr-login";
+import { startQrLogin, type QrView } from "@/lib/auth/qr-login";
 
 const messages = {
   creating: "Creating your code…",
@@ -28,15 +28,17 @@ export function PhoneSignIn({ onClose }: { onClose: () => void }) {
       startQrLogin(
         process.env.NEXT_PUBLIC_SERVE,
         setView,
-        async ({ netId, cookies, sessionToken, provider }) => {
+        async ({ netId, cookies, sessionToken, sessionId, provider }) => {
           await completeSignIn(
             provider === "student_portal"
-              ? studentPortalSession(netId, sessionToken)
+              ? studentPortalSession(netId, sessionToken, sessionId)
               : {
                   kind: "academia",
                   netId,
                   token: cookies!,
                   ...(sessionToken ? { sessionToken } : {}),
+                  ...(sessionId ? { sessionId } : {}),
+                  provider: "academia",
                 },
           );
         },
@@ -54,10 +56,10 @@ export function PhoneSignIn({ onClose }: { onClose: () => void }) {
         Already signed in to CampusApp? Scan this code and approve the login on
         your phone.
       </p>
-      {view.channelId && (
+      {view.qrPayload && (
         <div className="rounded-2xl bg-white p-4">
           <QRCodeSVG
-            value={qrPayload(view.channelId)}
+            value={view.qrPayload}
             size={208}
             level="M"
             marginSize={4}
