@@ -1,7 +1,14 @@
 "use client";
 
-import { Eye, EyeOff, Loader2, LockKeyhole, UserRound } from "lucide-react";
-import Link from "next/link";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  LockKeyhole,
+  ScanLine,
+  UserRound,
+} from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -9,23 +16,16 @@ import { PhoneSignIn } from "@/components/auth/phone-sign-in";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROUTES } from "@/constants/auth";
-import { LEGAL_ROUTES } from "@/constants/routes";
 import { useBrowseAsGuest, useSignIn } from "@/hooks/use-auth-actions";
 import { SignInError } from "@/lib/auth/sign-in-error";
 import { notify } from "@/lib/toast";
-import { cn } from "@/lib/utils";
+import styles from "./sign-in.module.css";
 
 interface FormValues {
   username: string;
   password: string;
 }
 
-/**
- * Student sign-in. Errors show inline under the form (screen readers get
- * them via role="alert"); the button turns into a spinner while the parallel
- * login runs, and the form is disabled so it cannot be sent twice.
- */
 export function SignInForm() {
   const id = useId();
   useEffect(() => {
@@ -50,7 +50,6 @@ export function SignInForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({ defaultValues: { username: "", password: "" } });
-
   const pending = signIn.isPending;
   const serverError =
     signIn.error instanceof SignInError
@@ -59,155 +58,170 @@ export function SignInForm() {
         ? "Sign-in didn't go through. Please try again."
         : null;
 
-  if (phoneLogin) return <PhoneSignIn onClose={() => setPhoneLogin(false)} />;
-
   return (
-    <form
-      noValidate
-      aria-busy={pending}
-      onSubmit={handleSubmit((values) => signIn.mutate(values))}
-      className="flex flex-col gap-5"
-    >
-      <Button
-        type="button"
-        variant="outline"
-        size="touch"
-        disabled={pending}
-        onClick={() => setPhoneLogin(true)}
-        className="h-12"
-      >
-        Log in with phone
-      </Button>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-username`} className="text-on-surface-muted">
-          Username
-        </Label>
-        <div className="relative">
-          <UserRound
-            aria-hidden
-            className="pointer-events-none absolute top-1/2 left-3.5 size-[1.125rem] -translate-y-1/2 text-on-surface-subtle"
-          />
-          <Input
-            id={`${id}-username`}
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            placeholder="e.g. ab1234"
-            disabled={pending}
-            aria-invalid={!!errors.username}
-            className="h-12 rounded-xl bg-surface-highest/60 pl-11 text-base"
-            {...register("username", {
-              validate: (value) =>
-                value.trim().length > 0 || "Enter your username.",
-            })}
-          />
-        </div>
-        {errors.username && (
-          <p className="text-sm text-danger-accent">
-            {errors.username.message}
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-password`} className="text-on-surface-muted">
-          Password
-        </Label>
-        <div className="relative">
-          <LockKeyhole
-            aria-hidden
-            className="pointer-events-none absolute top-1/2 left-3.5 size-[1.125rem] -translate-y-1/2 text-on-surface-subtle"
-          />
-          <Input
-            id={`${id}-password`}
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            placeholder="Your password"
-            disabled={pending}
-            aria-invalid={!!errors.password}
-            className="h-12 rounded-xl bg-surface-highest/60 pr-12 pl-11 text-base"
-            {...register("password", {
-              validate: (value) => value.length > 0 || "Enter your password.",
-            })}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowPassword((shown) => !shown)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            aria-pressed={showPassword}
-            className="absolute top-1/2 right-1.5 size-9 -translate-y-1/2 rounded-lg text-on-surface-muted"
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </Button>
-        </div>
-        {errors.password && (
-          <p className="text-sm text-danger-accent">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
-
-      <div aria-live="polite">
-        {serverError && (
-          <p
-            role="alert"
-            className="rounded-xl border border-danger/40 bg-danger-container px-4 py-3 text-sm font-semibold text-on-danger-container"
-          >
-            {serverError}
-          </p>
-        )}
-      </div>
-
-      <Button
-        type="submit"
-        size="touch"
-        disabled={pending}
-        className="h-12 text-base"
-      >
-        {pending ? (
-          <>
-            <Loader2 className="animate-spin" aria-hidden />
-            Signing in
-          </>
-        ) : (
-          "Sign in"
-        )}
-      </Button>
-
-      <Button
-        type="button"
-        variant="outline"
-        size="touch"
-        disabled={pending}
-        onClick={() => void browseAsGuest()}
-        className="h-12"
-      >
-        Just looking? Browse events and clubs
-      </Button>
-
-      <div className="flex flex-col items-center gap-2 pt-1 text-sm">
-        <Link
-          href={ROUTES.clubLogin}
-          className={cn(
-            "font-semibold text-primary-accent underline-offset-4 hover:underline",
-            pending && "pointer-events-none opacity-50",
-          )}
-        >
-          Organising a club? Open the club portal
-        </Link>
-        <p className="text-center text-xs text-on-surface-subtle">
-          Your password is only used to sign you in - it is never saved.{" "}
-          <Link
-            href={LEGAL_ROUTES.center}
-            className="underline underline-offset-2 hover:text-on-surface-muted"
-          >
-            Legal &amp; policies
-          </Link>
+    <div className={styles.signIn}>
+      <div className={styles.panelHeading}>
+        <h2>{phoneLogin ? "Your phone is your pass." : "Welcome in."}</h2>
+        <p>
+          {phoneLogin
+            ? "Scan. Approve. You’re in."
+            : "Your campus is one sign-in away."}
         </p>
       </div>
-    </form>
+      <div className={styles.methods} role="group" aria-label="Sign-in method">
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={pending}
+          aria-pressed={!phoneLogin}
+          onClick={() => setPhoneLogin(false)}
+          className={styles.method}
+        >
+          <UserRound aria-hidden /> Student account
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={pending}
+          aria-pressed={phoneLogin}
+          onClick={() => setPhoneLogin(true)}
+          className={styles.method}
+        >
+          <ScanLine aria-hidden /> Log in with phone
+        </Button>
+      </div>
+      {phoneLogin ? (
+        <PhoneSignIn onClose={() => setPhoneLogin(false)} />
+      ) : (
+        <form
+          noValidate
+          aria-label="Student account sign in"
+          aria-busy={pending}
+          onSubmit={handleSubmit((values) => signIn.mutate(values))}
+          className={styles.form}
+        >
+          <div className={styles.field}>
+            <Label htmlFor={`${id}-username`}>Username</Label>
+            <div className={styles.inputWrap}>
+              <UserRound aria-hidden className={styles.inputIcon} />
+              <Input
+                id={`${id}-username`}
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                placeholder="Your student username"
+                disabled={pending}
+                aria-invalid={!!errors.username}
+                aria-describedby={
+                  errors.username
+                    ? `${id}-username-error`
+                    : `${id}-account-hint`
+                }
+                className={styles.input}
+                {...register("username", {
+                  validate: (value) =>
+                    value.trim().length > 0 || "Enter your username.",
+                })}
+              />
+            </div>
+            {errors.username ? (
+              <p
+                id={`${id}-username-error`}
+                className={styles.fieldError}
+                role="alert"
+              >
+                {errors.username.message}
+              </p>
+            ) : (
+              <p id={`${id}-account-hint`} className={styles.fieldHint}>
+                Academia or Student Portal. Same place to sign in.
+              </p>
+            )}
+          </div>
+          <div className={styles.field}>
+            <Label htmlFor={`${id}-password`}>Password</Label>
+            <div className={styles.inputWrap}>
+              <LockKeyhole aria-hidden className={styles.inputIcon} />
+              <Input
+                id={`${id}-password`}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Your account password"
+                disabled={pending}
+                aria-invalid={!!errors.password}
+                aria-describedby={
+                  errors.password ? `${id}-password-error` : undefined
+                }
+                className={styles.passwordInput}
+                {...register("password", {
+                  validate: (value) =>
+                    value.length > 0 || "Enter your password.",
+                })}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-touch"
+                disabled={pending}
+                onClick={() => setShowPassword((shown) => !shown)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                className={styles.passwordToggle}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
+            </div>
+            {errors.password && (
+              <p
+                id={`${id}-password-error`}
+                className={styles.fieldError}
+                role="alert"
+              >
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+          {serverError && (
+            <p role="alert" className={styles.serverError}>
+              {serverError}
+            </p>
+          )}
+          <Button
+            type="submit"
+            size="touch"
+            disabled={pending}
+            className={styles.submit}
+          >
+            {pending ? (
+              <>
+                <Loader2 className="animate-spin" aria-hidden /> Signing in…
+              </>
+            ) : (
+              <>
+                Let me in <ArrowRight aria-hidden />
+              </>
+            )}
+          </Button>
+          <p className={styles.privacy}>
+            <LockKeyhole aria-hidden size={12} /> Your password is never saved.
+          </p>
+        </form>
+      )}
+      <div className={styles.guestArea}>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={pending}
+          onClick={() => void browseAsGuest()}
+          className={styles.guestButton}
+        >
+          <span>
+            Just taking a look?
+            <small>Explore events &amp; clubs without signing in.</small>
+          </span>
+          <ArrowRight aria-hidden />
+        </Button>
+      </div>
+    </div>
   );
 }

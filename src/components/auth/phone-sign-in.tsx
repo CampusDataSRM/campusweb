@@ -2,11 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Loader2, Smartphone } from "lucide-react";
+import {
+  CircleCheck,
+  Clock3,
+  Loader2,
+  QrCode,
+  RotateCw,
+  ScanLine,
+  ShieldX,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCompleteSignIn } from "@/hooks/use-auth-actions";
 import { studentPortalSession } from "@/lib/auth/session";
 import { startQrLogin, type QrView } from "@/lib/auth/qr-login";
+import styles from "./sign-in.module.css";
 
 const messages = {
   creating: "Creating your code…",
@@ -46,59 +55,84 @@ export function PhoneSignIn({ onClose }: { onClose: () => void }) {
     [generation, completeSignIn],
   );
   const waiting = view.status === "pending" || view.status === "scanned";
+  const remaining = `${Math.floor(view.seconds / 60)
+    .toString()
+    .padStart(2, "0")}:${(view.seconds % 60).toString().padStart(2, "0")}`;
   return (
-    <section
-      className="flex flex-col items-center gap-5"
-      aria-label="Log in with phone"
-    >
-      <Smartphone aria-hidden className="size-7 text-primary-accent" />
-      <p className="text-center text-sm text-on-surface-muted">
-        Already signed in to CampusApp? Scan this code and approve the login on
-        your phone.
-      </p>
-      {view.qrPayload && (
-        <div className="rounded-2xl bg-white p-4">
-          <QRCodeSVG
-            value={view.qrPayload}
-            size={208}
-            level="M"
-            marginSize={4}
-            title="Scan to log in with CampusApp"
-          />
-        </div>
-      )}
-      {view.status === "creating" && (
-        <Loader2 aria-hidden className="size-8 animate-spin" />
-      )}
-      <p role="status" className="text-center text-sm font-semibold">
-        {messages[view.status]}
-      </p>
+    <section className={styles.phone} aria-label="Log in with phone">
+      <div
+        className={styles.qrStage}
+        data-state={view.status}
+        aria-busy={view.status === "creating"}
+      >
+        {view.qrPayload ? (
+          <div className={styles.qrCode}>
+            <QRCodeSVG
+              value={view.qrPayload}
+              size={192}
+              level="M"
+              marginSize={4}
+              title="Scan to log in with CampusApp"
+            />
+          </div>
+        ) : (
+          <div className={styles.qrPlaceholder} aria-hidden>
+            {view.status === "creating" ? (
+              <Loader2 className="animate-spin" />
+            ) : view.status === "approved" ? (
+              <CircleCheck />
+            ) : view.status === "denied" ? (
+              <ShieldX />
+            ) : view.status === "expired" || view.status === "consumed" ? (
+              <Clock3 />
+            ) : (
+              <QrCode />
+            )}
+          </div>
+        )}
+        <span className={styles.scanCorner} aria-hidden />
+      </div>
+      <div className={styles.qrStatus}>
+        <p role="status">{messages[view.status]}</p>
+        {waiting && (
+          <span className={styles.countdown}>
+            <Clock3 aria-hidden size={13} /> Expires in {remaining}
+          </span>
+        )}
+      </div>
       {waiting && (
-        <p className="text-sm tabular-nums text-on-surface-subtle">
-          Expires in {view.seconds}s
+        <p className={styles.qrInstruction}>
+          <ScanLine aria-hidden size={16} />
+          <span>
+            Open the QR scanner in CampusApp.
+            <br />
+            Scan here, then approve on your phone.
+          </span>
         </p>
       )}
-      <div className="flex w-full flex-col gap-3">
+      <div className={styles.qrActions}>
         <Button
           type="button"
           variant="outline"
           size="touch"
+          className={styles.refreshCode}
           disabled={view.status === "creating" || view.status === "approved"}
           onClick={() => {
             setView({ status: "creating", seconds: 0 });
             setGeneration((n) => n + 1);
           }}
         >
-          Refresh code
+          <RotateCw aria-hidden /> Refresh code
         </Button>
         <Button
           type="button"
           variant="ghost"
           size="touch"
+          className={styles.usePassword}
           disabled={view.status === "approved"}
           onClick={onClose}
         >
-          Use username and password
+          Use password instead
         </Button>
       </div>
     </section>
