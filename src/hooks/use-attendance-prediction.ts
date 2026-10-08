@@ -13,7 +13,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
 import { useNow } from "@/hooks/use-now";
-import { usePlanner, useProfile, useStudentDataApi, useTimetable } from "@/hooks/use-student-data";
+import {
+  usePlanner,
+  useProfile,
+  useStudentDataApi,
+  useTimetable,
+} from "@/hooks/use-student-data";
 import {
   mergeTheoryPracticalCourses,
   predictAttendance,
@@ -23,6 +28,8 @@ import { readOdMlDates, writeOdMlDates } from "@/lib/student/od-ml-store";
 import type { UserCourse } from "@/network-calls/types";
 
 export interface AttendancePredictionState {
+  /** Recorded attendance, before any local prediction. */
+  baseCourses: UserCourse[];
   courses: UserCourse[];
   /** The prediction applied on screen, if any. */
   result: PredictionResult | null;
@@ -30,7 +37,15 @@ export interface AttendancePredictionState {
   credited: Date[];
   /** Planner + timetable are loaded, so a prediction can be computed. */
   ready: boolean;
-  apply(missed: Date[], credited: Date[]): "ok" | "no-classes" | "no-dates" | "past-dates";
+  /** Compute a draft without saving it or changing the attendance page. */
+  preview(
+    missed: Date[],
+    credited: Date[],
+  ): PredictionResult | "no-dates" | "past-dates" | null;
+  apply(
+    missed: Date[],
+    credited: Date[],
+  ): "ok" | "no-classes" | "no-dates" | "past-dates";
   clear(): void;
 }
 
@@ -42,7 +57,10 @@ export function useAttendancePrediction(): AttendancePredictionState {
   const timetable = useTimetable();
   const queryClient = useQueryClient();
   const semester = profile.data?.semester ?? "";
-  const odMlKey = useMemo(() => ["od-ml", api.scope, semester] as const, [api.scope, semester]);
+  const odMlKey = useMemo(
+    () => ["od-ml", api.scope, semester] as const,
+    [api.scope, semester],
+  );
 
   const [missed, setMissed] = useState<Date[]>([]);
   const savedCredited = useQuery({
@@ -51,13 +69,24 @@ export function useAttendancePrediction(): AttendancePredictionState {
     enabled: api.ready && api.hasStudentData && profile.data !== undefined,
     staleTime: Infinity,
   });
-  const credited = useMemo(() => savedCredited.data ?? [], [savedCredited.data]);
+  const credited = useMemo(
+    () => savedCredited.data ?? [],
+    [savedCredited.data],
+  );
 
   const baseCourses = useMemo(
-    () => mergeTheoryPracticalCourses(profile.data?.courses ?? [], profile.data?.attendanceSource),
+    () =>
+      mergeTheoryPracticalCourses(
+        profile.data?.courses ?? [],
+        profile.data?.attendanceSource,
+      ),
     [profile.data],
   );
-  const ready = !!now && !!planner.data && !!timetable.data?.timetable && baseCourses.length > 0;
+  const ready =
+    !!now &&
+    !!planner.data &&
+    !!timetable.data?.timetable &&
+    baseCourses.length > 0;
 
   const compute = useCallback(
     (absent: Date[], odMl: Date[]) =>
@@ -101,11 +130,13 @@ export function useAttendancePrediction(): AttendancePredictionState {
   }, [queryClient, odMlKey, api.scope, semester]);
 
   return {
+    baseCourses,
     courses: result?.courses ?? baseCourses,
     result,
     missed,
     credited,
     ready,
+    preview: compute,
     apply,
     clear,
   };

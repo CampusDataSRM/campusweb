@@ -1,0 +1,45 @@
+.credit {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--on-surface-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.credit:focus-visible {
+  outline: 2px solid var(--on-surface-muted);
+  outline-offset: 4px;
+}
+
+.credit * {
+  cursor: inherit;
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.credit[data-compact] {
+  flex-basis: 100%;
+}
+
+.credit[data-compact] .logo {
+  width: 20px;
+  height: 20px;
+}

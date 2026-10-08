@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ExternalLink, Pin, PinOff } from "lucide-react";
+import Image from "next/image";
 import { useState, type CSSProperties } from "react";
 
 import { timeAgo } from "@/components/feedback/data-states";
@@ -24,14 +25,34 @@ import {
   type StudiqueSubject,
 } from "@/lib/student/notes";
 import type { RecentNote } from "@/lib/student/notes-store";
+import styles from "./studique-credit.module.css";
 
 export { KIND_ICON };
 
-export function StudiqueCredit() {
+export function StudiqueCredit({ compact = false }: { compact?: boolean }) {
   return (
-    <p className="text-xs font-semibold text-on-surface-subtle">
-      Notes and papers by Studique
-    </p>
+    <button
+      type="button"
+      className={styles.credit}
+      data-compact={compact || undefined}
+      aria-label="Notes and papers by Studique — open Mealmap in a new tab"
+      onClick={() =>
+        window.open(
+          "https://www.studique.in/mealmap",
+          "_blank",
+          "noopener,noreferrer",
+        )
+      }
+    >
+      <Image
+        src="/assets/studique/logo.png"
+        alt=""
+        width={24}
+        height={24}
+        className={styles.logo}
+      />
+      <span>Notes and papers by Studique</span>
+    </button>
   );
 }
 
@@ -104,7 +125,7 @@ export function ResourceSheet({
             <span>
               {total} {total === 1 ? "file" : "files"}
             </span>
-            <StudiqueCredit />
+            <StudiqueCredit compact />
           </SheetDescription>
           {subject && (
             <Button
