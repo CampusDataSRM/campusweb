@@ -394,6 +394,24 @@
   font-weight: 850;
   border-radius: 10px;
 }
+/* Match the logo and purple glow while keeping the label easy to read. */
+:global(html[data-palette="campus-glow"]) .submit {
+  color: #fff;
+  border-color: rgb(193 174 255 / 28%);
+  background: linear-gradient(110deg, #4544c7 0%, #6435ce 55%, #7935d5 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 8px 28px -14px rgb(136 0 255 / 65%);
+}
+:global(html[data-palette="campus-glow"]) .submit:hover:not(:disabled) {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 20%),
+    0 10px 30px -12px rgb(136 0 255 / 65%);
+}
+:global(html[data-palette="campus-glow"]) .submit:focus-visible {
+  outline: 2px solid #c4afff;
+  outline-offset: 3px;
+}
 .submit svg {
   transition: transform 180ms ease;
 }
