@@ -20,6 +20,13 @@
     transparent 55%
   );
 }
+/* Let the shared Campus Glow artwork show through the login shell. */
+:global(html[data-palette="campus-glow"]) .page {
+  background: transparent;
+}
+:global(html[data-palette="campus-glow"]) .page::before {
+  background: none;
+}
 .header,
 .layout,
 .footer {
