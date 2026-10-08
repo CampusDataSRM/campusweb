@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { CampusWall, WallEyebrow } from "@/components/auth/campus-wall";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { Logo } from "@/components/brand/logo";
 import { STORE_LINKS } from "@/constants/site";
+import { ROUTES, SESSION_COOKIE } from "@/constants/auth";
+import { isSignedIn, parseSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: { absolute: "The Campus Web - Sign in" },
@@ -11,7 +15,11 @@ export const metadata: Metadata = {
     "Every club and every event on campus, in one place. Sign in or browse as a guest.",
 };
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const cookieStore = await cookies();
+  const session = parseSession(cookieStore.get(SESSION_COOKIE)?.value);
+  if (isSignedIn(session)) redirect(ROUTES.student);
+
   return (
     <main className="sign-in-page">
       <header className="sign-in-header">

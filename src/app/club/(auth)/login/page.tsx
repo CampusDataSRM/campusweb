@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { ClubAuthCard } from "@/components/club/club-auth-card";
 import { ClubSignInForm } from "@/components/club/club-sign-in-form";
+import { CLUB_SESSION_COOKIE, ROUTES } from "@/constants/auth";
+import { isClubTokenUsable } from "@/lib/auth/club-session";
 
 export const metadata: Metadata = { title: "Club sign in" };
 
-export default function ClubLoginPage() {
+export default async function ClubLoginPage() {
+  const cookieStore = await cookies();
+  if (isClubTokenUsable(cookieStore.get(CLUB_SESSION_COOKIE)?.value)) {
+    redirect(ROUTES.club);
+  }
+
   return (
     <ClubAuthCard
       title="Sign in to your club"
