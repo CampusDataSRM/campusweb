@@ -182,67 +182,18 @@
   position: relative;
   z-index: 1;
 }
-.orbit {
+.posterMark {
   position: absolute;
-  width: 280px;
-  height: 280px;
-  right: -12px;
-  top: 12px;
+  width: 132px;
+  height: 132px;
+  right: 66px;
+  top: 50%;
+  transform: translateY(-50%);
 }
-.orbitText {
-  position: absolute;
-  inset: 0;
+.posterMark img {
   width: 100%;
   height: 100%;
-  fill: var(--primary-accent);
-  font-family: var(--font-home), sans-serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  font-weight: 800;
-  animation: orbit 90s linear infinite;
-}
-.orbitDisc {
-  position: absolute;
-  inset: 45px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid color-mix(in oklab, var(--primary-accent) 40%, transparent);
-  background: radial-gradient(
-    circle at 40% 30%,
-    color-mix(in oklab, var(--primary-accent) 22%, var(--surface)),
-    color-mix(in oklab, var(--primary-accent) 3%, var(--surface))
-  );
-  box-shadow:
-    inset 0 0 0 10px color-mix(in oklab, var(--primary-accent) 3%, transparent),
-    0 0 70px color-mix(in oklab, var(--primary-accent) 7%, transparent);
-}
-.orbitDisc img {
-  width: 104px;
-  height: 104px;
   object-fit: contain;
-  transform: rotate(-12deg);
-}
-.orbitAxis {
-  position: absolute;
-  left: 7px;
-  right: 7px;
-  top: 91px;
-  height: 96px;
-  border: 1px solid color-mix(in oklab, var(--primary-accent) 50%, transparent);
-  border-radius: 50%;
-  transform: rotate(-30deg);
-}
-.orbitDot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary-accent);
-  top: 92px;
-  right: 36px;
-  box-shadow: 0 0 16px
-    color-mix(in oklab, var(--primary-accent) 60%, transparent);
 }
 .heroNote {
   margin-top: 17px;
@@ -641,11 +592,6 @@
     transform: translateY(12px);
   }
 }
-@keyframes orbit {
-  to {
-    transform: rotate(360deg);
-  }
-}
 @media (min-width: 1600px) {
   .layout {
     gap: 112px;
@@ -664,22 +610,10 @@
   .headline {
     font-size: clamp(42px, 5.3vw, 65px);
   }
-  .orbit {
-    width: 235px;
-    height: 235px;
-    right: -37px;
-    top: 37px;
-  }
-  .orbitDisc {
-    inset: 38px;
-  }
-  .orbitAxis {
-    top: 75px;
-    height: 80px;
-  }
-  .orbitDisc img {
-    width: 86px;
-    height: 86px;
+  .posterMark {
+    width: 104px;
+    height: 104px;
+    right: 35px;
   }
 }
 @media (max-width: 920px) {
@@ -791,8 +725,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hero,
-  .loginPanel,
-  .orbitText {
+  .loginPanel {
     animation: none;
   }
 }

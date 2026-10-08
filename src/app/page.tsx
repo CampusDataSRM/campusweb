@@ -77,25 +77,8 @@ export default async function SignInPage() {
                 </span>
               </li>
             </ul>
-            <div className={styles.orbit} aria-hidden>
-              <svg viewBox="0 0 280 280" className={styles.orbitText}>
-                <defs>
-                  <path
-                    id="campus-orbit"
-                    d="M140,140 m-114,0 a114,114 0 1,1 228,0 a114,114 0 1,1 -228,0"
-                  />
-                </defs>
-                <text>
-                  <textPath href="#campus-orbit" textLength="716">
-                    YOUR CLASSES · YOUR PEOPLE · YOUR CAMPUS ·{" "}
-                  </textPath>
-                </text>
-              </svg>
-              <div className={styles.orbitDisc}>
-                <Image src="/logo-mark.svg" alt="" width={112} height={112} />
-              </div>
-              <span className={styles.orbitAxis} />
-              <span className={styles.orbitDot} />
+            <div className={styles.posterMark} aria-hidden>
+              <Image src="/logo-mark.svg" alt="" width={132} height={132} />
             </div>
             <p className={styles.posterBottom}>
               <BookOpen aria-hidden size={14} /> For the 9am. And everything
