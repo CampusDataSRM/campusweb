@@ -1,4 +1,3 @@
-
 import type { RequestConfig } from "@/lib/api/axios-client";
 import { apiClient } from "@/lib/api/axios-client";
 
@@ -17,6 +16,11 @@ import { apiClient } from "@/lib/api/axios-client";
  * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
  */
 export async function logoutUser(config?: RequestConfig): Promise<string> {
-  const { data } = await apiClient.get<string>("/auth/logoutuser", config);
+  const logoutConfig: RequestConfig = {
+    ...config,
+    // The current unified session has already been revoked intentionally.
+    skipSessionRevokedRedirect: true,
+  };
+  const { data } = await apiClient.get<string>("/auth/logoutuser", logoutConfig);
   return data;
 }

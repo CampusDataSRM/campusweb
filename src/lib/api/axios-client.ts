@@ -63,6 +63,8 @@ function createApiClient(): AxiosInstance {
         data !== null &&
         "code" in data &&
         data.code === "session_revoked" &&
+        !(error.config as RequestConfig | undefined)
+          ?.skipSessionRevokedRedirect &&
         typeof window !== "undefined" &&
         !revocationPending
       ) {
@@ -89,7 +91,10 @@ function createApiClient(): AxiosInstance {
 export const apiClient = createApiClient();
 
 /** Per-call axios config override (headers, params, signal, etc.). */
-export type RequestConfig = AxiosRequestConfig;
+export type RequestConfig = AxiosRequestConfig & {
+  /** Intentional logout may receive 401 after revoking its own token. */
+  skipSessionRevokedRedirect?: boolean;
+};
 
 /** Extract a readable message from any thrown value. */
 export function getErrorMessage(error: unknown): string {

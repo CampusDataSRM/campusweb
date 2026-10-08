@@ -20,6 +20,7 @@ import { clearCacheScope } from "@/lib/cache/offline-cache";
 import { notify } from "@/lib/toast";
 import { postDemoLogout } from "@/network-calls/demo";
 import { logoutUser } from "@/network-calls/logoutUser";
+import { revokeSession } from "@/network-calls/sessions";
 import { queryKeys } from "@/network-calls/query-keys";
 import { clearCachedPages } from "@/lib/pwa/sw-client";
 
@@ -78,7 +79,16 @@ export function useSignOut() {
   return useCallback(async () => {
     if (session) {
       const config = studentRequestConfig(session);
-      // Best effort: the server session ends on its own if this fails.
+      if (
+        session.kind !== "demo" &&
+        session.kind !== "guest" &&
+        session.sessionId
+      ) {
+        // Keep the credentials available until this device has been revoked.
+        // A network failure must never prevent local sign-out.
+        await revokeSession(session, session.sessionId).catch(() => undefined);
+      }
+      // Preserve the legacy provider logout as a best-effort cleanup.
       if (session.kind === "demo")
         void postDemoLogout(config).catch(() => undefined);
       else if (session.kind !== "guest")
