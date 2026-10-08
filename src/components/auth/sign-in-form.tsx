@@ -65,7 +65,7 @@ export function SignInForm() {
         <p>
           {phoneLogin
             ? "Scan. Approve. You’re in."
-            : "Your campus is one sign-in away."}
+            : "Your clubs and events, all in one place."}
         </p>
       </div>
       <div className={styles.methods} role="group" aria-label="Sign-in method">
@@ -77,7 +77,7 @@ export function SignInForm() {
           onClick={() => setPhoneLogin(false)}
           className={styles.method}
         >
-          <UserRound aria-hidden /> Student account
+          <UserRound aria-hidden /> Your account
         </Button>
         <Button
           type="button"
@@ -95,7 +95,7 @@ export function SignInForm() {
       ) : (
         <form
           noValidate
-          aria-label="Student account sign in"
+          aria-label="Account sign in"
           aria-busy={pending}
           onSubmit={handleSubmit((values) => signIn.mutate(values))}
           className={styles.form}
@@ -109,7 +109,7 @@ export function SignInForm() {
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck={false}
-                placeholder="Your student username"
+                placeholder="Your username"
                 disabled={pending}
                 aria-invalid={!!errors.username}
                 aria-describedby={
@@ -134,7 +134,7 @@ export function SignInForm() {
               </p>
             ) : (
               <p id={`${id}-account-hint`} className={styles.fieldHint}>
-                Academia or Student Portal. Same place to sign in.
+                Use the username linked to your account.
               </p>
             )}
           </div>
