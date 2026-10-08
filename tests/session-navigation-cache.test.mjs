@@ -67,7 +67,7 @@ test("session changes clear every page-cache version but preserve static assets"
     "other-app",
   ];
   const deleted = [];
-  const module = { exports: {} };
+  const testModule = { exports: {} };
   const code = ts.transpileModule(
     readFileSync("src/lib/pwa/sw-client.ts", "utf8"),
     {
@@ -75,8 +75,8 @@ test("session changes clear every page-cache version but preserve static assets"
     },
   ).outputText;
   runInNewContext(code, {
-    module,
-    exports: module.exports,
+    module: testModule,
+    exports: testModule.exports,
     navigator: {},
     sessionStorage: { removeItem() {} },
     caches: {
@@ -87,9 +87,59 @@ test("session changes clear every page-cache version but preserve static assets"
       },
     },
   });
-  await module.exports.clearCachedPages();
+  await testModule.exports.clearCachedPages();
   assert.deepEqual(
     deleted.sort(),
     names.filter((n) => n.startsWith("cw-pages-")).sort(),
   );
+});
+
+test("login entry pages bypass the worker cache", () => {
+  const listeners = {};
+  runInNewContext(workerSource, {
+    self: {
+      location: { origin: "https://campus.example" },
+      addEventListener: (name, cb) => { listeners[name] = cb; },
+    },
+    URL,
+  });
+  for (const path of ["/", "/?fresh=1", "/club/login"]) {
+    listeners.fetch({
+      request: {
+        method: "GET", url: `https://campus.example${path}`,
+        mode: "navigate", headers: new Headers(),
+      },
+      respondWith() { assert.fail("login must reach the server directly"); },
+    });
+  }
+});
+
+test("worker upgrade refreshes stale login windows and leaves dashboard alone", async () => {
+  const listeners = {};
+  const navigated = [];
+  const deleted = [];
+  runInNewContext(workerSource, {
+    self: {
+      location: { origin: "https://campus.example" },
+      addEventListener: (name, cb) => { listeners[name] = cb; },
+      registration: {},
+      clients: {
+        claim: async () => {},
+        matchAll: async () => ["/", "/club/login", "/student"].map((path) => ({
+          url: `https://campus.example${path}`,
+          navigate: async (url) => { navigated.push(url); },
+        })),
+      },
+    },
+    URL,
+    caches: {
+      keys: async () => ["cw-pages-v3", "cw-pages-v4"],
+      delete: async (name) => { deleted.push(name); },
+    },
+  });
+  let completion;
+  listeners.activate({ waitUntil(p) { completion = p; } });
+  await completion;
+  assert.deepEqual(deleted, ["cw-pages-v3"]);
+  assert.deepEqual(navigated, ["https://campus.example/", "https://campus.example/club/login"]);
 });

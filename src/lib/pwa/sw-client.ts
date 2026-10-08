@@ -6,8 +6,8 @@
  */
 
 /** Must match PAGES in public/sw.js. */
-export const PAGES_CACHE = "cw-pages-v3";
-const WARMED_KEY = "cw-warmed-v3";
+export const PAGES_CACHE = "cw-pages-v4";
+const WARMED_KEY = "cw-warmed-v4";
 
 export const swSupported = () =>
   typeof navigator !== "undefined" && "serviceWorker" in navigator;

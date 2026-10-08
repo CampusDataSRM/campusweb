@@ -18,7 +18,7 @@
  * on activate. Served with no-cache (next.config.ts) so updates land at once.
  */
 
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC = `cw-static-${VERSION}`;
 const PAGES = `cw-pages-${VERSION}`;
 const ASSETS = `cw-assets-${VERSION}`;
@@ -62,6 +62,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const names = await caches.keys();
+      const upgrading = names.some((name) => name.startsWith("cw-pages-") && name !== PAGES);
       await Promise.all(
         names.filter((name) => name.startsWith("cw-") && !CURRENT.includes(name)).map((name) => caches.delete(name)),
       );
@@ -69,6 +70,14 @@ self.addEventListener("activate", (event) => {
         await self.registration.navigationPreload.enable().catch(() => undefined);
       }
       await self.clients.claim();
+      // Older workers may have just served a stale login document. Refresh only
+      // these entry pages on upgrade so the server can also check the cookie.
+      if (upgrading) {
+        const windows = await self.clients.matchAll({ type: "window" });
+        await Promise.all(windows.filter((client) => isLoginPage(client.url)).map((client) =>
+          client.navigate(client.url).catch(() => undefined),
+        ));
+      }
     })(),
   );
 });
@@ -81,6 +90,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname === "/sw.js") return;
+  // Login documents must use fresh server HTML and its session redirects.
+  if (isLoginPage(url.href)) return;
   // Checkout handoffs and receipts must always come from the network.
   if (url.pathname === "/app" || url.pathname === "/payment") return;
   if (url.pathname.startsWith("/api/")) return;
@@ -171,6 +182,7 @@ async function warm(urls) {
   const pages = await caches.open(PAGES);
   const chunks = new Set();
   for (const url of urls) {
+    if (isLoginPage(url)) continue;
     try {
       const response = await fetch(url, { credentials: "same-origin", cache: "no-cache" });
       if (!cacheable(response) || response.redirected) continue;
@@ -207,6 +219,11 @@ self.addEventListener("message", (event) => {
 });
 
 /* ── helpers ── */
+
+function isLoginPage(url) {
+  const pathname = new URL(url, self.location.origin).pathname;
+  return pathname === "/" || pathname === "/club/login";
+}
 
 function cacheable(response) {
   return Boolean(response) && response.ok && response.type === "basic";
