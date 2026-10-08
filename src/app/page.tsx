@@ -40,40 +40,39 @@ export default async function SignInPage() {
       <div className={styles.layout}>
         <section className={styles.hero} aria-labelledby="welcome-title">
           <p className={styles.eyebrow}>
-            <span aria-hidden /> CLUBS, EVENTS & GOOD COMPANY
+            <span aria-hidden /> CLUBS &amp; EVENTS, IN ONE PLACE
           </p>
           <h1 id="welcome-title" className={styles.headline}>
-            Your people.
+            See what’s on.
             <br />
-            <span>Your plans.</span>
+            <span>Be part of it.</span>
           </h1>
           <p className={styles.intro}>
-            Discover your next event, find a club that feels like you,
-            <br className={styles.desktopBreak} /> and keep all your plans in
-            one place.
+            Discover clubs, explore upcoming events, and take part in
+            <br className={styles.desktopBreak} /> what’s happening around you.
           </p>
           <div className={styles.poster}>
             <div className={styles.posterTop}>
-              <span>GOOD PLANS START HERE.</span>
+              <span>DISCOVER. JOIN. TAKE PART.</span>
               <ArrowUpRight aria-hidden size={18} />
             </div>
             <ul className={styles.features}>
               <li>
                 <CalendarDays aria-hidden />
                 <span>
-                  What’s happening.<small>Upcoming events</small>
+                  Explore events.<small>See what’s coming up</small>
                 </span>
               </li>
               <li>
                 <Users aria-hidden />
                 <span>
-                  Find your people.<small>Clubs &amp; communities</small>
+                  Discover clubs.<small>Find your interests</small>
                 </span>
               </li>
               <li>
                 <QrCode aria-hidden />
                 <span>
-                  You’re on the list.
+                  Track your visits.
                   <small>Event check-ins &amp; check-outs</small>
                 </span>
               </li>
@@ -82,13 +81,11 @@ export default async function SignInPage() {
               <Image src="/logo-mark.svg" alt="" width={132} height={132} />
             </div>
             <p className={styles.posterBottom}>
-              <Ticket aria-hidden size={14} /> From the first check-in to the
-              last goodbye.
+              <Ticket aria-hidden size={14} /> Every event. Every check-in. All
+              in one place.
             </p>
           </div>
-          <p className={styles.heroNote}>
-            Discover an event. Join a club. Be part of it.
-          </p>
+          <p className={styles.heroNote}>Find an event worth showing up for.</p>
         </section>
         <section aria-label="Account sign in" className={styles.loginPanel}>
           <div className={styles.passLabel}>
@@ -101,9 +98,7 @@ export default async function SignInPage() {
         </section>
       </div>
       <footer className={styles.footer}>
-        <span className={styles.footerBrand}>
-          Good plans, wherever you are.
-        </span>
+        <span className={styles.footerBrand}>Your next event starts here.</span>
         <nav aria-label="CampusApp and policies">
           <a href={STORE_LINKS.playStore} target="_blank" rel="noreferrer">
             Android <ArrowUpRight aria-hidden size={12} />

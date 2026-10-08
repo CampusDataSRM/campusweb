@@ -3,7 +3,7 @@
 export const SITE = {
   name: "The Campus Web",
   shortName: "Campus Web",
-  tagline: "Your clubs. Your events. Your people.",
+  tagline: "Discover clubs. Explore events. Take part.",
   description:
     "Discover clubs and events, manage your plans, and keep track of event check-ins and check-outs - in one place.",
   url: "https://campusweb.in",
