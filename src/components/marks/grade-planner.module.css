@@ -1,0 +1,461 @@
+.planner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.planHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 30px;
+  padding: 28px;
+  border-radius: 18px;
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary-accent);
+}
+.planIntro h2 {
+  font-family: var(--font-home), sans-serif;
+  font-size: 27px;
+  font-weight: 650;
+  line-height: 1.2;
+  margin: 10px 0;
+}
+.planIntro p {
+  color: var(--on-surface-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 420px;
+}
+.assumption {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--on-primary-container);
+  background: var(--primary-container);
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 10px;
+}
+.sgpaComparison {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+}
+.sgpaComparison > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sgpaComparison > div + div {
+  border-left: 1px solid var(--outline-variant);
+  padding-left: 26px;
+}
+.sgpaComparison span {
+  color: var(--on-surface-muted);
+  font-size: 11px;
+}
+.sgpaComparison strong {
+  font-family: var(--font-home), sans-serif;
+  font-size: 42px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
+  line-height: 1.2;
+}
+.sgpaComparison small {
+  font-size: 9px;
+  color: var(--on-surface-muted);
+}
+.plannedFigure strong {
+  color: var(--primary-accent);
+}
+.planToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.targets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.targets > span {
+  font-size: 12px;
+  color: var(--on-surface-muted);
+  margin-right: 8px;
+}
+.targets button {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 9px;
+  border: 1px solid var(--outline-variant);
+  background: var(--surface-container);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.targets button[aria-pressed="true"] {
+  border-color: var(--primary-accent);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+.reset {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 11px;
+  color: var(--on-surface-muted);
+  cursor: pointer;
+}
+.reset:hover {
+  color: var(--on-surface);
+}
+.planCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.planCard {
+  min-width: 0;
+  padding: 24px;
+  border-radius: 16px;
+}
+.courseHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.courseHeader h3 {
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.courseHeader p {
+  font-size: 10px;
+  line-height: 1.5;
+  margin-top: 5px;
+  color: var(--on-surface-muted);
+}
+.gradeStanding {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.gradeStanding > span {
+  font-size: 9px;
+  color: var(--on-surface-muted);
+}
+.gradeBadge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  min-height: 30px;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--primary-accent) 40%, transparent);
+  border-radius: 8px;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  font-size: 16px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.currentScores {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0 20px;
+}
+.currentScores > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.currentScores > div + div {
+  border-left: 1px solid var(--outline-variant);
+  padding-left: 12px;
+}
+.currentScores span {
+  font-size: 10px;
+  color: var(--on-surface-muted);
+}
+.currentScores strong {
+  font-family: var(--font-home), sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.currentScores strong small {
+  font-size: 12px;
+  color: var(--on-surface-muted);
+  font-weight: 400;
+}
+.currentScores > div > small {
+  font-size: 9px;
+  line-height: 1.5;
+  color: var(--on-surface-muted);
+}
+.ceiling {
+  color: var(--primary-accent);
+}
+.targetAdvice {
+  border: 1px solid color-mix(in srgb, var(--primary-accent) 25%, transparent);
+  background: color-mix(in srgb, var(--primary-container) 65%, transparent);
+  border-radius: 10px;
+  padding: 13px;
+}
+.targetAdvice > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.targetLetter {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary-accent);
+  min-width: 30px;
+  text-align: center;
+}
+.targetAdvice strong {
+  font-size: 12px;
+  font-weight: 700;
+}
+.targetAdvice p {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--on-surface-muted);
+}
+.targetAdvice[data-reachable="no"] {
+  border-color: color-mix(in srgb, var(--warning-accent) 25%, transparent);
+  background: var(--warning-container);
+}
+.targetAdvice[data-reachable="no"] .targetLetter {
+  color: var(--warning-accent);
+}
+.scenario {
+  margin-top: 22px;
+}
+.scenario label {
+  display: block;
+  font-size: 11px;
+  font-weight: 650;
+  margin-bottom: 9px;
+}
+.scenario label > span {
+  color: var(--on-surface-muted);
+  font-weight: 400;
+}
+.scenarioInput {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.scenarioInput input {
+  width: 105px;
+  min-width: 0;
+  min-height: 46px;
+  padding: 9px 12px;
+  background: var(--surface-modal);
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  color: var(--on-surface);
+  font-size: 21px;
+  font-family: var(--font-home), sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.scenarioInput input::placeholder {
+  font-family: inherit;
+  font-size: 11px;
+}
+.scenarioResult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scenarioResult strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 33px;
+  min-height: 30px;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 750;
+}
+.scenarioResult > span {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface-muted);
+}
+.slider {
+  width: 100%;
+  margin: 12px 0 0;
+  height: 44px;
+  accent-color: var(--primary-accent);
+  cursor: pointer;
+}
+.slider:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.scenarioNote {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--on-surface-muted);
+  margin-top: 4px;
+}
+.bandsToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--outline-variant);
+  font-size: 11px;
+  color: var(--on-surface-muted);
+  cursor: pointer;
+}
+.gradeTable table {
+  width: 100%;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  border-collapse: collapse;
+}
+.gradeTable th {
+  color: var(--on-surface-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+.gradeTable :is(th, td) {
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.plannerFootnote {
+  max-width: 850px;
+  font-size: 11px;
+  color: var(--on-surface-muted);
+  line-height: 1.7;
+}
+.outlook {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  padding: 13px 0;
+  margin-bottom: 20px;
+  border-block: 1px solid var(--outline-variant);
+}
+.outlook > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.outlook > div > span {
+  color: var(--on-surface-muted);
+}
+.outlook .gradeBadge {
+  font-size: 13px;
+  min-height: 26px;
+  min-width: 29px;
+}
+.outlookFormula {
+  flex-wrap: wrap;
+  color: var(--on-surface);
+  font-variant-numeric: tabular-nums;
+}
+.outlookFormula strong {
+  font-weight: 650;
+}
+.outlook button {
+  margin-left: auto;
+  min-height: 44px;
+  color: var(--primary-accent);
+  font-size: 11px;
+  cursor: pointer;
+}
+@media (max-width: 1100px) {
+  .planHeader {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .sgpaComparison {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 767px) {
+  .planCards {
+    grid-template-columns: 1fr;
+  }
+  .planHeader {
+    padding: 20px;
+  }
+  .planIntro h2 {
+    font-size: 24px;
+  }
+  .planCard {
+    padding: 20px;
+  }
+  .sgpaComparison {
+    gap: 25px;
+  }
+  .sgpaComparison > div + div {
+    padding-left: 25px;
+  }
+  .sgpaComparison strong {
+    font-size: 36px;
+  }
+  .outlookFormula {
+    width: 100%;
+    order: 4;
+  }
+}
+@media (max-width: 420px) {
+  .targets {
+    gap: 5px;
+  }
+  .targets > span {
+    width: 100%;
+    margin: 0 0 3px;
+  }
+  .targets button {
+    min-width: 44px;
+  }
+  .currentScores {
+    gap: 8px;
+  }
+  .currentScores > div + div {
+    padding-left: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slider {
+    transition: none;
+  }
+}

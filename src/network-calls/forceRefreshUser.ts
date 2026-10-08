@@ -1,34 +1,61 @@
-
-import type { RequestConfig } from "@/lib/api/axios-client";
-import { apiClient } from "@/lib/api/axios-client";
+import {
+  apiClient,
+  ApiError,
+  type RequestConfig,
+} from "@/lib/api/axios-client";
+import {
+  refreshNotice,
+  type RefreshNotice,
+} from "@/lib/student/refresh-policy";
 import type { ForceRefreshUserResponse } from "@/network-calls/types";
 
-/**
- * POST /auth/force-refresh/user
- *
- * Scrapes the student's full live profile fresh from Academia (bypassing the
- * server-side cache) and returns it — profile, courses with attendance hours,
- * test performances, advisors. Unlike GET /auth/user, no request body.
- *
- * Authenticated endpoint — both headers required:
- * - `X-CSRF-Token`: the Academia session cookies (login response's `Cookies` string)
- * - `X-Net-ID`: the student's net id, e.g. "ac2741"
- * e.g.
- *   forceRefreshUser({
- *     headers: { "X-CSRF-Token": cookies, "X-Net-ID": netId },
- *   })
- * Global header wiring happens at integration time.
- *
- * Typed fetcher through the shared axios client; direct client-to-API calls
- * against NEXT_PUBLIC_SERVE, with no Next.js proxy in between.
- */
+/** Mirrors CampusApp ForceUpdateService. GET and POST are both supported by the API. */
+export async function requestForceRefresh<T>(
+  path: string,
+  config: RequestConfig,
+  body?: unknown,
+): Promise<{ data: T | undefined; notice: RefreshNotice }> {
+  const response = await apiClient.request<T>({
+    ...config,
+    url: path,
+    method: body === undefined ? "GET" : "POST",
+    data: body,
+    timeout: body === undefined ? 20_000 : 30_000,
+    validateStatus: () => true,
+  });
+  const notice = refreshNotice(response.status, response.headers);
+  if (response.status === 401 || response.status === 403)
+    throw new ApiError(
+      "Your session has expired. Please sign in again.",
+      response.status,
+    );
+  if (notice.limited && response.status === 429)
+    return { data: undefined, notice };
+  const payload = response.data as { error?: string; status?: string } | null;
+  if (
+    response.status !== 200 ||
+    !payload ||
+    typeof payload !== "object" ||
+    payload.error ||
+    payload.status === "fail" ||
+    payload.status === "error"
+  ) {
+    throw new ApiError(
+      "Couldn’t refresh right now. Your saved data is still available.",
+      response.status,
+    );
+  }
+  return { data: response.data, notice };
+}
+
 export async function forceRefreshUser(
-  config?: RequestConfig,
+  config: RequestConfig = {},
 ): Promise<ForceRefreshUserResponse> {
-  const { data } = await apiClient.post<ForceRefreshUserResponse>(
+  const result = await requestForceRefresh<ForceRefreshUserResponse>(
     "/auth/force-refresh/user",
-    undefined,
     config,
   );
-  return data;
+  if (!result.data)
+    throw new ApiError("Just refreshed. Please try again shortly.", 429);
+  return result.data;
 }

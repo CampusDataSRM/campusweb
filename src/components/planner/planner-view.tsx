@@ -167,8 +167,8 @@ export function PlannerView() {
         />
       ) : (
         <>
-          <div className="campus-toolbar">
-            <div className="flex items-center gap-2">
+          <div className="campus-toolbar planner-controls">
+            <div className="planner-month-controls flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon-touch"

@@ -13,6 +13,7 @@ import {
   ErrorState,
   ShimmerBlock,
 } from "@/components/feedback/data-states";
+import { StudentRefreshButton } from "@/components/feedback/student-refresh-button";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/context/session-context";
@@ -80,26 +81,29 @@ export function AttendanceView() {
           : "Updated from your student account."
       }
       actions={
-        canPredict && prediction.courses.length > 0 ? (
-          predicted ? (
-            <>
-              <Button
-                variant="outline"
-                size="touch"
-                onClick={() => setSheetOpen(true)}
-              >
-                Edit
+        <>
+          <StudentRefreshButton target="attendance" />
+          {canPredict && prediction.courses.length > 0 ? (
+            predicted ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="touch"
+                  onClick={() => setSheetOpen(true)}
+                >
+                  Edit
+                </Button>
+                <Button variant="tonal" size="touch" onClick={prediction.clear}>
+                  <X aria-hidden /> Clear
+                </Button>
+              </>
+            ) : (
+              <Button size="touch" onClick={() => setSheetOpen(true)}>
+                <Sparkles aria-hidden /> Plan attendance
               </Button>
-              <Button variant="tonal" size="touch" onClick={prediction.clear}>
-                <X aria-hidden /> Clear
-              </Button>
-            </>
-          ) : (
-            <Button size="touch" onClick={() => setSheetOpen(true)}>
-              <Sparkles aria-hidden /> Plan attendance
-            </Button>
-          )
-        ) : undefined
+            )
+          ) : undefined}
+        </>
       }
     />
   );

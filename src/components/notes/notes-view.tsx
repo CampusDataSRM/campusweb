@@ -448,6 +448,7 @@ export function NotesView() {
           </InputGroupAddon>
           <InputGroupInput
             type="search"
+            autoComplete="off"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => event.key === "Escape" && setQuery("")}

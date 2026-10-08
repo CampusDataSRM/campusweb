@@ -10,6 +10,7 @@ import {
   ErrorState,
   ShimmerBlock,
 } from "@/components/feedback/data-states";
+import { StudentRefreshButton } from "@/components/feedback/student-refresh-button";
 import { PageHeader } from "@/components/layout/page-header";
 import { TIER_STYLE } from "@/constants/attendance-tiers";
 import { STUDENT_ROUTES } from "@/constants/routes";
@@ -162,6 +163,7 @@ export function TimetableView() {
     <div className="campus-view timetable-page flex flex-col gap-6">
       <PageHeader
         title="Timetable"
+        actions={<StudentRefreshButton target="timetable" />}
         status={
           <CachedBadge
             savedAt={timetable.savedAt}

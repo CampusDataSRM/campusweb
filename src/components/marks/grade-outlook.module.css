@@ -1,0 +1,242 @@
+.outlook {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+  border-left: 1px solid var(--outline-variant);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--primary-container) 60%, transparent),
+    transparent
+  );
+}
+.gradeHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.projected {
+  color: var(--on-surface-muted);
+  font-size: 9px;
+  border: 1px solid var(--outline-variant);
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0 23px;
+  position: relative;
+}
+.stamp::before,
+.stamp::after {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-color: color-mix(in srgb, var(--primary-accent) 40%, transparent);
+  border-style: solid;
+}
+.stamp::before {
+  left: 0;
+  top: 25px;
+  border-width: 1px 0 0 1px;
+}
+.stamp::after {
+  right: 0;
+  bottom: 23px;
+  border-width: 0 1px 1px 0;
+}
+.stamp > strong {
+  font-family: var(--font-home), sans-serif;
+  font-size: 100px;
+  line-height: 1;
+  letter-spacing: -0.075em;
+  font-weight: 850;
+  color: var(--on-primary-container);
+  text-shadow: 0 6px 32px
+    color-mix(in srgb, var(--primary-accent) 22%, transparent);
+}
+.stamp > span {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-surface-muted);
+  margin-top: 9px;
+}
+.forecast > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  color: var(--on-surface-muted);
+}
+.forecast strong {
+  font-size: 12px;
+  color: var(--on-surface);
+  font-variant-numeric: tabular-nums;
+}
+.scoreTrack {
+  display: flex;
+  height: 7px;
+  background: var(--outline-variant);
+  gap: 2px;
+  margin-top: 10px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.scoreTrack i {
+  display: block;
+  background: var(--primary-accent);
+  flex-shrink: 0;
+}
+.scoreTrack b {
+  display: block;
+  background: repeating-linear-gradient(
+    120deg,
+    transparent 0 2px,
+    var(--on-primary-container) 2px 3px
+  );
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.forecast p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--on-surface-muted);
+  margin-top: 9px;
+  line-height: 1.5;
+}
+.forecast p i {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: var(--primary-accent);
+}
+.forecast p span {
+  margin-left: auto;
+}
+.nextGrade {
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1px solid var(--outline-variant);
+}
+.nextGrade > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--on-surface-muted);
+}
+.nextGrade svg {
+  color: var(--primary-accent);
+}
+.nextGrade strong {
+  margin-left: auto;
+  font-size: 18px;
+  color: var(--on-primary-container);
+}
+.nextGrade p {
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--on-surface-muted);
+  margin-top: 7px;
+}
+.nextGrade b {
+  font-weight: 700;
+  color: var(--on-surface);
+}
+.outlook > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border: 1px solid color-mix(in srgb, var(--primary-accent) 25%, transparent);
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.outlook > button:hover {
+  background: color-mix(in srgb, var(--primary-accent) 22%, var(--surface));
+}
+.outlook > small {
+  color: var(--on-surface-muted);
+  font-size: 8px;
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+@media (max-width: 1100px) {
+  .outlook {
+    padding: 20px 17px;
+  }
+  .stamp > strong {
+    font-size: 90px;
+  }
+}
+@media (max-width: 767px) {
+  .outlook {
+    border-left: 0;
+    border-top: 1px solid var(--outline-variant);
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 10px 18px;
+    padding: 18px;
+    align-items: center;
+  }
+  .gradeHeading {
+    grid-column: 1 / -1;
+  }
+  .stamp {
+    padding: 15px 0;
+    grid-column: 1;
+    grid-row: 2 / 4;
+  }
+  .stamp::before {
+    top: 12px;
+  }
+  .stamp::after {
+    bottom: 12px;
+  }
+  .stamp > strong {
+    font-size: 68px;
+  }
+  .stamp > span {
+    font-size: 8px;
+  }
+  .forecast {
+    grid-column: 2;
+  }
+  .nextGrade {
+    grid-column: 2;
+    margin-top: 0;
+    padding-top: 10px;
+  }
+  .nextGrade p {
+    font-size: 10px;
+  }
+  .outlook > button {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+  .outlook > small {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+}

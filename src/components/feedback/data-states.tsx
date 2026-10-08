@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudOff, History, RotateCw, type LucideIcon } from "lucide-react";
+import { Clock3, CloudOff, RotateCw, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -99,11 +99,16 @@ export function CachedBadge({ savedAt, refreshing }: { savedAt: number | null; r
   if (savedAt === null) return null;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning-container px-2.5 py-1 text-xs font-bold text-on-warning-container"
+      className="inline-flex shrink-0 items-center gap-1.5 py-1 text-xs font-normal leading-4 text-on-surface-muted"
       title={`Saved ${new Date(savedAt).toLocaleString()}`}
+      role="status"
     >
-      <History aria-hidden className={cn("size-3.5", refreshing && "animate-spin")} />
-      {refreshing ? "Updating" : `Saved ${timeAgo(savedAt)}`}
+      {refreshing ? (
+        <RotateCw aria-hidden className="size-3 motion-safe:animate-spin" />
+      ) : (
+        <Clock3 aria-hidden className="size-3" />
+      )}
+      {refreshing ? "Checking for updates" : `Saved ${timeAgo(savedAt)}`}
     </span>
   );
 }

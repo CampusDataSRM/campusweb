@@ -1,0 +1,122 @@
+.card {
+  min-width: 0;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.card:has([role="region"]) .header {
+  min-height: 74px;
+}
+
+.title {
+  margin: 0;
+  color: var(--on-surface);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.total {
+  margin: 0;
+  color: var(--on-surface);
+  font-family: var(--font-home), sans-serif;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.total > span {
+  color: var(--on-surface-muted);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.awaiting {
+  display: inline-block;
+  max-width: 75px;
+  color: var(--on-surface-muted);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.assessment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.assessmentName {
+  min-width: 0;
+  color: var(--on-surface-muted);
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.assessmentPending {
+  grid-column: 2 / -1;
+  color: var(--on-surface-muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* The shared segmented track has an attendance target; marks have no such rule. */
+.track :global(.attendance-track) {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--surface-highest) 0 4px,
+    transparent 4px 7px
+  );
+  border-radius: 1px;
+}
+.track :global(.attendance-track-fill) {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--track-ink) 0 4px,
+    transparent 4px 7px
+  );
+}
+.track :global(.attendance-track-target),
+.track :global(.attendance-track-gap) {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .header {
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .total {
+    font-size: 25px;
+  }
+
+  .assessment {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 10px;
+  }
+  .assessment > .track {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .assessmentPending {
+    grid-column: 2;
+  }
+}

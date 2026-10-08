@@ -1,0 +1,120 @@
+.chart {
+  min-width: 0;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--on-surface-muted);
+}
+
+.caption > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.key i {
+  display: block;
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--primary-accent);
+}
+
+.scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--outline) transparent;
+  border-radius: 4px;
+}
+
+.scroll:focus-visible {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 3px;
+}
+
+.canvas {
+  min-width: 0;
+  height: calc(220px + var(--label-overflow, 0px));
+}
+
+.singleCanvas {
+  min-width: 0;
+  height: 132px;
+}
+
+.chart :global(.recharts-surface) {
+  overflow: visible;
+}
+
+.chart :global(.recharts-wrapper):focus-visible {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.tooltip {
+  max-width: 230px;
+  padding: 12px 15px;
+  border: 1px solid var(--outline);
+  border-radius: 12px;
+  background: var(--surface-modal);
+  color: var(--on-surface);
+  box-shadow: 0 12px 28px #0003;
+}
+
+.tooltip p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 7px;
+}
+
+.tooltip strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.tooltip strong span {
+  color: var(--on-surface-muted);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.tooltip small {
+  display: block;
+  margin-top: 4px;
+  color: var(--on-surface-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .canvas {
+    height: calc(200px + var(--label-overflow, 0px));
+  }
+
+  .singleCanvas {
+    height: 120px;
+  }
+
+  .caption {
+    font-size: 10px;
+    gap: 10px;
+  }
+}

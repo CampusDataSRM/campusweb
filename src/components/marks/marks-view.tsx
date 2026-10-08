@@ -1,132 +1,110 @@
 "use client";
 
-import { BarChart3 } from "lucide-react";
+import { BarChart3, ChevronDown, List, Search, Target } from "lucide-react";
 import { useMemo, useState } from "react";
-
 import { UnlockPrompt } from "@/components/attendance/unlock-prompt";
-import CountUp from "@/components/CountUp";
 import {
   CachedBadge,
   EmptyState,
   ErrorState,
   ShimmerBlock,
 } from "@/components/feedback/data-states";
+import { StudentRefreshButton } from "@/components/feedback/student-refresh-button";
 import { PageHeader } from "@/components/layout/page-header";
-import { MarksCard, marksTone } from "@/components/marks/marks-card";
-import { SgpaSheet } from "@/components/marks/sgpa-sheet";
-import { Segmented } from "@/components/ui/segmented";
+import { MarksCard } from "@/components/marks/marks-card";
+import { MarksExplorer } from "@/components/marks/marks-explorer";
+import { SemesterScorecard } from "./semester-scorecard";
+import { GradePlanner } from "@/components/marks/grade-planner";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSession } from "@/context/session-context";
 import { useStudentCopy } from "@/hooks/use-student-copy";
 import { useProfile } from "@/hooks/use-student-data";
+import { normalizeMarks } from "@/lib/student/marks";
 import { projectSgpa } from "@/lib/student/sgpa";
-import { cn } from "@/lib/utils";
-import type { UserTestPerformance } from "@/network-calls/types";
-
-const fmt = (value: number) =>
-  Number.isInteger(value)
-    ? String(value)
-    : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
-
-const TONE_TEXT = {
-  good: "text-success-accent",
-  warn: "text-warning-accent",
-  bad: "text-danger-accent",
-} as const;
-
-/** A course's total so far, or null before any test is published. */
-function percentOf(row: UserTestPerformance): number | null {
-  const tests = Object.values(row.tests ?? {});
-  const total = row.totalMarks || tests.reduce((s, t) => s + t.total, 0);
-  const got = row.totalMarkGot || tests.reduce((s, t) => s + t.got, 0);
-  return total > 0 ? (got / total) * 100 : null;
-}
+import styles from "./marks.module.css";
 
 export function MarksView() {
   const copy = useStudentCopy();
   const { session } = useSession();
   const profile = useProfile();
-  const [filter, setFilter] = useState<"all" | "low">("all");
-  const performances = useMemo(
-    () => profile.data?.testPerformances ?? [],
+  const [view, setView] = useState("charts");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("all");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [targetGrade, setTargetGrade] = useState("O");
+  const [scenarios, setScenarios] = useState<Record<string, number | null>>({});
+  const subjects = useMemo(
+    () => normalizeMarks(profile.data?.testPerformances ?? []),
     [profile.data],
   );
   const projection = useMemo(
     () => (profile.data ? projectSgpa(profile.data) : null),
     [profile.data],
   );
+  const credits = new Map(
+    (profile.data?.courses ?? []).map((course) => [
+      course.courseCode,
+      course.credit,
+    ]),
+  );
+  const grades = new Map(
+    (projection?.subjects ?? []).map((subject) => [
+      subject.courseCode,
+      subject,
+    ]),
+  );
   const isDemo = session?.kind === "demo";
-  // The evaluator account is an events programme: activities and results, not subjects and tests.
-  const noun = isDemo ? ["activity", "activities"] : ["subject", "subjects"];
-  const showSgpa =
-    session?.kind !== "demo" &&
-    projection !== null &&
-    projection.countedCredits > 0;
-
-  // Weakest first, so the subject that needs work is the first one seen;
-  // subjects with nothing published yet go last.
-  const sorted = useMemo(
-    () =>
-      [...performances]
-        .map((row) => ({ row, percent: percentOf(row) }))
-        .sort((a, b) => (a.percent ?? 101) - (b.percent ?? 101)),
-    [performances],
-  );
-  const low = sorted.filter((s) => s.percent !== null && s.percent < 75);
-  const shown = filter === "all" ? sorted : low;
-  const credits = useMemo(
-    () =>
-      new Map(
-        (profile.data?.courses ?? []).map((c) => [c.courseCode, c.credit]),
-      ),
-    [profile.data],
-  );
-  const projected = useMemo(
-    () => new Map((projection?.subjects ?? []).map((s) => [s.courseCode, s])),
-    [projection],
-  );
-
-  // The strip: marks so far, tests published, subjects below 75%.
-  const scored = sorted.filter((s) => s.percent !== null);
-  const totalGot = scored.reduce(
-    (sum, s) => sum + (s.row.totalMarkGot || 0),
-    0,
-  );
-  const totalMax = scored.reduce((sum, s) => sum + (s.row.totalMarks || 0), 0);
-  const overall = totalMax > 0 ? (totalGot / totalMax) * 100 : 0;
-  const testCount = scored.reduce(
-    (sum, s) => sum + Object.keys(s.row.tests ?? {}).length,
-    0,
-  );
-  const pending = sorted.length - scored.length;
-  const lowest = scored.length
-    ? Math.min(...scored.map((s) => s.percent!))
-    : null;
+  const noun = isDemo ? "activities" : "subjects";
+  const published = subjects.filter((subject) => subject.percent !== null);
+  const pending = subjects.length - published.length;
+  const query = search.trim().toLocaleLowerCase();
+  // Keep the API's course order, with unpublished results collected at the end.
+  const shown = [
+    ...published,
+    ...subjects.filter((subject) => subject.percent === null),
+  ].filter((subject) => {
+    const matches = `${subject.courseName} ${subject.courseCode}`
+      .toLocaleLowerCase()
+      .includes(query);
+    return (
+      matches &&
+      (status === "all" ||
+        (status === "published"
+          ? subject.percent !== null
+          : subject.percent === null))
+    );
+  });
 
   return (
-    <div className="campus-view marks-page flex flex-col gap-6">
+    <div className={`campus-view ${styles.page}`}>
       <PageHeader
         title={copy.marksTitle}
-        description="Your scores, subject by subject. Keep an eye on what’s next."
+        description={
+          profile.error && profile.data ? (
+            <span className={styles.notice} role="status">
+              Sync unavailable · showing saved results
+            </span>
+          ) : (
+            "Your marks, grades and next targets."
+          )
+        }
         status={
           <CachedBadge
             savedAt={profile.savedAt}
             refreshing={profile.isFetching}
           />
         }
-        actions={
-          showSgpa ? (
-            <SgpaSheet
-              projection={projection}
-              program={profile.data?.program}
-              semester={profile.data?.semester}
-            />
-          ) : undefined
-        }
+        actions={<StudentRefreshButton target="marks" />}
       />
       {profile.isLoading ? (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {Array.from({ length: 4 }, (_, i) => (
-            <ShimmerBlock key={i} className="h-56" />
+        <div
+          className={styles.cards}
+          aria-label="Loading marks"
+          aria-busy="true"
+        >
+          {Array.from({ length: 4 }, (_, index) => (
+            <ShimmerBlock key={index} className="h-56" />
           ))}
         </div>
       ) : !profile.data ? (
@@ -136,7 +114,7 @@ export function MarksView() {
           onRetry={() => void profile.refetch()}
           retrying={profile.isFetching}
         />
-      ) : performances.length === 0 ? (
+      ) : subjects.length === 0 ? (
         profile.data.studentPortalLoginRequired ? (
           <UnlockPrompt subject="marks" />
         ) : (
@@ -148,104 +126,148 @@ export function MarksView() {
         )
       ) : (
         <>
-          {scored.length > 0 && (
-            <dl className="campus-stat-strip">
-              <div>
-                <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
-                  {isDemo ? "Score so far" : "Marks so far"}
-                </dt>
-                <dd
-                  className={cn(
-                    "font-heading text-h2 font-extrabold tabular",
-                    TONE_TEXT[marksTone(overall)],
-                  )}
-                >
-                  <CountUp to={Math.round(overall * 10) / 10} duration={0.8} />%
-                </dd>
-                <dd className="campus-stat-note">
-                  {fmt(totalGot)} of {fmt(totalMax)}{" "}
-                  {isDemo ? "points" : "marks"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
-                  {isDemo ? "Results published" : "Tests published"}
-                </dt>
-                <dd className="font-heading text-h2 font-extrabold text-on-surface tabular">
-                  <CountUp to={testCount} duration={0.8} />
-                </dd>
-                <dd className="campus-stat-note">
-                  {scored.length} of {sorted.length}{" "}
-                  {sorted.length === 1 ? noun[0] : noun[1]}
-                  {pending > 0 && ` · ${pending} waiting`}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold text-on-surface-muted sm:text-sm">
-                  Below 75%
-                </dt>
-                <dd
-                  className={cn(
-                    "font-heading text-h2 font-extrabold tabular",
-                    low.length > 0 ? "text-danger-accent" : "text-on-surface",
-                  )}
-                >
-                  <CountUp to={low.length} duration={0.8} />
-                </dd>
-                <dd className="campus-stat-note">
-                  {low.length > 0 && lowest !== null
-                    ? `Lowest at ${lowest.toFixed(1)}%`
-                    : "Everything at or above 75%"}
-                </dd>
-              </div>
-            </dl>
-          )}
-          <div className="campus-toolbar">
-            <Segmented
-              label={`Filter ${noun[1]}`}
-              value={filter}
-              onChange={setFilter}
-              options={[
-                {
-                  value: "all",
-                  label: (
-                    <>
-                      {isDemo ? "All activities" : "All subjects"}{" "}
-                      <span className="campus-tab-count">{sorted.length}</span>
-                    </>
-                  ),
-                },
-                {
-                  value: "low",
-                  label: (
-                    <>
-                      Below 75%{" "}
-                      <span className="campus-tab-count">{low.length}</span>
-                    </>
-                  ),
-                },
-              ]}
-            />
-            <p className="campus-caption">Lowest first</p>
-          </div>
-          {shown.length === 0 && (
-            <EmptyState
-              icon={BarChart3}
-              title="Nothing below 75%"
-              description="Every subject with published marks is at 75% or better."
+          {view !== "plan" && (
+            <SemesterScorecard
+              subjects={subjects}
+              noun={noun}
+              projection={isDemo ? undefined : (projection ?? undefined)}
+              semester={profile.data.semester}
+              program={profile.data.program}
+              onPlan={() => setView("plan")}
+              onSelect={(subject) => {
+                setSearch("");
+                setStatus("all");
+                setSelectedSubject(
+                  `${subject.courseCode}:${subject.courseType}`,
+                );
+                setView("charts");
+              }}
             />
           )}
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {shown.map(({ row }, index) => (
-              <MarksCard
-                key={row.courseCode}
-                performance={row}
-                credits={credits.get(row.courseCode)}
-                projection={isDemo ? undefined : projected.get(row.courseCode)}
-                index={index}
-              />
+          <Tabs
+            value={view}
+            onValueChange={(value) => setView(String(value))}
+            className={styles.tabs}
+          >
+            <div className={styles.toolbar}>
+              <TabsList className={styles.viewTabs} aria-label="Marks view">
+                <TabsTrigger value="charts" className={styles.viewTab}>
+                  <BarChart3 aria-hidden /> Charts
+                </TabsTrigger>
+                <TabsTrigger value="details" className={styles.viewTab}>
+                  <List aria-hidden /> Details
+                </TabsTrigger>
+                {!isDemo && projection && (
+                  <TabsTrigger value="plan" className={styles.viewTab}>
+                    <Target aria-hidden /> Plan grades
+                  </TabsTrigger>
+                )}
+              </TabsList>
+              {view !== "plan" && (
+                <div className={styles.filters}>
+                  <label className={styles.search}>
+                    <Search size={16} aria-hidden />
+                    <input
+                      aria-label={`Search ${noun}`}
+                      placeholder={`Find ${isDemo ? "an activity" : "a subject"}`}
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      type="search"
+                    />
+                  </label>
+                  <div className={styles.selectWrap}>
+                    <select
+                      aria-label="Filter results"
+                      value={status}
+                      onChange={(event) => setStatus(event.target.value)}
+                    >
+                      <option value="all">
+                        All {noun} ({subjects.length})
+                      </option>
+                      <option value="published">
+                        Published ({published.length})
+                      </option>
+                      <option value="pending">Awaiting ({pending})</option>
+                    </select>
+                    <ChevronDown size={14} aria-hidden />
+                  </div>
+                </div>
+              )}
+            </div>
+            {(["charts", "details"] as const).map((mode) => (
+              <TabsContent key={mode} value={mode} className={styles.content}>
+                {shown.length ? (
+                  mode === "charts" ? (
+                    <MarksExplorer
+                      subjects={shown}
+                      credits={isDemo ? undefined : credits}
+                      noun={noun}
+                      selectedKey={selectedSubject}
+                      onSelect={setSelectedSubject}
+                      grades={isDemo ? undefined : grades}
+                      onPlan={(subject) => {
+                        setSelectedSubject(
+                          `${subject.courseCode}:${subject.courseType}`,
+                        );
+                        setView("plan");
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.cards}>
+                      {shown.map((subject, index) => (
+                        <MarksCard
+                          key={subject.id}
+                          subject={subject}
+                          index={Math.min(index, 5)}
+                          credits={
+                            isDemo ? undefined : credits.get(subject.courseCode)
+                          }
+                          projection={
+                            isDemo ? undefined : grades.get(subject.courseCode)
+                          }
+                        />
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <EmptyState
+                    icon={Search}
+                    title="No matching results"
+                    description="Try another search or show all results."
+                    action={
+                      <Button
+                        variant="tonal"
+                        size="touch"
+                        onClick={() => {
+                          setSearch("");
+                          setStatus("all");
+                        }}
+                      >
+                        Clear filters
+                      </Button>
+                    }
+                  />
+                )}
+              </TabsContent>
             ))}
-          </div>
+            {!isDemo && projection && (
+              <TabsContent value="plan" className={styles.content}>
+                <GradePlanner
+                  projection={projection}
+                  target={targetGrade}
+                  onTargetChange={setTargetGrade}
+                  scenarios={scenarios}
+                  onScenariosChange={setScenarios}
+                  preferredCourse={selectedSubject?.split(":")[0]}
+                />
+              </TabsContent>
+            )}
+          </Tabs>
+          <p className={styles.footnote}>
+            {isDemo
+              ? "Scores reflect published assessments."
+              : "Grade badges and SGPA are projections: published marks scaled to 60 internals, plus an assumed 40/40 external marks for theory. Internal-only courses use their own 100-mark scale."}
+          </p>
         </>
       )}
     </div>

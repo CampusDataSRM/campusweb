@@ -22,7 +22,6 @@ html[data-palette="campus-glow"]
     .meal-menu,
     .home-hero-copy,
     .home-subject-tile,
-    .notes-page > div:has([role="radiogroup"]),
     [data-slot="sidebar-inner"]
   ) {
   background: var(--surface-container);
@@ -35,6 +34,11 @@ html[data-palette="campus-glow"] :is(h1, h2, h3, h4) {
 }
 html[data-palette="campus-glow"] .app-header {
   background: rgb(0 0 0 / 0.35);
+}
+html[data-palette="campus-glow"] .notes-page > .notes-toolbar {
+  background: color-mix(in srgb, var(--surface-modal) 35%, var(--surface));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 html[data-palette="campus-glow"] .planner-calendar > div:first-child {
   background: rgb(12 77 162 / 0.2);

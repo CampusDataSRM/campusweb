@@ -1,4 +1,4 @@
-import { clearStoredSession } from "@/lib/auth/session";
+import { clearStoredSession, readSession } from "@/lib/auth/session";
 import { clearCachedPages } from "@/lib/pwa/sw-client";
 /**
  * Shared axios client for all API calls.
@@ -29,6 +29,36 @@ export class ApiError extends Error {
 
 let revocationPending = false;
 
+async function handleSessionRevocation(
+  status: number | undefined,
+  data: unknown,
+  config: RequestConfig | undefined,
+) {
+  if (
+    status !== 401 ||
+    typeof data !== "object" ||
+    data === null ||
+    !("code" in data) ||
+    data.code !== "session_revoked" ||
+    config?.skipSessionRevokedRedirect ||
+    typeof window === "undefined" ||
+    revocationPending
+  )
+    return;
+
+  // A late response from the previous login must not sign out the new one.
+  const requestToken = config?.headers?.["X-Session-Token"];
+  if (typeof requestToken === "string") {
+    const current = await readSession();
+    if (current?.sessionToken !== requestToken) return;
+  }
+  if (revocationPending) return;
+  revocationPending = true;
+  await clearStoredSession();
+  await clearCachedPages();
+  window.location.replace("/#session-revoked");
+}
+
 function createApiClient(): AxiosInstance {
   const client = axios.create({
     baseURL: process.env.NEXT_PUBLIC_SERVE ?? "",
@@ -53,27 +83,34 @@ function createApiClient(): AxiosInstance {
   // Normalize every failure into `ApiError` so consumers (TanStack Query,
   // error boundaries, toasts) always handle a consistent error type.
   client.interceptors.response.use(
-    (response) => response,
+    async (response) => {
+      // Force-refresh accepts HTTP statuses to inspect rate-limit notices.
+      // Revocation still belongs to this central path, regardless of that setting.
+      await handleSessionRevocation(
+        response.status,
+        response.data,
+        response.config,
+      );
+      if (
+        response.status === 401 &&
+        response.data?.code === "session_revoked"
+      ) {
+        throw new ApiError(
+          "You were signed out from another device.",
+          401,
+          response.data,
+        );
+      }
+      return response;
+    },
     async (error: AxiosError) => {
       const status = error.response?.status;
       const data = error.response?.data;
-      if (
-        status === 401 &&
-        typeof data === "object" &&
-        data !== null &&
-        "code" in data &&
-        data.code === "session_revoked" &&
-        !(error.config as RequestConfig | undefined)
-          ?.skipSessionRevokedRedirect &&
-        typeof window !== "undefined" &&
-        !revocationPending
-      ) {
-        revocationPending = true;
-        await clearStoredSession();
-        await clearCachedPages();
-        // Carry only a public reason through the full reload, never session data.
-        window.location.replace("/#session-revoked");
-      }
+      await handleSessionRevocation(
+        status,
+        data,
+        error.config as RequestConfig | undefined,
+      );
       const message =
         (typeof data === "object" && data !== null && "message" in data
           ? String((data as { message: unknown }).message)

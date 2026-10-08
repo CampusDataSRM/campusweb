@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StudentRefreshButton } from "@/components/feedback/student-refresh-button";
 import { WeekStrip } from "@/components/dashboard/week-strip";
 import {
   ArrowUpRight,
@@ -275,17 +276,27 @@ export function TodayHero({ aside }: { aside?: ReactNode } = {}) {
       <div className="home-welcome">
         <div className="home-greeting flex flex-wrap items-center gap-2">
           <p>
-            {now ? greeting(now.getHours()) : "Welcome back"}
-            {name ? `, ${name}` : ""}
+            <span className="home-greeting-label">
+              {now ? greeting(now.getHours()) : "Welcome back"}
+            </span>
+            {name && (
+              <>
+                <span className="home-greeting-comma">, </span>
+                <span className="home-greeting-name">{name}</span>
+              </>
+            )}
           </p>
           <CachedBadge
             savedAt={profile.savedAt}
             refreshing={profile.isFetching}
           />
         </div>
-        {now && (
-          <span className="home-welcome-date">{todayFormat.format(now)}</span>
-        )}
+        <div className="flex items-center gap-1">
+          {now && (
+            <span className="home-welcome-date">{todayFormat.format(now)}</span>
+          )}
+          <StudentRefreshButton target="dashboard" />
+        </div>
       </div>
       <div className="home-hero-grid">
         <DayOverview />
