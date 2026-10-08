@@ -35,7 +35,7 @@ export function StudiqueCredit({ compact = false }: { compact?: boolean }) {
       type="button"
       className={styles.credit}
       data-compact={compact || undefined}
-      aria-label="Notes and papers by Studique — open Mealmap in a new tab"
+      aria-label="Notes by study_queue — open Mealmap in a new tab"
       onClick={() =>
         window.open(
           "https://www.studique.in/mealmap",
@@ -47,11 +47,11 @@ export function StudiqueCredit({ compact = false }: { compact?: boolean }) {
       <Image
         src="/assets/studique/logo.png"
         alt=""
-        width={24}
-        height={24}
+        width={16}
+        height={16}
         className={styles.logo}
       />
-      <span>Notes and papers by Studique</span>
+      <span>Notes by study_queue</span>
     </button>
   );
 }
