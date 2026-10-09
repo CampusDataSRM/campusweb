@@ -242,6 +242,24 @@
     padding: 12px 20px;
     cursor: pointer;
   }
+  .checkout-return {
+    display: block;
+    width: fit-content;
+    margin: 20px auto 0;
+    min-height: 44px;
+    padding: 12px;
+    color: #3e5368;
+    font-size: 14px;
+    text-underline-offset: 4px;
+  }
+  .checkout-check {
+    display: inline-block;
+    width: 12px;
+    height: 22px;
+    border-right: 2px solid #007fa8;
+    border-bottom: 2px solid #007fa8;
+    transform: rotate(45deg);
+  }
   @keyframes checkout-spin {
     to {
       transform: rotate(360deg);

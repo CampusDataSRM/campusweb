@@ -35,6 +35,8 @@ export function AppPaymentCheckout({
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [paid, setPaid] = useState(false);
+  const [returnAttempted, setReturnAttempted] = useState(false);
+  const [showReturnFallback, setShowReturnFallback] = useState(false);
   const [message, setMessage] = useState("Preparing your payment…");
   const lock = useRef(false);
   const autoOpened = useRef(false);
@@ -84,6 +86,24 @@ export function AppPaymentCheckout({
     };
   }, [embedded]);
 
+  useEffect(() => {
+    if (!returnAttempted) return;
+    let delayElapsed = false;
+    const reveal = () => {
+      if (delayElapsed && document.visibilityState === "visible")
+        setShowReturnFallback(true);
+    };
+    const timeout = window.setTimeout(() => {
+      delayElapsed = true;
+      reveal();
+    }, 3000);
+    document.addEventListener("visibilitychange", reveal);
+    return () => {
+      window.clearTimeout(timeout);
+      document.removeEventListener("visibilitychange", reveal);
+    };
+  }, [returnAttempted]);
+
   const pay = useCallback(
     async (checkOnly = false) => {
       if (!checkout || paid || lock.current) return;
@@ -105,6 +125,7 @@ export function AppPaymentCheckout({
         }
         // Native completion is a hint only; CampusAPI verifies before closing.
         window.CampusCheckout?.postMessage("completed");
+        setMessage("Confirming payment…");
         const response = await fetch("/api/payment/app/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,8 +145,9 @@ export function AppPaymentCheckout({
           result.amount === checkout.amount
         ) {
           setPaid(true);
-          setMessage("Payment confirmed. Returning to Campus App…");
-          // This is only a return hint; the signed-in app verifies its own saved order.
+          setReturnAttempted(true);
+          setMessage("Returning to CampusApp…");
+          // The signed-in app still verifies its own saved order independently.
           window.location.assign(appPaymentReturnUrl(checkout));
         } else if (result.status === "expired") {
           setMessage(
@@ -180,14 +202,20 @@ export function AppPaymentCheckout({
       <main className="embedded-checkout">
         {sdk}
         <div role="status" aria-live="polite">
-          <span className="checkout-spinner" aria-hidden />
+          <span
+            className={
+              paid && showReturnFallback ? "checkout-check" : "checkout-spinner"
+            }
+            aria-hidden
+          />
           <p>
-            {message ||
-              (paid ? "Confirming your payment…" : "Opening secure checkout…")}
+            {paid && showReturnFallback
+              ? "Payment complete"
+              : message || "Opening secure checkout…"}
           </p>
-          {checkout && (
-            <a className="embedded-retry" href={appPaymentReturnUrl(checkout)}>
-              Return to Campus App
+          {checkout && showReturnFallback && (
+            <a className="checkout-return" href={appPaymentReturnUrl(checkout)}>
+              Open CampusApp
             </a>
           )}
           {message && checkout && !busy && !paid && (
@@ -252,9 +280,9 @@ export function AppPaymentCheckout({
         <p className="status" role="status" aria-live="polite">
           {message}
         </p>
-        {checkout && (
+        {checkout && showReturnFallback && (
           <a className="check-button" href={appPaymentReturnUrl(checkout)}>
-            Return to Campus App
+            Open CampusApp
           </a>
         )}
         <div className="processor">
