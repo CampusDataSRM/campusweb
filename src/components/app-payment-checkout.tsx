@@ -3,7 +3,17 @@
 import Image from "next/image";
 import Script from "next/script";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { parseAppCheckout, type AppCheckout } from "@/lib/app-checkout";
+import {
+  appCheckoutReceiptKey,
+  appCheckoutReturnPath,
+  appPaymentReturnUrl,
+  parseAppCheckout,
+  parseAppCheckoutReceipt,
+  parseAppCheckoutReturn,
+  serializeAppCheckoutReceipt,
+  type AppCheckout,
+  type AppCheckoutReceipt,
+} from "@/lib/app-checkout";
 
 // Browser values only select checkout/receipt. The signed-in Flutter app must
 // verify this exact order with CampusAPI before activating student access.
@@ -18,7 +28,10 @@ export function AppPaymentCheckout({
 }: {
   embedded?: boolean;
 }) {
-  const [checkout, setCheckout] = useState<AppCheckout | null>(null);
+  const [checkout, setCheckout] = useState<
+    AppCheckout | AppCheckoutReceipt | null
+  >(null);
+  const [checkingReturn, setCheckingReturn] = useState(false);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [paid, setPaid] = useState(false);
@@ -30,14 +43,33 @@ export function AppPaymentCheckout({
     void Promise.resolve().then(() => {
       if (!active) return;
       try {
-        const data = parseAppCheckout(window.location.hash);
+        const hasHandoff = !!window.location.hash;
+        let savedReceipt = window.history.state?.appCheckoutReceipt ?? null;
+        try {
+          savedReceipt =
+            window.sessionStorage.getItem(appCheckoutReceiptKey) ??
+            savedReceipt;
+        } catch {
+          /* History remains available. */
+        }
+        const data = hasHandoff
+          ? parseAppCheckout(window.location.hash)
+          : (parseAppCheckoutReturn(window.location.search) ??
+            parseAppCheckoutReceipt(savedReceipt));
+        const receipt = serializeAppCheckoutReceipt(data);
+        try {
+          window.sessionStorage.setItem(appCheckoutReceiptKey, receipt);
+        } catch {
+          /* History is the fallback. */
+        }
         // Keep the payment session out of browser history and future referrers.
         window.history.replaceState(
-          null,
+          { appCheckoutReceipt: receipt },
           "",
-          embedded ? "/app?embedded=1" : "/app",
+          appCheckoutReturnPath(data, embedded),
         );
         setCheckout(data);
+        setCheckingReturn(!hasHandoff);
         setMessage("");
       } catch (error) {
         setMessage(
@@ -62,6 +94,8 @@ export function AppPaymentCheckout({
         if (!navigator.onLine)
           throw new Error("Connect to the internet to continue.");
         if (!checkOnly) {
+          if (!("sessionId" in checkout))
+            throw new Error("Return to Campus App to start a new checkout.");
           if (!window.Cashfree)
             throw new Error("Cashfree is still loading. Please retry.");
           await window.Cashfree({ mode: "production" }).checkout({
@@ -90,11 +124,9 @@ export function AppPaymentCheckout({
           result.amount === checkout.amount
         ) {
           setPaid(true);
-          setMessage(
-            embedded
-              ? "Confirming your payment…"
-              : "Close this browser to return to Campus App. The app will verify and activate your access.",
-          );
+          setMessage("Payment confirmed. Returning to Campus App…");
+          // This is only a return hint; the signed-in app verifies its own saved order.
+          window.location.assign(appPaymentReturnUrl(checkout));
         } else if (result.status === "expired") {
           setMessage(
             embedded
@@ -126,11 +158,11 @@ export function AppPaymentCheckout({
   );
 
   useEffect(() => {
-    if (!ready || !checkout || autoOpened.current) return;
+    if ((!ready && !checkingReturn) || !checkout || autoOpened.current) return;
     autoOpened.current = true;
     // Cashfree modal checkout embeds its window; no second user click is needed.
-    void Promise.resolve().then(() => pay());
-  }, [ready, checkout, pay]);
+    void Promise.resolve().then(() => pay(checkingReturn));
+  }, [ready, checkout, checkingReturn, pay]);
 
   const sdk = (
     <Script
@@ -153,9 +185,14 @@ export function AppPaymentCheckout({
             {message ||
               (paid ? "Confirming your payment…" : "Opening secure checkout…")}
           </p>
-          {message && checkout && !busy && !paid && ready && (
-            <button className="embedded-retry" onClick={() => void pay()}>
-              Retry checkout
+          {checkout && (
+            <a className="embedded-retry" href={appPaymentReturnUrl(checkout)}>
+              Return to Campus App
+            </a>
+          )}
+          {message && checkout && !busy && !paid && (
+            <button className="embedded-retry" onClick={() => void pay(true)}>
+              Check payment status
             </button>
           )}
         </div>
@@ -193,7 +230,7 @@ export function AppPaymentCheckout({
                 ₹{checkout.amount}.00 <small>INR</small>
               </strong>
             </div>
-            {message && !busy && (
+            {message && !busy && "sessionId" in checkout && (
               <button
                 className="pay-button"
                 disabled={!ready || busy}
@@ -215,6 +252,11 @@ export function AppPaymentCheckout({
         <p className="status" role="status" aria-live="polite">
           {message}
         </p>
+        {checkout && (
+          <a className="check-button" href={appPaymentReturnUrl(checkout)}>
+            Return to Campus App
+          </a>
+        )}
         <div className="processor">
           Payments secured by <strong>Cashfree</strong>
         </div>
