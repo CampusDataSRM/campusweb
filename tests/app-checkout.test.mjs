@@ -5,10 +5,26 @@ import {
   serializeAppCheckoutReceipt,
   parseAppCheckoutReceipt,
   appPaymentReturnUrl,
+  appCheckoutPlatform,
   appCheckoutReturnPath,
   parseAppCheckoutReturn,
 } from "../src/lib/app-checkout.ts";
 const id = "cf_" + "a".repeat(40);
+test("iPhone and desktop-mode iPad return through the registered iOS scheme", () => {
+  for (const browser of [
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X)", "iPhone", 5],
+    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) Safari/605.1.15", "MacIntel", 5],
+  ]) {
+    const platform = appCheckoutPlatform(...browser);
+    assert.equal(platform, "ios");
+    assert.equal(
+      appPaymentReturnUrl({ orderId: id, amount: 10 }, platform),
+      `campusweb://payment-return?order_id=${id}&amount=10`,
+    );
+  }
+  assert.equal(appCheckoutPlatform("Mozilla/5.0 (Linux; Android 16)", "Linux armv8l", 5), "android");
+  assert.equal(appCheckoutPlatform("Mozilla/5.0 (Macintosh)", "MacIntel", 0), "android");
+});
 test("parses the app handoff with its selected amount", () => {
   const result = parseAppCheckout(
     "#" +

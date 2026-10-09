@@ -5,6 +5,7 @@ import Script from "next/script";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   appCheckoutReceiptKey,
+  appCheckoutPlatform,
   appCheckoutReturnPath,
   appPaymentReturnUrl,
   parseAppCheckout,
@@ -40,6 +41,16 @@ export function AppPaymentCheckout({
   const [message, setMessage] = useState("Preparing your payment…");
   const lock = useRef(false);
   const autoOpened = useRef(false);
+  const returnUrl = checkout
+    ? appPaymentReturnUrl(
+        checkout,
+        appCheckoutPlatform(
+          navigator.userAgent,
+          navigator.platform,
+          navigator.maxTouchPoints,
+        ),
+      )
+    : "";
   useEffect(() => {
     let active = true;
     void Promise.resolve().then(() => {
@@ -148,7 +159,7 @@ export function AppPaymentCheckout({
           setReturnAttempted(true);
           setMessage("Returning to CampusApp…");
           // The signed-in app still verifies its own saved order independently.
-          window.location.assign(appPaymentReturnUrl(checkout));
+          window.location.assign(returnUrl);
         } else if (result.status === "expired") {
           setMessage(
             embedded
@@ -176,7 +187,7 @@ export function AppPaymentCheckout({
         setBusy(false);
       }
     },
-    [checkout, paid, embedded],
+    [checkout, paid, embedded, returnUrl],
   );
 
   useEffect(() => {
@@ -214,7 +225,7 @@ export function AppPaymentCheckout({
               : message || "Opening secure checkout…"}
           </p>
           {checkout && showReturnFallback && (
-            <a className="checkout-return" href={appPaymentReturnUrl(checkout)}>
+            <a className="checkout-return" href={returnUrl}>
               Open CampusApp
             </a>
           )}
@@ -281,7 +292,7 @@ export function AppPaymentCheckout({
           {message}
         </p>
         {checkout && showReturnFallback && (
-          <a className="check-button" href={appPaymentReturnUrl(checkout)}>
+          <a className="check-button" href={returnUrl}>
             Open CampusApp
           </a>
         )}

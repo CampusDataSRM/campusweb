@@ -67,7 +67,10 @@ export function parseAppCheckoutReceipt(
   return { orderId: data.orderId, amount: data.amount };
 }
 
-export function appPaymentReturnUrl(data: AppCheckoutReceipt) {
+export function appPaymentReturnUrl(
+  data: AppCheckoutReceipt,
+  platform: "android" | "ios" = "android",
+) {
   if (
     !/^cf_[a-f0-9]{40}$/.test(data.orderId) ||
     ![10, 12, 15, 20].includes(data.amount)
@@ -78,7 +81,19 @@ export function appPaymentReturnUrl(data: AppCheckoutReceipt) {
     order_id: data.orderId,
     amount: String(data.amount),
   });
+  if (platform === "ios") return `campusweb://payment-return?${query}`;
   return `intent://payment-return?${query}#Intent;scheme=campusweb;package=com.campusweb.campusapp;end`;
+}
+
+export function appCheckoutPlatform(
+  userAgent: string,
+  platform: string,
+  maxTouchPoints: number,
+): "android" | "ios" {
+  return /iPad|iPhone|iPod/i.test(userAgent) ||
+    (platform === "MacIntel" && maxTouchPoints > 1)
+    ? "ios"
+    : "android";
 }
 
 export function parseAppCheckout(fragment: string): AppCheckout {
